@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/text_ordine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cosa vuoi ordinare"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinner_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/edit_richieste"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:hint="Ulteriori richieste"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:paddingBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/text_totale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Totale dovuto: €0.00"
+        android:textSize="16sp"
+        android:paddingBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btn_ordina"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ordina"/>
+</LinearLayout>
