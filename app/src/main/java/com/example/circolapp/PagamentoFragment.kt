@@ -6,8 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
+
+
 
 class MenuOpzioniFragment : Fragment() {
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -15,7 +20,17 @@ class MenuOpzioniFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_pagamento, container, false)
 
         view.findViewById<Button>(R.id.btn_opzione1).setOnClickListener {
-            parentFragmentManager.beginTransaction()
+
+            /*var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+            val user = hashMapOf(
+                "username" to "Ada",
+                "password" to "Lovelace",
+                "livello" to "Lovelace"
+            )
+
+            db.collection("utenti")
+                .add(user)*/
+           parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, QrCodeFragment())
                 .addToBackStack(null)
                 .commit()
@@ -35,4 +50,6 @@ class MenuOpzioniFragment : Fragment() {
 
         return view
     }
+
+
 }

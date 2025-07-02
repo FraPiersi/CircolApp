@@ -38,4 +38,10 @@
         android:layout_height="wrap_content"
         android:text="Telefono: 1234567890"
         android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/buttonLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout" />
 </LinearLayout>
