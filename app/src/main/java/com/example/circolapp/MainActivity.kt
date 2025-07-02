@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                     .commit()
                     true }
                 R.id.nav_search -> { supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, InfoLocaleFragment())
+                    .replace(R.id.fragment_container, EventiFragment())
                     .commit()
                     true }
                 R.id.nav_add -> { supportFragmentManager.beginTransaction()

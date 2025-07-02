@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.circolapp.model.ChatItem
 
 class ListaChat(private val chatList: List<ChatItem>) :
     RecyclerView.Adapter<ListaChat.ChatViewHolder>() {
