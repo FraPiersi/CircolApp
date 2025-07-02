@@ -31,7 +31,10 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.fragment_container, HomeFragment())
                     .commit()
                     true }
-                R.id.nav_search -> { /* Naviga a Cerca */ true }
+                R.id.nav_search -> { supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, InfoLocaleFragment())
+                    .commit()
+                    true }
                 R.id.nav_add -> { /* Naviga a Aggiungi */ true }
                 R.id.nav_notifications -> { /* Naviga a Notifiche */ true }
                 R.id.nav_profile -> { /* Naviga a Profilo */ true }
