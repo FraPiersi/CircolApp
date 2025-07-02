@@ -23,7 +23,7 @@ class ListaEventi(
         holder.textView.text = evento
         holder.itemView.setOnClickListener { onClick(evento) }
         holder.itemView.setOnClickListener {
-            val fragment = InfoEvento.newInstance(evento)
+            val fragment = InfoEventoFragment.newInstance(evento)
             (holder.itemView.context as AppCompatActivity).supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)

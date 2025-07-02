@@ -39,7 +39,10 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.fragment_container, MenuOpzioniFragment())
                     .commit()
                     true }
-                R.id.nav_notifications -> { /* Naviga a Notifiche */ true }
+                R.id.nav_notifications -> { supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, ChatFragment())
+                    .commit()
+                    true }
                 R.id.nav_profile -> { /* Naviga a Profilo */ true }
                 else -> false
             }

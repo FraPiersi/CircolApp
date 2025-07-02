@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 
-class Ordinazione : Fragment() {
+class OrdinazioneFragment : Fragment() {
 
     private val menu = listOf(
         "Panino - €5.00",

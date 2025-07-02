@@ -9,12 +9,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 
-class InfoEvento : Fragment() {
+class InfoEventoFragment : Fragment() {
 
     companion object {
         private const val ARG_NOME_EVENTO = "nome_evento"
-        fun newInstance(nomeEvento: String): InfoEvento {
-            val fragment = InfoEvento()
+        fun newInstance(nomeEvento: String): InfoEventoFragment {
+            val fragment = InfoEventoFragment()
             val args = Bundle()
             args.putString(ARG_NOME_EVENTO, nomeEvento)
             fragment.arguments = args

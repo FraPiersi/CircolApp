@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class Catalogo : Fragment() {
+class CatalogoFragment : Fragment() {
     private val catalogo = listOf("Elemento 1", "Elemento 2", "Elemento 3", "Elemento 4")
     private var filteredCatalogo = catalogo.toList()
     private lateinit var adapter: ListaCatalogo
