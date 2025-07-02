@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.fragment_container, ChatFragment())
                     .commit()
                     true }
-                R.id.nav_profile -> { /* Naviga a Profilo */ true }
+                R.id.nav_profile -> { supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, ProfiloFragment())
+                    .commit()
+                    true }
                 else -> false
             }
         }

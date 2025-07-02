@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "880099449018",
+    "project_id": "circolapp-6b344",
+    "storage_bucket": "circolapp-6b344.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880099449018:android:73190911216c7629448a83",
+        "android_client_info": {
+          "package_name": "com.example.circolapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDobox-iv6FkrlFeuLluOlnMVwRCBCBEbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
