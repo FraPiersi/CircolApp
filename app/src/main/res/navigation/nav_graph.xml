@@ -22,12 +22,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/pagamentoFragment"
-        android:name="com.example.circolapp.PagamentoFragment"
-        android:label="fragment_pagamento"
-        tools:layout="@layout/fragment_pagamento" />
-
-    <fragment
         android:id="@+id/chatFragment"
         android:name="com.example.circolapp.ChatFragment"
         android:label="fragment_chat"
@@ -49,4 +43,41 @@
             app:argType="com.example.circolapp.model.Evento" />
     </fragment>
 
+    <fragment
+        android:id="@+id/pagamentoFragment"
+        android:name="com.example.circolapp.PagamentoFragment"
+        android:label="Pagamento"
+        tools:layout="@layout/fragment_pagamento">
+        <action
+            android:id="@+id/action_pagamentoFragment_to_qrCodeFragment"
+            app:destination="@id/qrCodeFragment"
+            />
+        <!-- Altre azioni da PagamentoFragment se necessario -->
+        <action
+            android:id="@+id/action_pagamentoFragment_to_catalogoFragment"
+            app:destination="@id/catalogoFragment" />
+        <action
+            android:id="@+id/action_pagamentoFragment_to_ordinazioneFragment"
+            app:destination="@id/ordinazioneFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/qrCodeFragment"
+        android:name="com.example.circolapp.QrCodeFragment"
+        android:label="QR Code"
+        tools:layout="@layout/fragment_qr_code" />
+
+    <fragment
+        android:id="@+id/catalogoFragment"
+        android:name="com.example.circolapp.CatalogoFragment"
+        android:label="Catalogo"
+        tools:layout="@layout/fragment_catalogo" />
+
+    <fragment
+        android:id="@+id/ordinazioneFragment"
+        android:name="com.example.circolapp.OrdinazioneFragment"
+        android:label="Ordinazione"
+        tools:layout="@layout/fragment_ordinazione" />
+
 </navigation>
+
