@@ -10,7 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 
-class MenuOpzioniFragment : Fragment() {
+class PagamentoFragment : Fragment() {
 
 
     override fun onCreateView(

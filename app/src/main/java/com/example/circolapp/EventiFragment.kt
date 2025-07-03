@@ -8,36 +8,53 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.circolapp.databinding.FragmentEventiBinding
-import com.example.circolapp.databinding.ItemEventoBinding
 import com.example.circolapp.viewmodel.EventiViewModel
+import com.example.circolapp.model.Evento // Importa la tua classe Evento
 
 class EventiFragment : Fragment() {
 
     private val viewModel: EventiViewModel by viewModels()
-    private var binding: FragmentEventiBinding? = null
+    private var _binding: FragmentEventiBinding? = null // Convenzione per nullable backing property
+    private val binding get() = _binding!! // Getter non-nullo
+
+    private lateinit var eventoAdapter: ListaEventi
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_eventi, container, false)
+    ): View { // Rimuovi il tipo nullable se il binding è gestito correttamente
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_eventi, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
 
         viewModel.eventi.observe(viewLifecycleOwner) { eventiList ->
-            val eventiContainer = binding?.eventiContainer
-            eventiContainer?.removeAllViews()
-            eventiList.forEach { evento ->
-                val itemBinding = ItemEventoBinding.inflate(inflater, eventiContainer, false)
-                itemBinding.evento = evento
-                eventiContainer?.addView(itemBinding.root)
-            }
+            eventoAdapter.submitList(eventiList)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        eventoAdapter = ListaEventi { evento ->
+            // Naviga al DettaglioEventoFragment passando l'oggetto evento
+            val action = EventiFragmentDirections.actionEventiFragmentToInfoEventoFragment(evento)
+            findNavController().navigate(action)
         }
 
-        return binding?.root
+        binding.eventiRecyclerView.apply { // Assicurati di avere un RecyclerView nel tuo layout
+            adapter = eventoAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding = null
+        _binding = null // Pulisci il binding per evitare memory leak
     }
 }

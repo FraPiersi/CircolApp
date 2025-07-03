@@ -1,39 +1,52 @@
+// DettaglioEventoFragment.kt
 package com.example.circolapp
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
+import com.example.circolapp.databinding.FragmentInfoEventoBinding // Assicurati di avere questo layout
+import com.example.circolapp.model.Evento
 
 class InfoEventoFragment : Fragment() {
 
-    companion object {
-        private const val ARG_NOME_EVENTO = "nome_evento"
-        fun newInstance(nomeEvento: String): InfoEventoFragment {
-            val fragment = InfoEventoFragment()
-            val args = Bundle()
-            args.putString(ARG_NOME_EVENTO, nomeEvento)
-            fragment.arguments = args
-            return fragment
-        }
+    private var _binding: FragmentInfoEventoBinding? = null
+    private val binding get() = _binding!!
+
+    // Recupera gli argomenti passati in modo typesafe
+    private val args: InfoEventoFragmentArgs by navArgs()
+    private lateinit var evento: Evento
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        evento = args.evento!! // Ottieni l'oggetto Evento
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_info_evento, container, false)
-        val nomeEvento = arguments?.getString(ARG_NOME_EVENTO) ?: "Evento"
-        view.findViewById<TextView>(R.id.text_nome_evento).text = nomeEvento
-        view.findViewById<TextView>(R.id.text_descrizione_evento).text = "Descrizione di $nomeEvento"
+    ): View {
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_info_evento, container, false)
+        return binding.root
+    }
 
-        view.findViewById<Button>(R.id.button_partecipa).setOnClickListener {
-            Toast.makeText(context, "Richiesta di partecipazione inviata!", Toast.LENGTH_SHORT).show()
-        }
-        return view
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Usa l'oggetto 'evento' per popolare le viste
+        binding.evento = evento // Se usi Data Binding nel layout del dettaglio
+        // Altrimenti, imposta manualmente i testi, immagini, ecc.
+        // binding.nomeEventoTextView.text = evento.nome
+        // binding.descrizioneEventoTextView.text = evento.descrizione
+        // ... e così via
+        binding.executePendingBindings() // Se usi Data Binding
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

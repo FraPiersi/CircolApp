@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.circolapp.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/eventiFragment"
+        android:name="com.example.circolapp.EventiFragment"
+        android:label="fragment_eventi"
+        tools:layout="@layout/fragment_eventi" >
+        <action
+            android:id="@+id/action_eventiFragment_to_infoEventoFragment"
+            app:destination="@id/infoEventoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/pagamentoFragment"
+        android:name="com.example.circolapp.PagamentoFragment"
+        android:label="fragment_pagamento"
+        tools:layout="@layout/fragment_pagamento" />
+
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.circolapp.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
+        android:id="@+id/profiloFragment"
+        android:name="com.example.circolapp.ProfiloFragment"
+        android:label="fragment_profilo"
+        tools:layout="@layout/fragment_profilo" />
+
+    <fragment
+        android:id="@+id/infoEventoFragment"
+        android:name="com.example.circolapp.InfoEventoFragment"
+        android:label="fragment_info_evento"
+        tools:layout="@layout/fragment_info_evento" >
+        <argument
+            android:name="evento"
+            app:argType="com.example.circolapp.model.Evento" />
+    </fragment>
+
+</navigation>

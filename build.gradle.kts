@@ -4,3 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     id("com.google.gms.google-services") version "4.4.3" apply false
 }
+
+buildscript {
+    // ...
+    dependencies {
+        // ...
+        val nav_version = "2.7.7" // Usa l'ultima versione di Navigation
+        classpath ("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
+    }
+}

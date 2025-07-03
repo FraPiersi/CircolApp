@@ -1,39 +1,45 @@
-package com.example.circolapp
+// EventoAdapter.kt
+package com.example.circolapp// o la tua package structure
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.circolapp.databinding.ItemEventoBinding
+import com.example.circolapp.model.Evento // Assicurati che il path sia corretto
 
-class ListaEventi(
-    private val eventi: List<String>,
-    private val onClick: (String) -> Unit
-) : RecyclerView.Adapter<ListaEventi.EventoViewHolder>() {
+class ListaEventi(private val onItemClicked: (Evento) -> Unit) :
+    ListAdapter<Evento, ListaEventi.EventoViewHolder>(EventoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventoViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
-        return EventoViewHolder(view)
+        val binding = ItemEventoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return EventoViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: EventoViewHolder, position: Int) {
-        val evento = eventi[position]
-        holder.textView.text = evento
-        holder.itemView.setOnClickListener { onClick(evento) }
+        val evento = getItem(position)
+        holder.bind(evento)
         holder.itemView.setOnClickListener {
-            val fragment = InfoEventoFragment.newInstance(evento)
-            (holder.itemView.context as AppCompatActivity).supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            onItemClicked(evento)
         }
     }
 
-    override fun getItemCount() = eventi.size
+    class EventoViewHolder(private val binding: ItemEventoBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(evento: Evento) {
+            binding.evento = evento
+            binding.executePendingBindings() // Importante per Data Binding in RecyclerView
+        }
+    }
+}
 
-    class EventoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(android.R.id.text1)
+class EventoDiffCallback : DiffUtil.ItemCallback<Evento>() {
+    override fun areItemsTheSame(oldItem: Evento, newItem: Evento): Boolean {
+        return oldItem.id == newItem.id // Assumendo che Evento abbia un 'id' univoco
+    }
+
+    override fun areContentsTheSame(oldItem: Evento, newItem: Evento): Boolean {
+        return oldItem == newItem
     }
 }

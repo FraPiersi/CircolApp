@@ -1,29 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp">
+<!-- res/layout/fragment_dettaglio_evento.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/text_nome_evento"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nome Evento"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:paddingBottom="16dp"/>
+    <!-- (Opzionale) Definisci le variabili che vuoi usare nel layout -->
+    <data>
+        <variable
+            name="evento"
+            type="com.example.circolapp.model.Evento" /> <!-- Assicurati che il percorso del modello Evento sia corretto -->
+    </data>
 
-    <TextView
-        android:id="@+id/text_descrizione_evento"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Descrizione evento qui..."
-        android:paddingBottom="24dp"/>
+    <!-- Il tuo layout effettivo va qui -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".InfoEventoFragment">
 
-    <Button
-        android:id="@+id/button_partecipa"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Richiedi partecipazione"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/nomeEventoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{evento.nome}" /> <!-- Esempio di come usare la variabile 'evento' -->
+
+        <!-- Altri elementi UI per visualizzare i dettagli dell'evento -->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
