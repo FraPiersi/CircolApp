@@ -1,28 +1,64 @@
-<!-- res/layout/fragment_dettaglio_evento.xml -->
+<!-- res/layout/fragment_info_evento.xml -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- (Opzionale) Definisci le variabili che vuoi usare nel layout -->
     <data>
         <variable
-            name="evento"
-            type="com.example.circolapp.model.Evento" /> <!-- Assicurati che il percorso del modello Evento sia corretto -->
+            name="viewModel"
+            type="com.example.circolapp.viewmodel.InfoEventoViewModel" />
     </data>
 
-    <!-- Il tuo layout effettivo va qui -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="16dp"
         tools:context=".InfoEventoFragment">
 
         <TextView
             android:id="@+id/nomeEventoTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@{viewModel.evento.nome}"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Nome Evento Molto Lungo per Test" />
+
+        <ScrollView
+            android:id="@+id/scrollViewDescrizione"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/nomeEventoTextView"
+            app:layout_constraintBottom_toTopOf="@id/btnPartecipa"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:fillViewport="true">
+
+            <TextView
+                android:id="@+id/descrizioneEventoTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.evento.descrizione}"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                tools:text="Questa è una descrizione molto dettagliata dell'evento..." />
+        </ScrollView>
+
+        <Button
+            android:id="@+id/btnPartecipa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{evento.nome}" /> <!-- Esempio di come usare la variabile 'evento' -->
-
-        <!-- Altri elementi UI per visualizzare i dettagli dell'evento -->
+            android:layout_marginBottom="16dp"
+            android:text="Partecipa"
+            android:onClick="@{() -> viewModel.onPartecipaClicked()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
