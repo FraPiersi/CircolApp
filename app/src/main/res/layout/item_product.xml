@@ -1,0 +1,76 @@
+<!-- res/layout/item_product.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="product"
+            type="com.example.circolapp.model.Product" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="4dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/imageViewProduct"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/textViewProductName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?android:attr/textColorPrimary"
+                app:layout_constraintStart_toEndOf="@id/imageViewProduct"
+                app:layout_constraintTop_toTopOf="@id/imageViewProduct"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Nome Prodotto Lungo" />
+
+            <TextView
+                android:id="@+id/textViewProductDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?android:attr/textColorSecondary"
+                android:maxLines="2"
+                android:ellipsize="end"
+                app:layout_constraintStart_toStartOf="@id/textViewProductName"
+                app:layout_constraintTop_toBottomOf="@id/textViewProductName"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Breve descrizione del prodotto che può essere anche abbastanza lunga da andare a capo." />
+
+            <TextView
+                android:id="@+id/textViewProductPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintStart_toStartOf="@id/textViewProductName"
+                app:layout_constraintTop_toBottomOf="@id/textViewProductDescription"
+                app:layout_constraintBottom_toBottomOf="@id/imageViewProduct"
+                app:layout_constraintVertical_bias="1.0"
+                tools:text="€19.99" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

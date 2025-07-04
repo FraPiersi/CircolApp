@@ -22,6 +22,7 @@ android {
     }
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
     buildTypes {
         release {
@@ -44,7 +45,6 @@ android {
 
 
 dependencies{
-    // Glide per immagini
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
