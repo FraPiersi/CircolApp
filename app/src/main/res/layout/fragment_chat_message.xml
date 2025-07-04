@@ -1,0 +1,122 @@
+<!-- res/layout/fragment_chat_message.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.circolapp.viewmodel.ChatMessageViewModel" />
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ChatMessageFragment">
+
+        <!-- Toolbar (opzionale, potresti usare quella dell'Activity) -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarChatMessage"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="?attr/colorOnPrimary"
+            app:navigationIcon="@drawable/indietro"
+            app:navigationIconTint="?attr/colorOnPrimary"/>
+        <!-- tools:title="Nome Contatto" -->
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMessages"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbarChatMessage"
+            app:layout_constraintBottom_toTopOf="@id/viewInputSeparator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:listitem="@layout/item_message_sent"
+            android:paddingVertical="8dp"
+            android:clipToPadding="false"
+            android:visibility="@{viewModel.isLoading ? View.GONE : View.VISIBLE}"/>
+
+        <ProgressBar
+            android:id="@+id/progressBarMessages"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/toolbarChatMessage"
+            app:layout_constraintBottom_toTopOf="@id/viewInputSeparator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewMessageError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.errorMessage}"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="@{viewModel.errorMessage != null ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/toolbarChatMessage"
+            app:layout_constraintBottom_toTopOf="@id/viewInputSeparator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Errore caricamento messaggi" />
+
+
+        <View
+            android:id="@+id/viewInputSeparator"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/grey_300"
+        app:layout_constraintBottom_toTopOf="@id/layoutInputMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutInputMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="8dp"
+            android:background="?android:colorBackground">
+
+            <EditText
+                android:id="@+id/editTextMessageInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Scrivi un messaggio..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:background="@drawable/bg_edittext_chat"
+            android:padding="12dp"
+            android:maxLines="5"
+            android:text="@={viewModel.newMessageText}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/buttonSendMessage"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="8dp"/>
+
+            <ImageButton
+                android:id="@+id/buttonSendMessage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/invio"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{() -> viewModel.sendMessage()}"
+            app:tint="?attr/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="Invia messaggio"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

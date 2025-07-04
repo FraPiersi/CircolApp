@@ -1,0 +1,41 @@
+<!-- res/layout/item_message_received.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="4dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="64dp"
+        android:clipToPadding="false">
+
+        <!-- Potresti aggiungere un ImageView per l'avatar dell'altro utente qui a sinistra -->
+
+        <TextView
+            android:id="@+id/textViewMessageTextReceived"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_message_received"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:maxWidth="280dp"
+        tools:text="Questo è un messaggio ricevuto da un altro utente." />
+
+        <TextView
+            android:id="@+id/textViewMessageTimestampReceived"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            tools:text="10:32"
+            app:layout_constraintStart_toStartOf="@id/textViewMessageTextReceived"
+            app:layout_constraintTop_toBottomOf="@id/textViewMessageTextReceived"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

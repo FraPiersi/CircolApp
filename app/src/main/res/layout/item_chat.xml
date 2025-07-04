@@ -1,26 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:gravity="center_vertical">
+<!-- res/layout/item_chat.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/image_profilo"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/account"
-        android:layout_marginEnd="16dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:scaleType="centerCrop"
-        android:contentDescription="Immagine profilo"/>
+    <data>
+        <!-- Potresti aggiungere qui una variabile per ChatConversation se vuoi fare più binding diretto -->
+    </data>
 
-    <TextView
-        android:id="@+id/text_nome"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nome"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
-</LinearLayout>
+        android:padding="12dp"
+        android:background="?android:attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/imageViewProfile"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:srcCompat="@tools:sample/avatars"
+            android:contentDescription="Immagine Profilo Contatto" />
+
+        <TextView
+            android:id="@+id/textViewContactName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/imageViewProfile"
+            app:layout_constraintTop_toTopOf="@id/imageViewProfile"
+            app:layout_constraintEnd_toStartOf="@id/textViewTimestamp"
+            tools:text="Nome Contatto" />
+
+        <TextView
+            android:id="@+id/textViewLastMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            app:layout_constraintStart_toStartOf="@id/textViewContactName"
+            app:layout_constraintTop_toBottomOf="@id/textViewContactName"
+            app:layout_constraintEnd_toEndOf="@id/textViewContactName"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewProfile"
+            tools:text="Questo è l'ultimo messaggio di anteprima della conversazione..." />
+
+        <TextView
+            android:id="@+id/textViewTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textViewContactName"
+            tools:text="10:30" />
+
+        <!-- Potresti aggiungere un TextView per unreadCount qui -->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

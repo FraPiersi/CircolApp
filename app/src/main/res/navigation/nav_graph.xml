@@ -21,11 +21,7 @@
             app:destination="@id/infoEventoFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/chatFragment"
-        android:name="com.example.circolapp.ChatFragment"
-        android:label="fragment_chat"
-        tools:layout="@layout/fragment_chat" />
+
 
     <fragment
         android:id="@+id/profiloFragment"
@@ -78,6 +74,83 @@
         android:name="com.example.circolapp.OrdinazioneFragment"
         android:label="Ordinazione"
         tools:layout="@layout/fragment_ordinazione" />
+
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.circolapp.ChatFragment"
+        android:label="Chat"
+        tools:layout="@layout/fragment_chat">
+        <action
+            android:id="@+id/action_chatFragment_to_newChatFragment"
+            app:destination="@id/newChatFragment" />
+        <action
+            android:id="@+id/action_chatFragment_to_chatMessageFragment"
+            app:destination="@id/chatMessageFragment">
+            <argument
+                android:name="chatId"
+                app:argType="string" />
+            <argument
+                android:name="otherUserId"
+                app:argType="string" />
+            <argument
+                android:name="contactName"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="contactPhotoUrl"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/newChatFragment"
+        android:name="com.example.circolapp.NewChatFragment"
+        android:label="Nuova Chat"
+        tools:layout="@layout/fragment_new_chat">
+        <action
+            android:id="@+id/action_newChatFragment_to_chatMessageFragment"
+            app:destination="@id/chatMessageFragment">
+            <!-- Definisci gli argomenti che ChatMessageFragment si aspetta -->
+            <argument
+                android:name="chatId"
+                app:argType="string" />
+            <argument
+                android:name="otherUserId"
+                app:argType="string" />
+            <argument
+                android:name="contactName"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="contactPhotoUrl"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+
+
+
+    <fragment
+        android:id="@+id/chatMessageFragment"
+        android:name="com.example.circolapp.ChatMessageFragment"
+        android:label="{contactName}"
+    tools:layout="@layout/fragment_chat_message">
+    <argument
+        android:name="chatId"
+        app:argType="string" />
+    <argument
+        android:name="otherUserId"
+        app:argType="string" />
+    <argument
+        android:name="contactName"
+        app:argType="string"
+        app:nullable="true" />
+    <argument
+        android:name="contactPhotoUrl"
+        app:argType="string"
+        app:nullable="true" />
+</fragment>
 
 </navigation>
 
