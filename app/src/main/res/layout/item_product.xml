@@ -1,76 +1,69 @@
-<!-- res/layout/item_product.xml -->
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- res/layout/item_product_catalog.xml -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp">
 
-    <data>
-        <variable
-            name="product"
-            type="com.example.circolapp.model.Product" />
-    </data>
-
-    <com.google.android.material.card.MaterialCardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="4dp"
-        app:cardElevation="2dp"
-        app:cardCornerRadius="8dp">
+        android:padding="12dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/imageViewProduct"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars"
+            android:contentDescription="Immagine prodotto" />
+
+        <TextView
+            android:id="@+id/textViewProductName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:layout_marginStart="12dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+        app:layout_constraintStart_toEndOf="@+id/imageViewProduct"
+        app:layout_constraintTop_toTopOf="@+id/imageViewProduct"
+        tools:text="Nome Prodotto Molto Lungo" />
 
-            <ImageView
-                android:id="@+id/imageViewProduct"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+        <TextView
+            android:id="@+id/textViewProductPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintStart_toEndOf="@+id/imageViewProduct"
+            app:layout_constraintTop_toBottomOf="@+id/textViewProductName"
+            tools:text="€ 10.99" />
 
-            <TextView
-                android:id="@+id/textViewProductName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?android:attr/textColorPrimary"
-                app:layout_constraintStart_toEndOf="@id/imageViewProduct"
-                app:layout_constraintTop_toTopOf="@id/imageViewProduct"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:text="Nome Prodotto Lungo" />
+        <!-- TextView per il numero di pezzi - VISIBILE SOLO PER ADMIN -->
+        <TextView
+            android:id="@+id/textViewProductQuantityAdmin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textStyle="italic"
+            android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@+id/imageViewProduct"
+        app:layout_constraintTop_toBottomOf="@+id/textViewProductPrice"
+        app:layout_constraintEnd_toEndOf="@+id/textViewProductName"
+        tools:text="Disponibili: 25"
+        tools:visibility="visible" /> <!-- tools:visibility per anteprima -->
 
-            <TextView
-                android:id="@+id/textViewProductDescription"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:attr/textColorSecondary"
-                android:maxLines="2"
-                android:ellipsize="end"
-                app:layout_constraintStart_toStartOf="@id/textViewProductName"
-                app:layout_constraintTop_toBottomOf="@id/textViewProductName"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:text="Breve descrizione del prodotto che può essere anche abbastanza lunga da andare a capo." />
 
-            <TextView
-                android:id="@+id/textViewProductPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAppearance="?attr/textAppearanceTitleSmall"
-                android:textColor="?attr/colorPrimary"
-                app:layout_constraintStart_toStartOf="@id/textViewProductName"
-                app:layout_constraintTop_toBottomOf="@id/textViewProductDescription"
-                app:layout_constraintBottom_toBottomOf="@id/imageViewProduct"
-                app:layout_constraintVertical_bias="1.0"
-                tools:text="€19.99" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-</layout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

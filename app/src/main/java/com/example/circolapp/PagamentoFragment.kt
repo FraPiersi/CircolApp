@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController // Importa findNavController
+import com.example.circolapp.model.UserRole
+
 // Non c'è bisogno di FirebaseFirestore qui se non la usi direttamente in questo listener
 
 class PagamentoFragment : Fragment() {
@@ -22,7 +24,8 @@ class PagamentoFragment : Fragment() {
         view.findViewById<Button>(R.id.btn_opzione1).setOnClickListener {
             // Usa l'azione definita nel nav_graph per navigare
             // Safe Args genererà una classe PagamentoFragmentDirections
-            val action = PagamentoFragmentDirections.actionPagamentoFragmentToQrCodeFragment()
+            val action = PagamentoFragmentDirections.actionPagamentoFragmentToQrCodeFragment(
+                UserRole.USER)
             findNavController().navigate(action)
 
         }

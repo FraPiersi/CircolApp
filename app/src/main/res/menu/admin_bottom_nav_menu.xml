@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/adminHomeFragment"
+        android:icon="@drawable/errore"
+    android:title="Dashboard" />
+    <item
+        android:id="@+id/adminManageProductsFragment"
+    android:icon="@drawable/errore"
+    android:title="Prodotti" />
+    <item
+        android:id="@+id/adminManageOrdersFragment"
+    android:icon="@drawable/errore"
+    android:title="Ordini" />
+    <item
+        android:id="@+id/adminManageUsersFragment"
+    android:icon="@drawable/errore"
+    android:title="Utenti" />
+    <item
+        android:id="@+id/profiloFragment"
+    android:icon="@drawable/errore"
+    android:title="Profilo Admin" />
+</menu>
+

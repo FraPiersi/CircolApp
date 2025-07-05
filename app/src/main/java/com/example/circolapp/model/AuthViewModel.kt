@@ -1,132 +1,136 @@
 package com.example.circolapp.viewmodel // o il tuo package viewmodel
 
 import android.app.Application
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.circolapp.MainActivity // Assumendo che sia la tua schermata principale
-import com.example.circolapp.repository.UserRepository // Creeremo questo
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.example.circolapp.model.UserRole // Creeremo questo Enum/Sealed Class
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
-// Eventi per la navigazione o per mostrare messaggi una tantum
-sealed class AuthEvent {
-    data class NavigateToMain(val user: FirebaseUser) : AuthEvent()
-    data class ShowErrorToast(val message: String) : AuthEvent()
-    object StartFirebaseUIFlow : AuthEvent()
+// Enum o Sealed class per rappresentare lo stato dell'autenticazione/ruolo
+sealed class AuthResult {
+    data class Success(val userRole: UserRole, val user: FirebaseUser) : AuthResult()
+    data class Error(val message: String) : AuthResult()
+    object Loading : AuthResult()
+    object Idle : AuthResult() // Stato iniziale o dopo un logout
 }
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val userRepository: UserRepository = UserRepository() // Istanzia il tuo repository
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = Firebase.firestore // Modo più conciso
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _authResult = MutableLiveData<AuthResult>(AuthResult.Idle)
+    val authResult: LiveData<AuthResult> get() = _authResult
 
-    // LiveData per eventi una tantum
-    private val _authEvent = MutableLiveData<AuthEvent?>()
-    val authEvent: LiveData<AuthEvent?> get() = _authEvent
-
-    // LiveData per l'utente corrente (opzionale, ma utile per osservare lo stato di login)
-    private val _currentUser = MutableLiveData<FirebaseUser?>()
-    val currentUser: LiveData<FirebaseUser?> get() = _currentUser
-
-    // In AuthViewModel.kt
     init {
-        val user = auth.currentUser
-        _currentUser.value = user
-        if (user != null) {
-            Log.d("AuthViewModel", "Utente già loggato: ${user.uid}. Navigazione a Main...")
-            viewModelScope.launch {
-                try {
-                    userRepository.addOrUpdateUserInFirestore(user) // Aggiorna dati utente (es. lastSeen)
-                    _authEvent.value = AuthEvent.NavigateToMain(user)
-                } catch (e: Exception) {
-                    Log.e("AuthViewModel", "Errore sync utente (già loggato): ${e.message}", e)
-                    // Se fallisce l'aggiornamento, cosa fare? Navigare comunque? Mostrare errore?
-                    // Per ora, navighiamo comunque e mostriamo un errore se fallisce il sync.
-                    _authEvent.value = AuthEvent.NavigateToMain(user) // Naviga anche se il sync ha problemi
-                    _authEvent.value = AuthEvent.ShowErrorToast("Problema nel sincronizzare i dati utente: ${e.message}")
-                }
-            }
+        checkCurrentUser()
+    }
+
+    private fun checkCurrentUser() {
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null) {
+            _authResult.value = AuthResult.Loading
+            fetchUserRoleAndProceed(currentUser)
         } else {
-            Log.d("AuthViewModel", "Nessun utente loggato. Avvio FirebaseUI Flow...")
-            _authEvent.value = AuthEvent.StartFirebaseUIFlow
+            _authResult.value = AuthResult.Idle
         }
     }
 
-    fun createSignInIntent(): Intent {
-        val providers = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build()
-            // Aggiungi altri provider se necessario
-        )
-        return AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setAvailableProviders(providers)
-            // .setLogo(R.drawable.my_logo) // Imposta un logo se vuoi
-            // .setTheme(R.style.MyAuthTheme) // Imposta un tema se vuoi
-            .build()
-    }
-
-    fun handleSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-        val response = result.idpResponse
-        _isLoading.value = true
-
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
-            val firebaseUser = auth.currentUser
-            if (firebaseUser != null) {
-                Log.d("AuthViewModel", "Login/Registrazione FirebaseUI riuscita. Utente: ${firebaseUser.uid}")
-                viewModelScope.launch {
-                    try {
-                        userRepository.addOrUpdateUserInFirestore(firebaseUser)
-                        _currentUser.value = firebaseUser
-                        _authEvent.value = AuthEvent.NavigateToMain(firebaseUser)
-                    } catch (e: Exception) {
-                        Log.e("AuthViewModel", "Errore sync utente dopo FirebaseUI: ${e.message}", e)
-                        _authEvent.value = AuthEvent.ShowErrorToast("Errore nella sincronizzazione dei dati utente: ${e.message}")
-                    } finally {
-                        _isLoading.value = false
-                    }
-                }
-            } else {
-                Log.e("AuthViewModel", "FirebaseUI OK, ma currentUser è null.")
-                _authEvent.value = AuthEvent.ShowErrorToast("Errore: utente non trovato dopo il login.")
-                _isLoading.value = false
-            }
-        } else {
-            val errorMsgFromResponse = response?.error?.localizedMessage
-            val errorMsg = if (errorMsgFromResponse != null) {
-                "Accesso fallito: $errorMsgFromResponse"
-            } else if (response == null) {
-                "Accesso annullato dall'utente." // FirebaseUI AuthCancelledException
-            } else {
-                "Accesso fallito o annullato. Codice errore: ${response.error?.errorCode}"
-            }
-            Log.w("AuthViewModel", "FirebaseUI fallito/annullato. Response: $response, Error: $errorMsg")
-            _authEvent.value = AuthEvent.ShowErrorToast(errorMsg)
-            _isLoading.value = false
+    fun loginUser(email: String, password: String) {
+        if (email.isBlank() || password.isBlank()) {
+            _authResult.value = AuthResult.Error("Inserisci email e password.")
+            return
         }
-    }
-
-    fun onAuthEventHandled() {
-        _authEvent.value = null // Resetta l'evento dopo che è stato gestito dalla View
-    }
-
-    fun signOut() {
+        _authResult.value = AuthResult.Loading
         viewModelScope.launch {
-            auth.signOut()
-            AuthUI.getInstance().signOut(getApplication()) // Per FirebaseUI
-            _currentUser.value = null
-            // Potresti voler navigare alla schermata di login qui o emettere un evento
-            Log.d("AuthViewModel", "Utente disconnesso.")
+            try {
+                val authTask = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+                authTask.user?.let {
+                        user ->
+                    fetchUserRoleAndProceed(user)
+                } ?: run {
+                    _authResult.value = AuthResult.Error("Errore: utente non trovato dopo il login.")
+                }
+            } catch (e: Exception) {
+                Log.w("AuthViewModel", "Login fallito", e)
+                _authResult.value = AuthResult.Error("Autenticazione fallita: ${e.message}")
+            }
         }
+    }
+
+
+
+    private fun fetchUserRoleAndProceed(firebaseUser: FirebaseUser) {
+        viewModelScope.launch {
+            try {
+                val userDocRef = firestore.collection("utenti").document(firebaseUser.uid)
+                val documentSnapshot = userDocRef.get().await()
+
+                if (documentSnapshot.exists()) {
+                    val ruoloString = documentSnapshot.getString("ruolo")
+                    Log.d("AuthViewModel", "Ruolo utente '${firebaseUser.uid}': $ruoloString")
+                    val userRole = when (ruoloString?.lowercase()) { // Confronta in lowercase
+                        UserRole.ADMIN.name.lowercase() -> UserRole.ADMIN
+                        UserRole.USER.name.lowercase() -> UserRole.USER
+                        else -> {
+                            Log.w("AuthViewModel", "Ruolo sconosciuto '$ruoloString' per UID: ${firebaseUser.uid}. Aggiornamento a USER se possibile o default a USER.")
+                            // Se il ruolo è sconosciuto o null, potremmo volerlo aggiornare a USER
+                            // Per ora, lo trattiamo come USER e se il documento esiste ma il ruolo è strano,
+                            // non lo modifichiamo qui, ma lo farebbe un admin.
+                            // Se il documento esiste ma il campo ruolo manca, questo è un problema di dati.
+                            UserRole.USER
+                        }
+                    }
+                    _authResult.value = AuthResult.Success(userRole, firebaseUser)
+                } else {
+                    // Documento utente non trovato, crealo con ruolo USER
+                    Log.w("AuthViewModel", "Documento utente non trovato per UID: ${firebaseUser.uid}. Creazione con ruolo USER.")
+                    createFirestoreUserDocument(firebaseUser, UserRole.USER) // Passa UserRole.USER
+                    _authResult.value = AuthResult.Success(UserRole.USER, firebaseUser)
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Errore nel recuperare/creare il ruolo utente da Firestore.", e)
+                _authResult.value = AuthResult.Error("Errore nel recupero dati utente: ${e.message}")
+            }
+        }
+    }
+
+    // Funzione per creare il documento utente se non esiste
+    private suspend fun createFirestoreUserDocument(firebaseUser: FirebaseUser, defaultRole: UserRole) {
+        val userDocRef = firestore.collection("utenti").document(firebaseUser.uid)
+        // Non è necessario un altro check if exists qui se chiamato solo quando sappiamo che non esiste.
+        // Ma se potesse essere chiamato in altri contesti, un check è più sicuro.
+        // Per ora, assumiamo che venga chiamato quando il documento non esiste.
+        try {
+            val userData = hashMapOf(
+                "uid" to firebaseUser.uid,
+                "email" to firebaseUser.email,
+                "displayName" to firebaseUser.displayName, // Potrebbe essere null se non impostato in Firebase Auth
+                "photoUrl" to firebaseUser.photoUrl?.toString(),
+                "ruolo" to defaultRole.name.lowercase(), // Salva il nome dell'enum in minuscolo (es. "user")
+                "saldo" to 0.0,
+                "dataCreazione" to FieldValue.serverTimestamp()
+            )
+            userDocRef.set(userData).await()
+            Log.d("AuthViewModel", "Documento utente creato in Firestore per ${firebaseUser.uid} con ruolo ${defaultRole.name}")
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Errore durante la creazione del documento utente in Firestore (chiamata da AuthViewModel)", e)
+            throw e // Rilancia per essere gestita dal blocco catch chiamante
+        }
+    }
+
+    fun resetAuthResult() {
+        _authResult.value = AuthResult.Idle
     }
 }
+

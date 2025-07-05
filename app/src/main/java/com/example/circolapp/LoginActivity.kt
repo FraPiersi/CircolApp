@@ -1,83 +1,82 @@
-package com.example.circolapp
+package com.example.circolapp // Assicurati che il package sia corretto
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.viewModels
+import androidx.activity.viewModels // Per usare by viewModels()
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import com.example.circolapp.databinding.ActivityLoginBinding // ASSICURATI DI CREARE QUESTO LAYOUT
-import com.example.circolapp.viewmodel.AuthEvent
+import com.example.circolapp.databinding.ActivityLoginBinding
+import com.example.circolapp.model.UserRole
+import com.example.circolapp.viewmodel.AuthResult
 import com.example.circolapp.viewmodel.AuthViewModel
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+// Non hai più bisogno di importare FirebaseAuth e FirebaseFirestore direttamente qui
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLoginBinding // Usa ViewBinding
-    private val authViewModel: AuthViewModel by viewModels()
-
-    private val signInLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(FirebaseAuthUIActivityResultContract()) { result ->
-            authViewModel.handleSignInResult(result)
-        }
+    private lateinit var binding: ActivityLoginBinding
+    private val authViewModel: AuthViewModel by viewModels() // Inizializza il ViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root) // Usa il binding per il layout
+        setContentView(binding.root)
 
-        // Nascondi la UI di login standard, ci penserà FirebaseUI o il ViewModel
-        // Potresti avere un ProgressBar qui gestito dal ViewModel.isLoading
-        binding.progressBarLogin.visibility = View.GONE // Assumendo che tu abbia un ProgressBar con id progressBarLogin
+        observeAuthResult()
 
-        observeViewModel()
+        binding.buttonLogin.setOnClickListener {
+            val email = binding.editTextEmail.text.toString().trim()
+            val password = binding.editTextPassword.text.toString().trim()
+            authViewModel.loginUser(email, password)
+        }
+
+
+        binding.textViewRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    private fun observeViewModel() {
-        authViewModel.isLoading.observe(this, Observer { isLoading ->
-            binding.progressBarLogin.visibility = if (isLoading) View.VISIBLE else View.GONE
-            // Disabilita/Abilita altri controlli UI se necessario durante il caricamento
-        })
-
-        authViewModel.authEvent.observe(this, Observer { event ->
-            event?.let {
-                when (it) {
-                    is AuthEvent.NavigateToMain -> {
-                        Toast.makeText(this, "Accesso riuscito! Utente: ${it.user.displayName}", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish() // Chiudi LoginActivity
-                    }
-                    is AuthEvent.ShowErrorToast -> {
-                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                    }
-                    AuthEvent.StartFirebaseUIFlow -> {
-                        // Lancia il flusso di FirebaseUI
-                        val signInIntent = authViewModel.createSignInIntent()
-                        signInLauncher.launch(signInIntent)
-                    }
+    private fun observeAuthResult() {
+        authViewModel.authResult.observe(this) { result ->
+            when (result) {
+                is AuthResult.Loading -> {
+                    setLoading(true)
                 }
-                authViewModel.onAuthEventHandled() // Segnala che l'evento è stato gestito
+                is AuthResult.Success -> {
+                    setLoading(false)
+                    Log.d("LoginActivity", "Autenticazione riuscita. Ruolo: ${result.userRole.name}")
+                    navigateToMainActivity(result.userRole)
+                    authViewModel.resetAuthResult() // Resetta per evitare trigger multipli se l'activity viene ricreata
+                }
+                is AuthResult.Error -> {
+                    setLoading(false)
+                    Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
+                    Log.w("LoginActivity", "Errore di autenticazione: ${result.message}")
+                    authViewModel.resetAuthResult()
+                }
+                is AuthResult.Idle -> {
+                    setLoading(false)
+                    // Stato iniziale o dopo un logout, non fare nulla o prepara la UI
+                }
             }
-        })
-
-        // Opzionale: Osserva l'utente corrente se hai bisogno di reagire a cambiamenti di stato di login
-        // al di fuori del flusso di login esplicito.
-        authViewModel.currentUser.observe(this, Observer { user ->
-            if (user != null && supportFragmentManager.findFragmentById(android.R.id.content) == null) {
-                // Se l'utente è già loggato all'avvio dell'activity e non c'è già un flusso in corso,
-                // potresti reindirizzarlo. Ma l'init del ViewModel già gestisce il lancio di FirebaseUI
-                // se non c'è utente.
-            }
-        })
+        }
     }
 
-    // Se hai bisogno di un pulsante di logout da qualche parte (es. in MainActivity, non qui)
-    // fun handleSignOut() {
-    //     authViewModel.signOut()
-    //     // Torna a LoginActivity o gestisci la UI di conseguenza
-    // }
+    private fun navigateToMainActivity(userRole: UserRole) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("USER_ROLE", userRole.name) // Passa il nome dell'enum (es. "ADMIN" o "USER")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        finish() // Termina LoginActivity
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        binding.progressBarLogin.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.buttonLogin.isEnabled = !isLoading
+        binding.editTextEmail.isEnabled = !isLoading
+        binding.editTextPassword.isEnabled = !isLoading
+    }
 }
