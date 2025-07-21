@@ -7,11 +7,11 @@
     <item
         android:id="@+id/eventiFragment"
     android:icon="@drawable/errore"
-    android:title="Prodotti" />
+    android:title="Eventi" />
     <item
-        android:id="@+id/adminManageOrdersFragment"
+        android:id="@+id/cassaFragment"
     android:icon="@drawable/errore"
-    android:title="Ordini" />
+    android:title="Cassa" />
     <item
         android:id="@+id/adminManageUsersFragment"
     android:icon="@drawable/errore"
