@@ -140,10 +140,12 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
                 importo = amount, // Salva l'importo come Double
                 imageUrl = null
             )
-
+            Log.d("ViewModel_Save", "Product object before saving: ${product.toString()}")
             productsCollection.document(codeId)
                 .set(product)
                 .addOnSuccessListener {
+                    // In AddEditProductViewModel -> saveProduct() -> addOnSuccessListener
+                    Log.d("ViewModel_Save", "Attempting to post ProductSaved event")
                     _isLoading.value = false
                     _event.value = AddEditProductEvent.ProductSaved
                 }

@@ -53,8 +53,8 @@
         </action>
         <!-- Altre azioni da PagamentoFragment se necessario -->
         <action
-            android:id="@+id/action_pagamentoFragment_to_catalogoFragment"
-            app:destination="@id/catalogoFragment" />
+            android:id="@+id/action_pagamentoFragment_to_productCatalogFragment"
+            app:destination="@id/ProductCatalogFragment" />
         <action
             android:id="@+id/action_pagamentoFragment_to_ordinazioneFragment"
             app:destination="@id/ordinazioneFragment" />
@@ -151,41 +151,35 @@
 
 
     <fragment
-        android:id="@+id/catalogoFragment"
-        android:name="com.example.circolapp.CatalogoFragment"
-    android:label="Dashboard Admin"
-    tools:layout="@layout/fragment_catalogo" /> <!-- Crea questo layout -->
+        android:id="@+id/ProductCatalogFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
+    android:label="ProductCatalogFragment"
+    tools:layout="@layout/fragment_product_catalog" >
+    <action
+        android:id="@+id/action_productCatalogFragment_to_addEditProductFragment"
+        app:destination="@id/addEditProductFragment" />
+</fragment><!-- Crea questo layout -->
 
     <fragment
         android:id="@+id/adminManageProductsFragment"
-        android:name="com.example.circolapp.CatalogoFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
         android:label="Gestione Prodotti"
-        tools:layout="@layout/fragment_catalogo" /> <!-- Crea questo layout -->
-    <fragment
-        android:id="@+id/adminManageOrdersFragment"
-        android:name="com.example.circolapp.CatalogoFragment"
-        android:label="Gestione Ordini"
-        tools:layout="@layout/fragment_catalogo" /> <!-- Crea questo layout -->
-    <fragment
-        android:id="@+id/adminManageUsersFragment"
-        android:name="com.example.circolapp.CatalogoFragment"
-        android:label="Gestione Utenti"
-        tools:layout="@layout/fragment_catalogo" />
+        tools:layout="@layout/fragment_product_catalog" />
 
     <fragment
-        android:id="@+id/adminHomeFragment"
-        android:name="com.example.circolapp.CatalogoFragment"
-        android:label="Catalogo Prodotti"
-        tools:layout="@layout/fragment_catalogo">
-        <!-- Action per aggiungere/modificare un prodotto -->
-        <action
-            android:id="@+id/action_catalogoFragment_to_addEditProductFragment"
-            app:destination="@id/addEditProductFragment" />
-    </fragment>
+        android:id="@+id/adminManageOrdersFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
+        android:label="Gestione Ordini"
+        tools:layout="@layout/fragment_product_catalog" /> <!-- Crea questo layout -->
+    <fragment
+        android:id="@+id/adminManageUsersFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
+        android:label="Gestione Utenti"
+        tools:layout="@layout/fragment_product_catalog" />
 
     <fragment
         android:id="@+id/addEditProductFragment"
-        android:name="com.example.circolapp.ui.admin.AddEditProductFragment"
+        android:name="com.example.circolapp.admin.AddEditProductFragment"
         android:label="Gestisci Prodotto"
         tools:layout="@layout/fragment_add_edit_product">
         <argument

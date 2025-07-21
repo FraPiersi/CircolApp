@@ -1,5 +1,6 @@
-package com.example.circolapp.adapters // o il tuo package adapter
+package com.example.circolapp.adapter // o il tuo package adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +19,9 @@ class ProductCatalogAdapter(
     internal val userRole: UserRole, // Passa il ruolo dell'utente
     private val onProductClick: (Product) -> Unit,
     private val onAddToCartClick: (Product) -> Unit
-) : ListAdapter<Product, ProductCatalogAdapter.ProductViewHolder>(ProductDiffCallback()) {
-
+) : ListAdapter<Product, ProductCatalogAdapter.ProductViewHolder>(
+    ProductDiffCallback().also { Log.d("AdapterInit", "Using DiffCallback: $it") }
+) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val binding = ItemProductBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -77,11 +79,15 @@ class ProductCatalogAdapter(
 
     class ProductDiffCallback : DiffUtil.ItemCallback<Product>() {
         override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem.id == newItem.id
+            Log.d("ProductDiffCallback", "ARE_ITEMS_THE_SAME CALLED: oldId=${oldItem.id}, newId=${newItem.id}")
+            // FORZA IL DIFF PER VEDERE SE VIENE CHIAMATO areContentsTheSame
+            return false // Considera sempre gli item diversi per forzare la chiamata a areContentsTheSame
         }
 
         override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem == newItem
+            Log.d("ProductDiffCallback", "ARE_CONTENTS_THE_SAME CALLED: oldName=${oldItem.nome}, newName=${newItem.nome}")
+            // FORZA IL DIFF
+            return false // Considera sempre i contenuti diversi
         }
     }
 }

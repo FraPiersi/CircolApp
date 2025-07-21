@@ -30,11 +30,11 @@ class PagamentoFragment : Fragment() {
 
         }
 
-        // Bottone per navigare a CatalogoFragment
+        // Bottone per navigare a ProductCatalogFragment
         view.findViewById<Button>(R.id.btn_opzione2).setOnClickListener {
             // Assumendo che tu abbia un'action definita anche per questo nel nav_graph
             // e che tu voglia usare il Navigation Component per coerenza.
-            val action = PagamentoFragmentDirections.actionPagamentoFragmentToCatalogoFragment()
+            val action = PagamentoFragmentDirections.actionPagamentoFragmentToProductCatalogFragment()
             findNavController().navigate(action)
 
         }

@@ -11,7 +11,12 @@ import com.example.circolapp.model.UserRole
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlin.io.path.name
 
-class MainActivity : AppCompatActivity() {
+interface NavControllerProvider {
+    fun getAppNavController(): NavController?
+}
+
+class MainActivity : AppCompatActivity(), NavControllerProvider {
+
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -37,27 +42,47 @@ class MainActivity : AppCompatActivity() {
 
         // Imposta il NavGraph e la start destination in base al ruolo
         if (userRole == UserRole.ADMIN) {
-            // Se hai NavGraph completamente separati e vuoi caricarli:
-            // val adminGraph = navController.navInflater.inflate(R.navigation.admin_nav_graph)
-            // navController.graph = adminGraph
-            // In questo caso, admin_nav_graph.xml avrebbe come startDestination adminHomeFragment.
-
-            // Se usi un unico NavGraph principale (nav_graph.xml) ma con start destination diverse:
             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-            navGraph.setStartDestination(R.id.adminHomeFragment)
-            navController.graph = navGraph // Applica il graph con la nuova start destination
-
+            navGraph.setStartDestination(R.id.ProductCatalogFragment)
+            navController.graph = navGraph
+            // Forza la navigazione verso ProductCatalogFragment dopo aver impostato il graph
+            navController.navigate(R.id.ProductCatalogFragment)
             setupAdminBottomNavigation()
         } else {
-            // Configurazione utente standard
             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
             navGraph.setStartDestination(R.id.homeFragment) // ID del fragment di partenza per utente
             navController.graph = navGraph // Applica il graph con la nuova start destination
 
             setupUserBottomNavigation()
         }
-    }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            Log.d("MainActivity_Nav", "Destination changed to: ${destination.label} (ID: ${destination.id})")
+        }
+        Log.d("MainActivity_Nav", "onCreate - Initial NavController currentDest: ${navController.currentDestination?.label}")
 
+    }
+    // In MainActivity
+    override fun getAppNavController(): NavController? { // Cambia il tipo di ritorno in NavController?
+        Log.d("MainActivity_Life", "getAppNavController called.")
+        if (::navController.isInitialized) {
+            Log.d("MainActivity_Life", "getAppNavController returning INITIALIZED instance. Current Dest: ${navController.currentDestination?.label}")
+            return navController
+        } else {
+            // Questo blocco non dovrebbe essere raggiunto se l'Activity è stata creata correttamente.
+            Log.e("MainActivity_Life", "getAppNavController: appNavControllerInstance IS NOT INITIALIZED! This is a critical error if activity is created.")
+            // Prova a reinizializzare come ultima spiaggia, ma questo indica un problema di ciclo di vita.
+            return try {
+                val navHostFragment = supportFragmentManager
+                    .findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+                navController = navHostFragment.navController
+                Log.w("MainActivity_Life", "getAppNavController: Re-initialized appNavControllerInstance successfully.")
+                navController
+            } catch (e: Exception) {
+                Log.e("MainActivity_Life", "getAppNavController: FAILED to re-initialize appNavControllerInstance.", e)
+                null // Restituisci null se fallisce
+            }
+        }
+    }
     private fun setupAdminBottomNavigation() {
         binding.bottomNavView.menu.clear() // Rimuovi il menu precedente (se impostato nel XML)
         binding.bottomNavView.inflateMenu(R.menu.admin_bottom_nav_menu) // Carica il menu admin
@@ -74,6 +99,15 @@ class MainActivity : AppCompatActivity() {
 
     // Opzionale: per gestire il pulsante "Indietro" del sistema con il NavController
     override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        val result = navController.navigateUp() || super.onSupportNavigateUp()
+        Log.d("MainActivity_Nav", "onSupportNavigateUp - result: $result, new currentDest: ${navController.currentDestination?.label}")
+        return result
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::navController.isInitialized) {
+            Log.d("MainActivity_Nav", "onResume - NavController currentDest: ${navController.currentDestination?.label}")
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.google.firebase.firestore.DocumentId
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@com.google.firebase.firestore.IgnoreExtraProperties
 data class Product(
     @DocumentId // Annotazione per mappare l'ID del documento Firestore
     val id: String? = "",
@@ -15,3 +16,14 @@ data class Product(
     val imageUrl: String? = null
     // Aggiungi altri campi se necessario
 ) : Parcelable
+//costruttore vuoto per firestore
+{
+    constructor() : this(
+        id = "",
+        nome = "",
+        descrizione = "",
+        numeroPezzi = 0,
+        importo = 0.0,
+        imageUrl = null
+    )
+}
