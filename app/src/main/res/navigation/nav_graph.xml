@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_eventiFragment_to_infoEventoFragment"
             app:destination="@id/infoEventoFragment" />
+        <action
+            android:id="@+id/action_eventiFragment_to_addEventoFragment"
+            app:destination="@id/addEventoFragment" />
     </fragment>
 
 
@@ -189,7 +192,10 @@
             android:defaultValue="@null" /> <!-- Default a null per nuovi prodotti -->
     </fragment>
 
+    <fragment
+        android:id="@+id/addEventoFragment"
+        android:name="com.example.circolapp.AddEventoFragment"
+        android:label="Aggiungi Evento"
+        tools:layout="@layout/fragment_add_evento" />
 
 </navigation>
-
-

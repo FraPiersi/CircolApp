@@ -38,6 +38,16 @@ class EventiFragment : Fragment() {
         viewModel.eventi.observe(viewLifecycleOwner) { eventiList ->
             eventoAdapter.submitList(eventiList)
         }
+        // Mostra il bottone solo se l'utente è ADMIN
+        val userRole = (activity?.intent?.getStringExtra("USER_ROLE") ?: "USER")
+        if (userRole == "ADMIN") {
+            binding.fabAddEvento.visibility = View.VISIBLE
+            binding.fabAddEvento.setOnClickListener {
+                findNavController().navigate(R.id.action_eventiFragment_to_addEventoFragment)
+            }
+        } else {
+            binding.fabAddEvento.visibility = View.GONE
+        }
     }
 
     private fun setupRecyclerView() {

@@ -8,4 +8,8 @@ import com.example.circolapp.repository.EventiRepository
 class EventiViewModel : ViewModel() {
     private val repository = EventiRepository()
     val eventi: LiveData<List<Evento>> = repository.getEventi()
+
+    fun addEvento(evento: Evento, onComplete: (() -> Unit)? = null, onError: ((Exception) -> Unit)? = null) {
+        repository.addEvento(evento, onComplete, onError)
+    }
 }

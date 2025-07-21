@@ -18,4 +18,16 @@ class EventiRepository {
         }
         return eventiLiveData
     }
+
+    fun addEvento(evento: Evento, onComplete: (() -> Unit)? = null, onError: ((Exception) -> Unit)? = null) {
+        // Crea una mappa senza il campo id
+        val eventoMap = hashMapOf<String, Any?>()
+        eventoMap["nome"] = evento.nome
+        eventoMap["descrizione"] = evento.descrizione
+        // aggiungi qui altri campi se presenti nella classe Evento
+        db.collection("eventi")
+            .add(eventoMap)
+            .addOnSuccessListener { onComplete?.invoke() }
+            .addOnFailureListener { e -> onError?.invoke(e) }
+    }
 }
