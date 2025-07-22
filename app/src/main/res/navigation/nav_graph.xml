@@ -156,18 +156,26 @@
     <fragment
         android:id="@+id/ProductCatalogFragment"
         android:name="com.example.circolapp.ProductCatalogFragment"
-    android:label="ProductCatalogFragment"
-    tools:layout="@layout/fragment_product_catalog" >
-    <action
-        android:id="@+id/action_productCatalogFragment_to_addEditProductFragment"
-        app:destination="@id/addEditProductFragment" />
-</fragment><!-- Crea questo layout -->
+        android:label="ProductCatalogFragment"
+        tools:layout="@layout/fragment_product_catalog" >
+        <action
+            android:id="@+id/action_ProductCatalogFragment_to_addEditProductFragment"
+            app:destination="@id/addEditProductFragment" />
+    </fragment><!-- Crea questo layout -->
 
     <fragment
         android:id="@+id/cassaFragment"
         android:name="com.example.circolapp.admin.CassaFragment"
         android:label="Cassa"
-        tools:layout="@layout/fragment_cassa" />
+        tools:layout="@layout/fragment_cassa">
+    <action
+        android:id="@+id/action_cassaFragment_to_ricaricaFragment"
+        app:destination="@id/ricaricaFragment">
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </action>
+    </fragment>
 
     <fragment
         android:id="@+id/adminManageOrdersFragment"
@@ -197,5 +205,24 @@
         android:name="com.example.circolapp.AddEventoFragment"
         android:label="Aggiungi Evento"
         tools:layout="@layout/fragment_add_evento" />
+
+    <fragment
+        android:id="@+id/ricaricaFragment"
+        android:name="com.example.circolapp.RicaricaFragment"
+        android:label="Ricarica"
+        tools:layout="@layout/fragment_ricarica">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_ricaricaFragment_self"
+            app:destination="@id/ricaricaFragment">
+            <argument
+                android:name="username"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+
 
 </navigation>

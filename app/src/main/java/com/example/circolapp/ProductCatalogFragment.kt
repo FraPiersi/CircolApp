@@ -21,6 +21,7 @@ import com.example.circolapp.model.Product
 import com.example.circolapp.model.UserRole
 import com.example.circolapp.viewmodel.ProductCatalogViewModel
 import com.example.circolapp.viewmodel.ProductCatalogScreenState
+import com.example.circolapp.ProductCatalogFragmentDirections
 import java.util.UUID
 
 class ProductCatalogFragment : Fragment() {
