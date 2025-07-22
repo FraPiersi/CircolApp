@@ -175,6 +175,18 @@
             android:name="username"
             app:argType="string" />
     </action>
+        <action
+            android:id="@+id/action_cassaFragment_to_riscuotiFragment"
+            app:destination="@id/riscuotiFragment">
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="prodotti"
+            app:argType="string"
+            app:nullable="true" />
+        </action>
     </fragment>
 
     <fragment
@@ -223,6 +235,19 @@
         </action>
     </fragment>
 
-
+    <fragment
+        android:id="@+id/riscuotiFragment"
+        android:name="com.example.circolapp.RiscuotiFragment"
+        android:label="Riscuoti"
+        tools:layout="@layout/fragment_riscuoti">
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="prodotti"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 
 </navigation>

@@ -37,6 +37,10 @@ class CassaFragment : Fragment() {
                 showBarcodeScannerDialog()
             }
         }
+        btnRiscuoti.setOnClickListener {
+            val action = CassaFragmentDirections.actionCassaFragmentToRiscuotiFragment("", "")
+            requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(action)
+        }
         return view
     }
 
