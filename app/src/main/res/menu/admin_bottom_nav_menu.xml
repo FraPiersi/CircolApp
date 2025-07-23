@@ -13,12 +13,11 @@
     android:icon="@drawable/euro"
     android:title="Cassa" />
     <item
-        android:id="@+id/adminManageUsersFragment"
-    android:icon="@drawable/errore"
-    android:title="Utenti" />
+        android:id="@+id/ordinazioniFragment"
+        android:icon="@drawable/prodotto"
+        android:title="Ordinazioni" />
     <item
         android:id="@+id/profiloFragment"
     android:icon="@drawable/errore"
     android:title="Profilo Admin" />
 </menu>
-

@@ -254,4 +254,15 @@
             app:nullable="true" />
     </fragment>
 
+    <fragment
+        android:id="@+id/ordinazioniFragment"
+        android:name="com.example.circolapp.OrdinazioniFragment"
+        android:label="Ordinazioni"
+        tools:layout="@layout/fragment_ordinazioni" />
+
+    <fragment
+        android:id="@+id/notificheFragment"
+        android:name="com.example.circolapp.NotificheFragment"
+        android:label="Notifiche"
+        tools:layout="@layout/fragment_notifiche" />
 </navigation>
