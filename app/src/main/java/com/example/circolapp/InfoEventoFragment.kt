@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.circolapp.databinding.FragmentInfoEventoBinding
 import com.example.circolapp.model.Evento // Assicurati che il percorso sia corretto
+import com.example.circolapp.model.UserRole
 import com.example.circolapp.viewmodel.InfoEventoViewModel // Importa il ViewModel
 
 class InfoEventoFragment : Fragment() {
@@ -23,6 +26,7 @@ class InfoEventoFragment : Fragment() {
 
     // Recupera gli argomenti di navigazione
     private val navArguments: InfoEventoFragmentArgs by navArgs()
+    private lateinit var userRole: UserRole
 
     // Inizializza il ViewModel usando la KTX library
     private val viewModel: InfoEventoViewModel by viewModels()
@@ -39,10 +43,10 @@ class InfoEventoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        userRole = navArguments.userRole
         // Carica l'evento nel ViewModel
         try {
-            val eventoArg: Evento? = navArguments.evento // Può essere nullo se definito come nullable
+            val eventoArg: Evento? = navArguments.evento
             viewModel.caricaEvento(eventoArg)
         } catch (e: Exception) {
             Log.e("InfoEventoFragment", "Errore nel recuperare l'argomento evento dagli args: ${e.message}", e)
@@ -52,6 +56,15 @@ class InfoEventoFragment : Fragment() {
         }
 
         setupObservers()
+        // Mostra/nascondi partecipanti e bottone in base al ruolo
+        val btnPartecipa = view.findViewById<View>(R.id.btnPartecipa)
+        val partecipantiLayout = view.findViewById<LinearLayout?>(R.id.layoutPartecipanti)
+        if (userRole == UserRole.ADMIN) {
+            btnPartecipa?.visibility = View.GONE
+            partecipantiLayout?.visibility = View.VISIBLE
+        } else {
+            partecipantiLayout?.visibility = View.GONE
+        }
     }
 
     private fun setupObservers() {
@@ -59,13 +72,16 @@ class InfoEventoFragment : Fragment() {
         // Questo è utile se devi reagire a cambiamenti dell'evento nel Fragment
         viewModel.evento.observe(viewLifecycleOwner) { evento ->
             if (evento == null && viewModel.messaggioToast.value != null) {
-                // Se l'evento è nullo a causa di un errore già gestito in caricaEvento,
-                // il Toast e la navigazione potrebbero già essere in corso.
-                // Potrebbe essere necessario un controllo più robusto dello stato.
                 if(isAdded) findNavController().popBackStack()
             }
-            // Il binding nel layout XML dovrebbe aggiornare automaticamente la UI
-            // binding.executePendingBindings() // Di solito non necessario con LiveData e lifecycleOwner impostato
+            // Mostra la lista dei partecipanti se admin
+            if (userRole == UserRole.ADMIN && evento != null) {
+                val listaPartecipanti = view?.findViewById<TextView>(R.id.listaPartecipanti)
+                // Log per debug
+                android.util.Log.d("InfoEventoFragment", "Partecipanti evento: ${evento.partecipanti}")
+                val partecipanti = if (evento.partecipanti.isNotEmpty()) evento.partecipanti.joinToString(separator = "\n") else "Nessuno"
+                listaPartecipanti?.text = partecipanti
+            }
         }
 
         // Osserva i messaggi Toast dal ViewModel

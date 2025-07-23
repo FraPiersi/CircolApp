@@ -30,15 +30,17 @@
 
         <ScrollView
             android:id="@+id/scrollViewDescrizione"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="384dp"
+            android:layout_height="495dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintTop_toBottomOf="@id/nomeEventoTextView"
+            android:fillViewport="true"
             app:layout_constraintBottom_toTopOf="@id/btnPartecipa"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:fillViewport="true">
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nomeEventoTextView"
+            app:layout_constraintVertical_bias="0.0">
 
             <TextView
                 android:id="@+id/descrizioneEventoTextView"
@@ -49,16 +51,43 @@
                 tools:text="Questa è una descrizione molto dettagliata dell'evento..." />
         </ScrollView>
 
+        <LinearLayout
+            android:id="@+id/layoutPartecipanti"
+            android:layout_width="318dp"
+            android:layout_height="123dp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/btnPartecipa"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.262"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollViewDescrizione"
+            app:layout_constraintVertical_bias="0.058">
+
+            <TextView
+                android:id="@+id/labelPartecipanti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Partecipanti:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/listaPartecipanti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnPartecipa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Partecipa"
             android:onClick="@{() -> viewModel.onPartecipaClicked()}"
+            android:text="Partecipa"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

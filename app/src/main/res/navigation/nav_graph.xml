@@ -40,6 +40,10 @@
         <argument
             android:name="evento"
             app:argType="com.example.circolapp.model.Evento" />
+        <argument
+            android:name="userRole"
+            app:argType="com.example.circolapp.model.UserRole"
+            android:defaultValue="USER" />
     </fragment>
 
     <fragment

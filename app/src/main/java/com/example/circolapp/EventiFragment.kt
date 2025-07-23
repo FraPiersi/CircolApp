@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.circolapp.databinding.FragmentEventiBinding
 import com.example.circolapp.viewmodel.EventiViewModel
 import com.example.circolapp.model.Evento // Importa la tua classe Evento
+import com.example.circolapp.model.UserRole
 
 class EventiFragment : Fragment() {
 
@@ -51,9 +52,9 @@ class EventiFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val userRole = activity?.intent?.getStringExtra("USER_ROLE")?.let { UserRole.valueOf(it) } ?: UserRole.USER
         eventoAdapter = ListaEventi { evento ->
-            // Naviga al DettaglioEventoFragment passando l'oggetto evento
-            val action = EventiFragmentDirections.actionEventiFragmentToInfoEventoFragment(evento)
+            val action = EventiFragmentDirections.actionEventiFragmentToInfoEventoFragment(evento, userRole)
             findNavController().navigate(action)
         }
 
