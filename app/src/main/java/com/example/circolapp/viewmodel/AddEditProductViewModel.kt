@@ -32,6 +32,7 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
     val productPieces = MutableLiveData<String>()
     val productCategory = MutableLiveData<String>()
     val productAmount = MutableLiveData<String>() // << NUOVO LiveData per l'importo (come String per input)
+    val productOrdinabile = MutableLiveData<Boolean>(true) // << NUOVO LiveData per ordinabile
 
     private val _isCodeEditable = MutableLiveData<Boolean>(true)
     val isCodeEditable: LiveData<Boolean> get() = _isCodeEditable
@@ -58,6 +59,7 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             productPieces.value = ""
             productCategory.value = ""
             productAmount.value = "" // Inizializza l'importo
+            productOrdinabile.value = true // Inizializza ordinabile a true
         }
     }
 
@@ -75,6 +77,7 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
                         productPieces.value = it.numeroPezzi.toString()
                         // Formatta il double in stringa per il campo di testo, considerando la localizzazione
                         productAmount.value = formatDoubleToString(it.importo)
+                        productOrdinabile.value = it.ordinabile // Carica la proprietà ordinabile
                     }
                 } else {
                     _event.value = AddEditProductEvent.Error("Prodotto con codice '$productId' non trovato.")
@@ -138,7 +141,8 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
                 descrizione = description,
                 numeroPezzi = pieces,
                 importo = amount, // Salva l'importo come Double
-                imageUrl = null
+                imageUrl = null,
+                ordinabile = productOrdinabile.value ?: true // Salva la proprietà ordinabile
             )
             Log.d("ViewModel_Save", "Product object before saving: ${product.toString()}")
             productsCollection.document(codeId)

@@ -163,6 +163,33 @@
                 android:text="@={viewModel.productAmount}" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Toggle Button Ordinabile -->
+        <LinearLayout
+            android:id="@+id/layoutOrdinabile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/tilProductAmount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Prodotto ordinabile"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnSurface" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchOrdinabile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@={viewModel.productOrdinabile}" />
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progressBarAddEdit"
@@ -182,7 +209,7 @@
             android:layout_marginTop="24dp"
             android:text="Salva Prodotto"
             android:onClick="@{() -> viewModel.saveProduct()}"
-            app:layout_constraintTop_toBottomOf="@id/tilProductAmount"
+            app:layout_constraintTop_toBottomOf="@id/layoutOrdinabile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

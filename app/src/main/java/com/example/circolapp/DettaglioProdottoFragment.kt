@@ -40,9 +40,23 @@ class DettaglioProdottoFragment : Fragment() {
         textDescrizioneProdotto.text = product.descrizione.ifBlank { "Nessuna descrizione disponibile" }
         textPrezzoProdotto.text = "€${product.importo}"
 
-        // Gestisci il click del bottone Ordina
-        btnOrdina.setOnClickListener {
-            ordinaProdotto(product, editRichiesteAggiuntive.text.toString())
+        // Mostra/nascondi i controlli di ordinazione in base alla proprietà ordinabile
+        val labelRichieste = view.findViewById<TextView>(R.id.labelRichiesteAggiuntive)
+        if (product.ordinabile) {
+            // Prodotto ordinabile: mostra casella di testo e bottone
+            labelRichieste.visibility = View.VISIBLE
+            editRichiesteAggiuntive.visibility = View.VISIBLE
+            btnOrdina.visibility = View.VISIBLE
+
+            // Gestisci il click del bottone Ordina
+            btnOrdina.setOnClickListener {
+                ordinaProdotto(product, editRichiesteAggiuntive.text.toString())
+            }
+        } else {
+            // Prodotto non ordinabile: nascondi casella di testo e bottone
+            labelRichieste.visibility = View.GONE
+            editRichiesteAggiuntive.visibility = View.GONE
+            btnOrdina.visibility = View.GONE
         }
 
         return view

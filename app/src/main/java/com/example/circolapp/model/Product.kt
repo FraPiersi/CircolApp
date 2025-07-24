@@ -13,7 +13,8 @@ data class Product(
     val descrizione: String = "",
     val numeroPezzi: Int = 0,
     val importo: Double = 0.0, // o Long, a seconda di come lo memorizzi
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val ordinabile: Boolean = true
     // Aggiungi altri campi se necessario
 ) : Parcelable
 //costruttore vuoto per firestore
@@ -24,6 +25,7 @@ data class Product(
         descrizione = "",
         numeroPezzi = 0,
         importo = 0.0,
-        imageUrl = null
+        imageUrl = null,
+        ordinabile = true
     )
 }
