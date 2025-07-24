@@ -17,6 +17,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Icona Notifiche nell'angolo in alto a destra -->
+    <ImageView
+        android:id="@+id/iconNotifiche"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/notifiche"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="4dp"
+        android:contentDescription="Notifiche"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- Testo del Saldo -->
     <TextView
         android:id="@+id/saldoText"

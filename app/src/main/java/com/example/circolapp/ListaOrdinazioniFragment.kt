@@ -8,14 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.circolapp.R
 import android.widget.Toast
 import com.example.circolapp.model.Ordine
-import com.google.firebase.firestore.DocumentSnapshot
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class OrdinazioniFragment : Fragment() {
+class ListaOrdinazioniFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: OrdinazioniAdapter
     private val ordinazioni = mutableListOf<Ordine>()
@@ -126,18 +124,18 @@ class OrdinazioniFragment : Fragment() {
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Errore nell'eliminazione: ${e.message}", Toast.LENGTH_SHORT).show()
-                    android.util.Log.e("OrdinazioniFragment", "Errore eliminazione ordine: ${e.message}")
+                    android.util.Log.e("ListaOrdinazioniFragment", "Errore eliminazione ordine: ${e.message}")
                 }
         } else {
             Toast.makeText(context, "ID ordinazione non valido", Toast.LENGTH_SHORT).show()
-            android.util.Log.e("OrdinazioniFragment", "prodottoId vuoto per ordine: $ordine")
+            android.util.Log.e("ListaOrdinazioniFragment", "prodottoId vuoto per ordine: $ordine")
         }
     }
 
     private fun inviaNotificaUtente(ordine: Ordine) {
         // Utilizza solo notifiche in-app (senza Firebase Functions)
         salvaNotificaInApp(ordine)
-        android.util.Log.d("OrdinazioniFragment", "Notifica in-app salvata per utente: ${ordine.uidUtente}")
+        android.util.Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata per utente: ${ordine.uidUtente}")
     }
 
     private fun salvaNotificaInApp(ordine: Ordine) {
@@ -153,11 +151,11 @@ class OrdinazioniFragment : Fragment() {
         FirebaseFirestore.getInstance().collection("notifiche")
             .add(notifica)
             .addOnSuccessListener {
-                android.util.Log.d("OrdinazioniFragment", "Notifica in-app salvata")
+                android.util.Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata")
                 Toast.makeText(context, "Notifica inviata all'utente", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
-                android.util.Log.e("OrdinazioniFragment", "Errore nel salvare notifica in-app: ${e.message}")
+                android.util.Log.e("ListaOrdinazioniFragment", "Errore nel salvare notifica in-app: ${e.message}")
             }
     }
 }

@@ -171,7 +171,30 @@ class ProductCatalogFragment : Fragment() {
                 }
             } ?: Toast.makeText(context, "ID prodotto mancante per la modifica.", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Utente clicca per dettaglio: ${product.nome}", Toast.LENGTH_SHORT).show()
+            // Utente normale: naviga ai dettagli del prodotto per ordinare
+            if (!isAdded || view == null) return
+            val action = ProductCatalogFragmentDirections.actionProductCatalogFragmentToDettaglioProdottoFragment(product)
+            requireView().doOnPreDraw {
+                val activityProvidedNavController = getNavControllerFromActivity()
+                if (activityProvidedNavController == null) {
+                    Toast.makeText(context, "Errore NavController.", Toast.LENGTH_SHORT).show()
+                    return@doOnPreDraw
+                }
+                if (activityProvidedNavController.currentDestination?.id == R.id.ProductCatalogFragment) {
+                    activityProvidedNavController.navigate(action)
+                } else if (activityProvidedNavController.currentDestination == null) {
+                    requireView().postDelayed({
+                        val navControllerRetry = getNavControllerFromActivity()
+                        if (navControllerRetry?.currentDestination?.id == R.id.ProductCatalogFragment) {
+                            navControllerRetry.navigate(action)
+                        } else {
+                            Toast.makeText(context, "Navigazione non pronta.", Toast.LENGTH_SHORT).show()
+                        }
+                    }, 100)
+                } else {
+                    Toast.makeText(context, "Navigazione non pronta.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

@@ -62,9 +62,6 @@
         <action
             android:id="@+id/action_pagamentoFragment_to_productCatalogFragment"
             app:destination="@id/ProductCatalogFragment" />
-        <action
-            android:id="@+id/action_pagamentoFragment_to_ordinazioneFragment"
-            app:destination="@id/ordinazioneFragment" />
     </fragment>
 
     <fragment
@@ -72,12 +69,6 @@
         android:name="com.example.circolapp.QrCodeFragment"
         android:label="QR Code"
         tools:layout="@layout/fragment_qr_code" />
-
-    <fragment
-        android:id="@+id/ordinazioneFragment"
-        android:name="com.example.circolapp.OrdinazioneFragment"
-        android:label="Ordinazione"
-        tools:layout="@layout/fragment_ordinazione" />
 
     <fragment
         android:id="@+id/chatFragment"
@@ -165,6 +156,9 @@
         <action
             android:id="@+id/action_ProductCatalogFragment_to_addEditProductFragment"
             app:destination="@id/addEditProductFragment" />
+        <action
+            android:id="@+id/action_ProductCatalogFragment_to_dettaglioProdottoFragment"
+            app:destination="@id/dettaglioProdottoFragment" />
     </fragment><!-- Crea questo layout -->
 
     <fragment
@@ -256,7 +250,7 @@
 
     <fragment
         android:id="@+id/ordinazioniFragment"
-        android:name="com.example.circolapp.OrdinazioniFragment"
+        android:name="com.example.circolapp.ListaOrdinazioniFragment"
         android:label="Ordinazioni"
         tools:layout="@layout/fragment_ordinazioni" />
 
@@ -265,4 +259,14 @@
         android:name="com.example.circolapp.NotificheFragment"
         android:label="Notifiche"
         tools:layout="@layout/fragment_notifiche" />
+
+    <fragment
+        android:id="@+id/dettaglioProdottoFragment"
+        android:name="com.example.circolapp.DettaglioProdottoFragment"
+        android:label="Dettaglio Prodotto"
+        tools:layout="@layout/fragment_dettaglio_prodotto">
+        <argument
+            android:name="product"
+            app:argType="com.example.circolapp.model.Product" />
+    </fragment>
 </navigation>

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.circolapp.adapter.MovimentiAdapter // Assicurati che il percorso sia corretto
 import com.example.circolapp.databinding.FragmentHomeBinding
@@ -36,6 +37,11 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Gestione click icona notifiche
+        binding.iconNotifiche.setOnClickListener {
+            findNavController().navigate(R.id.notificheFragment)
+        }
 
         if (FirebaseAuth.getInstance().currentUser == null) {
             Log.w("HomeFragment", "Utente non loggato. Impossibile caricare i dati.")

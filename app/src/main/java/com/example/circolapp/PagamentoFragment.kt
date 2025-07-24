@@ -39,14 +39,6 @@ class PagamentoFragment : Fragment() {
 
         }
 
-        // Bottone per navigare a OrdinazioneFragment
-        view.findViewById<Button>(R.id.btn_opzione3).setOnClickListener {
-            // Assumendo che tu abbia un'action definita anche per questo nel nav_graph
-            val action = PagamentoFragmentDirections.actionPagamentoFragmentToOrdinazioneFragment()
-            findNavController().navigate(action)
-
-        }
-
         return view
     }
 }

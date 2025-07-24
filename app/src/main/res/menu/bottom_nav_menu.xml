@@ -3,6 +3,5 @@
     <item android:id="@+id/eventiFragment" android:icon="@drawable/calendario" android:title="Eventi"/>
     <item android:id="@+id/pagamentoFragment" android:icon="@drawable/euro" android:title="Pagamento"/>
     <item android:id="@+id/chatFragment" android:icon="@drawable/chat" android:title="Chat"/>
-    <item android:id="@+id/notificheFragment" android:icon="@drawable/notifiche" android:title="Notifiche"/>
-<!--    <item android:id="@+id/profiloFragment" android:icon="@drawable/account" android:title="Profilo"/>-->
+    <item android:id="@+id/profiloFragment" android:icon="@drawable/account" android:title="Profilo"/>
 </menu>
