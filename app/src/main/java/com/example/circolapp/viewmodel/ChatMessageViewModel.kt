@@ -112,6 +112,107 @@ class ChatMessageViewModel(
             .addOnFailureListener { e -> Log.w("ChatMessageVM", "Errore nel marcare chat $chatId come letta", e) }
     }
 
+    // Nuovo metodo per ottenere il saldo dell'utente corrente
+    fun getCurrentUserBalance(callback: (Double) -> Unit) {
+        db.collection("utenti").document(currentUserId)
+            .get()
+            .addOnSuccessListener { document ->
+                val balance = document.getDouble("saldo") ?: 0.0
+                callback(balance)
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatMessageVM", "Errore nel recuperare il saldo", e)
+                callback(0.0)
+            }
+    }
+
+    // Nuovo metodo per inviare trasferimento di denaro
+    fun sendMoneyTransfer(amount: Double, recipientId: String) {
+        viewModelScope.launch {
+            try {
+                // Esegui la transazione per trasferire il denaro
+                db.runTransaction { transaction ->
+                    val senderRef = db.collection("utenti").document(currentUserId)
+                    val recipientRef = db.collection("utenti").document(recipientId)
+
+                    val senderSnapshot = transaction.get(senderRef)
+                    val recipientSnapshot = transaction.get(recipientRef)
+
+                    val senderBalance = senderSnapshot.getDouble("saldo") ?: 0.0
+                    val recipientBalance = recipientSnapshot.getDouble("saldo") ?: 0.0
+
+                    // Verifica se il mittente ha saldo sufficiente
+                    if (senderBalance < amount) {
+                        throw Exception("Saldo insufficiente. Saldo disponibile: €${String.format("%.2f", senderBalance)}")
+                    }
+
+                    // Calcola i nuovi saldi
+                    val newSenderBalance = senderBalance - amount
+                    val newRecipientBalance = recipientBalance + amount
+
+                    // Aggiorna i saldi
+                    transaction.update(senderRef, "saldo", newSenderBalance)
+                    transaction.update(recipientRef, "saldo", newRecipientBalance)
+
+                    // Crea i movimenti per entrambi gli utenti
+                    val currentTime = com.google.firebase.Timestamp.now()
+
+                    // Movimento per il mittente (negativo)
+                    val senderMovimento = mapOf(
+                        "importo" to -amount,
+                        "descrizione" to "Trasferimento a ${recipientSnapshot.getString("displayName") ?: "Utente"}",
+                        "data" to currentTime
+                    )
+
+                    // Movimento per il destinatario (positivo)
+                    val recipientMovimento = mapOf(
+                        "importo" to amount,
+                        "descrizione" to "Ricevuto da ${senderSnapshot.getString("displayName") ?: "Utente"}",
+                        "data" to currentTime
+                    )
+
+                    // Aggiorna i movimenti del mittente
+                    val senderMovimenti = (senderSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
+                    senderMovimenti.add(senderMovimento)
+                    transaction.update(senderRef, "movimenti", senderMovimenti)
+
+                    // Aggiorna i movimenti del destinatario
+                    val recipientMovimenti = (recipientSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
+                    recipientMovimenti.add(recipientMovimento)
+                    transaction.update(recipientRef, "movimenti", recipientMovimenti)
+
+                    // Crea il messaggio di trasferimento denaro nella chat
+                    val transferMessage = Message(
+                        senderId = currentUserId,
+                        text = "💰 Trasferimento di €${String.format("%.2f", amount)}",
+                        isMoneyTransfer = true,
+                        transferAmount = amount,
+                        transferStatus = "COMPLETED"
+                    )
+
+                    // Aggiungi il messaggio alla chat
+                    val messageRef = messagesRef.document()
+                    transaction.set(messageRef, transferMessage)
+
+                    // Aggiorna il documento della chat
+                    val chatUpdates = mapOf(
+                        "lastMessageText" to "💰 Trasferimento di €${String.format("%.2f", amount)}",
+                        "lastMessageTimestamp" to FieldValue.serverTimestamp(),
+                        "unreadCount.$otherUserId" to FieldValue.increment(1)
+                    )
+                    transaction.update(chatDocRef, chatUpdates)
+
+                }.await()
+
+                _errorMessage.value = "Trasferimento di €${String.format("%.2f", amount)} completato!"
+
+            } catch (e: Exception) {
+                Log.e("ChatMessageVM", "Errore nel trasferimento denaro", e)
+                _errorMessage.value = "Errore nel trasferimento: ${e.message}"
+            }
+        }
+    }
+
 
     override fun onCleared() {
         super.onCleared()

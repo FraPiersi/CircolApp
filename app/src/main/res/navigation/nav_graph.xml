@@ -269,4 +269,11 @@
             android:name="product"
             app:argType="com.example.circolapp.model.Product" />
     </fragment>
+
+    <fragment
+        android:id="@+id/feedbackListFragment"
+        android:name="com.example.circolapp.FeedbackListFragment"
+        android:label="Feedback Ricevuti"
+        tools:layout="@layout/fragment_feedback_list" />
+
 </navigation>

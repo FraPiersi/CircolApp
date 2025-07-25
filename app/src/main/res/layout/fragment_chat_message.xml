@@ -99,10 +99,23 @@
             android:maxLines="5"
             android:text="@={viewModel.newMessageText}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/buttonSendMessage"
+            app:layout_constraintEnd_toStartOf="@id/buttonSendMoney"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp"/>
+
+            <ImageButton
+                android:id="@+id/buttonSendMoney"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_money_transfer"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorAccent"
+                app:layout_constraintEnd_toStartOf="@id/buttonSendMessage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Invia denaro"/>
 
             <ImageButton
                 android:id="@+id/buttonSendMessage"

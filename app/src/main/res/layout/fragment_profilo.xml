@@ -59,6 +59,14 @@
         android:layout_marginBottom="16dp"/>
 
     <Button
+        android:id="@+id/buttonFeedback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Invia Feedback"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="?attr/colorAccent"/>
+
+    <Button
         android:id="@+id/buttonLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

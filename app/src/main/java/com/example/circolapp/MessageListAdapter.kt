@@ -47,7 +47,22 @@ class MessageListAdapter(private val currentUserId: String) :
     class SentMessageViewHolder(private val binding: ItemMessageSentBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-            binding.textViewMessageTextSent.text = message.text
+            if (message.isMoneyTransfer) {
+                // Gestisci i messaggi di trasferimento denaro
+                binding.textViewMessageTextSent.text = "💰 Hai inviato €${String.format("%.2f", message.transferAmount ?: 0.0)}"
+                // Cambia il colore o lo stile per i trasferimenti di denaro
+                binding.textViewMessageTextSent.setTextColor(
+                    binding.root.context.getColor(android.R.color.holo_green_dark)
+                )
+            } else {
+                // Messaggio normale
+                binding.textViewMessageTextSent.text = message.text
+                // Ripristina il colore normale
+                binding.textViewMessageTextSent.setTextColor(
+                    binding.root.context.getColor(android.R.color.white)
+                )
+            }
+
             binding.textViewMessageTimestampSent.text = message.timestamp?.toDate()?.let {
                 SimpleDateFormat("HH:mm", Locale.getDefault()).format(it)
             } ?: ""
@@ -57,7 +72,22 @@ class MessageListAdapter(private val currentUserId: String) :
     class ReceivedMessageViewHolder(private val binding: ItemMessageReceivedBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-            binding.textViewMessageTextReceived.text = message.text
+            if (message.isMoneyTransfer) {
+                // Gestisci i messaggi di trasferimento denaro ricevuti
+                binding.textViewMessageTextReceived.text = "💰 Hai ricevuto €${String.format("%.2f", message.transferAmount ?: 0.0)}"
+                // Cambia il colore o lo stile per i trasferimenti di denaro
+                binding.textViewMessageTextReceived.setTextColor(
+                    binding.root.context.getColor(android.R.color.holo_green_dark)
+                )
+            } else {
+                // Messaggio normale
+                binding.textViewMessageTextReceived.text = message.text
+                // Ripristina il colore normale
+                binding.textViewMessageTextReceived.setTextColor(
+                    binding.root.context.getColor(android.R.color.black)
+                )
+            }
+
             binding.textViewMessageTimestampReceived.text = message.timestamp?.toDate()?.let {
                 SimpleDateFormat("HH:mm", Locale.getDefault()).format(it)
             } ?: ""

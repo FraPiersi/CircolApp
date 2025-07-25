@@ -73,6 +73,11 @@ class ChatMessageFragment : Fragment() {
                 }, 200)
             }
         }
+
+        // Gestisci il click del pulsante per inviare denaro
+        binding.buttonSendMoney.setOnClickListener {
+            showMoneyTransferDialog()
+        }
     }
 
     private fun setupToolbar() {
@@ -127,6 +132,45 @@ class ChatMessageFragment : Fragment() {
         }
     }
 
+    private fun showMoneyTransferDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(
+            android.R.layout.select_dialog_item, null
+        )
+
+        // Creo un dialog personalizzato
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("Invia denaro a ${args.contactName}")
+
+        // Creo un layout personalizzato per il dialog
+        val customView = LayoutInflater.from(requireContext()).inflate(
+            R.layout.dialog_money_transfer, null
+        )
+
+        val editAmount = customView.findViewById<android.widget.EditText>(R.id.editTextAmount)
+        val textBalance = customView.findViewById<android.widget.TextView>(R.id.textViewBalance)
+
+        // Mostro il saldo attuale dell'utente
+        viewModel.getCurrentUserBalance { balance ->
+            textBalance.text = "Saldo disponibile: €${String.format("%.2f", balance)}"
+        }
+
+        builder.setView(customView)
+        builder.setPositiveButton("Invia") { _, _ ->
+            val amountText = editAmount.text.toString().trim()
+            if (amountText.isNotEmpty()) {
+                val amount = amountText.toDoubleOrNull()
+                if (amount != null && amount > 0) {
+                    viewModel.sendMoneyTransfer(amount, args.otherUserId)
+                } else {
+                    Toast.makeText(context, "Inserisci un importo valido", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Inserisci un importo", Toast.LENGTH_SHORT).show()
+            }
+        }
+        builder.setNegativeButton("Annulla", null)
+        builder.show()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
