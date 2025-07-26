@@ -3,13 +3,16 @@ package com.example.circolapp.admin
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +29,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.example.circolapp.R
 import com.example.circolapp.databinding.FragmentAddEditProductBinding
 import com.example.circolapp.viewmodel.AddEditProductEvent
@@ -46,6 +50,17 @@ class AddEditProductFragment : Fragment() {
 
     private val viewModel: AddEditProductViewModel by viewModels()
     private val args: AddEditProductFragmentArgs by navArgs()
+
+    // Launcher per la selezione delle immagini
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.setSelectedImageUri(uri)
+            displaySelectedImage(uri)
+            binding.btnRemoveImage.visibility = View.VISIBLE
+        }
+    }
 
     // --- Inizio Variabili per Barcode Scanning con CameraX ---
     private lateinit var cameraExecutor: ExecutorService
@@ -86,6 +101,7 @@ class AddEditProductFragment : Fragment() {
 
         viewModel.start(args.productId)
         setupObservers()
+        setupImageHandling()
 
         if (args.productId != null) {
             (activity as? AppCompatActivity)?.supportActionBar?.title = "Modifica Prodotto"
@@ -99,6 +115,53 @@ class AddEditProductFragment : Fragment() {
         binding.btnScanBarcode.setOnClickListener {
             checkCameraPermissionAndScan()
         }
+
+        binding.btnSaveProduct.setOnClickListener {
+            viewModel.saveProduct()
+        }
+    }
+
+    private fun setupImageHandling() {
+        binding.btnSelectImage.setOnClickListener {
+            imagePickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+
+        binding.btnRemoveImage.setOnClickListener {
+            viewModel.removeImage()
+            resetImageDisplay()
+            binding.btnRemoveImage.visibility = View.GONE
+        }
+    }
+
+    private fun displaySelectedImage(uri: Uri) {
+        Glide.with(this)
+            .load(uri)
+            .centerCrop()
+            .placeholder(R.drawable.ic_image_placeholder)
+            .error(R.drawable.ic_image_placeholder)
+            .into(binding.ivProductImage)
+    }
+
+    private fun displayImageFromUrl(url: String?) {
+        if (url.isNullOrEmpty()) {
+            resetImageDisplay()
+            return
+        }
+
+        Glide.with(this)
+            .load(url)
+            .centerCrop()
+            .placeholder(R.drawable.ic_image_placeholder)
+            .error(R.drawable.ic_image_placeholder)
+            .into(binding.ivProductImage)
+
+        binding.btnRemoveImage.visibility = View.VISIBLE
+    }
+
+    private fun resetImageDisplay() {
+        binding.ivProductImage.setImageResource(R.drawable.ic_image_placeholder)
     }
 
     private fun checkCameraPermissionAndScan() {
@@ -259,13 +322,26 @@ class AddEditProductFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // ... (i tuoi observer esistenti, assicurati che la logica di abilitazione di btnScanBarcode sia corretta)
         viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             binding.progressBarAddEdit.visibility = if (isLoading) View.VISIBLE else View.GONE
             binding.btnSaveProduct.isEnabled = !isLoading
             binding.btnDeleteProduct.isEnabled = !isLoading
             binding.btnScanBarcode.isEnabled = !isLoading && viewModel.isCodeEditable.value == true
+            binding.btnSelectImage.isEnabled = !isLoading
         })
+
+        // Observer per l'URL dell'immagine del prodotto
+        viewModel.productImageUrl.observe(viewLifecycleOwner) { imageUrl ->
+            displayImageFromUrl(imageUrl)
+        }
+
+        // Observer per l'immagine selezionata localmente
+        viewModel.selectedImageUri.observe(viewLifecycleOwner) { uri ->
+            if (uri != null) {
+                displaySelectedImage(uri)
+                binding.btnRemoveImage.visibility = View.VISIBLE
+            }
+        }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             Log.d("AddEditFragment_Event", "Received event: $event")
@@ -275,17 +351,12 @@ class AddEditProductFragment : Fragment() {
                     is AddEditProductEvent.ProductSaved -> {
                         Log.d("AddEditFragment_Event", "ProductSaved event HANDLED. Showing Toast...")
                         Toast.makeText(context, "Prodotto salvato!", Toast.LENGTH_SHORT).show()
-                        // In AddEditProductFragment, prima di popBackStack
-                            Log.d("AddEditProduct", "Current destination before pop: ${findNavController().currentDestination?.label}")
-                            val success = findNavController().popBackStack()
-                            Log.d("AddEditProduct", "popBackStack success: $success. New current destination: ${findNavController().currentDestination?.label}")
-                            if (!success) {
-                                Log.e("AddEditProduct", "popBackStack FAILED!")
-                                // Forse navigare esplicitamente alla home come fallback?
-                                // findNavController().navigate(R.id.action_global_to_homeFragment) // Esempio
-                            }
-
-                        findNavController().popBackStack()
+                        Log.d("AddEditProduct", "Current destination before pop: ${findNavController().currentDestination?.label}")
+                        val success = findNavController().popBackStack()
+                        Log.d("AddEditProduct", "popBackStack success: $success. New current destination: ${findNavController().currentDestination?.label}")
+                        if (!success) {
+                            Log.e("AddEditProduct", "popBackStack FAILED!")
+                        }
                     }
                     is AddEditProductEvent.ProductDeleted -> {
                         Toast.makeText(context, "Prodotto eliminato!", Toast.LENGTH_SHORT).show()
@@ -293,6 +364,12 @@ class AddEditProductFragment : Fragment() {
                     }
                     is AddEditProductEvent.Error -> {
                         Toast.makeText(context, "Errore: ${it.message}", Toast.LENGTH_LONG).show()
+                    }
+                    is AddEditProductEvent.ImageUploadStarted -> {
+                        Toast.makeText(context, "Caricamento immagine...", Toast.LENGTH_SHORT).show()
+                    }
+                    is AddEditProductEvent.ImageUploadCompleted -> {
+                        Toast.makeText(context, "Immagine caricata con successo!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 viewModel.onEventHandled()
@@ -302,7 +379,7 @@ class AddEditProductFragment : Fragment() {
         viewModel.isCodeEditable.observe(viewLifecycleOwner, Observer { isEditable ->
             binding.etProductCode.isEnabled = isEditable
             binding.tilProductCode.isEnabled = isEditable
-            binding.btnScanBarcode.visibility = if(isEditable) View.VISIBLE else View.GONE // Corretto
+            binding.btnScanBarcode.visibility = if(isEditable) View.VISIBLE else View.GONE
             if (!isEditable) {
                 binding.tilProductCode.helperText = "Il codice non è modificabile per prodotti esistenti."
             } else {

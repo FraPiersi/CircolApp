@@ -1,6 +1,7 @@
 package com.example.circolapp.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -8,21 +9,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.circolapp.model.Product
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.NumberFormat
-import java.util.Locale
+import java.util.*
 
 sealed class AddEditProductEvent {
     object ProductSaved : AddEditProductEvent()
     object ProductDeleted : AddEditProductEvent()
     data class Error(val message: String) : AddEditProductEvent()
-    // object CodeCheckResult : AddEditProductEvent() // Rimosso se non strettamente usato
+    object ImageUploadStarted : AddEditProductEvent()
+    object ImageUploadCompleted : AddEditProductEvent()
 }
 
 class AddEditProductViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     private val productsCollection = db.collection("prodotti")
 
     // Dati del prodotto
@@ -34,6 +38,11 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
     val productAmount = MutableLiveData<String>() // << NUOVO LiveData per l'importo (come String per input)
     val productOrdinabile = MutableLiveData<Boolean>(true) // << NUOVO LiveData per ordinabile
 
+    // Gestione immagine
+    val productImageUrl = MutableLiveData<String?>()
+    private val _selectedImageUri = MutableLiveData<Uri?>()
+    val selectedImageUri: LiveData<Uri?> get() = _selectedImageUri
+
     private val _isCodeEditable = MutableLiveData<Boolean>(true)
     val isCodeEditable: LiveData<Boolean> get() = _isCodeEditable
 
@@ -44,9 +53,11 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
     val event: LiveData<AddEditProductEvent?> get() = _event
 
     private var isEditMode = false
+    private var currentProductId: String? = null
 
     fun start(productId: String?) {
         isEditMode = productId != null
+        currentProductId = productId
         if (isEditMode && productId != null) {
             _isCodeEditable.value = false
             productCode.value = productId
@@ -78,6 +89,7 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
                         // Formatta il double in stringa per il campo di testo, considerando la localizzazione
                         productAmount.value = formatDoubleToString(it.importo)
                         productOrdinabile.value = it.ordinabile // Carica la proprietà ordinabile
+                        productImageUrl.value = it.imageUrl // Carica l'URL dell'immagine
                     }
                 } else {
                     _event.value = AddEditProductEvent.Error("Prodotto con codice '$productId' non trovato.")
@@ -90,22 +102,80 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             }
     }
 
+    fun setSelectedImageUri(uri: Uri?) {
+        _selectedImageUri.value = uri
+    }
+
+    fun removeImage() {
+        _selectedImageUri.value = null
+        productImageUrl.value = null
+    }
+
+    private suspend fun uploadImageToStorage(imageUri: Uri, productId: String): String? {
+        return try {
+            _event.value = AddEditProductEvent.ImageUploadStarted
+
+            // Verifica che l'URI sia valido
+            val inputStream = getApplication<Application>().contentResolver.openInputStream(imageUri)
+                ?: throw Exception("Impossibile leggere il file immagine")
+            inputStream.close()
+
+            val storageRef = storage.reference
+            val timestamp = System.currentTimeMillis()
+            val fileName = "${productId}_${timestamp}.jpg"
+            val imageRef = storageRef.child("product_images/$fileName")
+
+            Log.d("ImageUpload", "Iniziando upload per: $fileName")
+            Log.d("ImageUpload", "Storage reference: ${imageRef.path}")
+
+            // Upload del file
+            val uploadTask = imageRef.putFile(imageUri).await()
+            Log.d("ImageUpload", "Upload completato. Metadata: ${uploadTask.metadata?.path}")
+
+            // Ottieni l'URL di download
+            val downloadUrl = imageRef.downloadUrl.await()
+            Log.d("ImageUpload", "Download URL ottenuto: $downloadUrl")
+
+            _event.value = AddEditProductEvent.ImageUploadCompleted
+            downloadUrl.toString()
+
+        } catch (e: Exception) {
+            Log.e("ImageUpload", "Errore dettagliato upload immagine", e)
+            when (e) {
+                is com.google.firebase.storage.StorageException -> {
+                    Log.e("ImageUpload", "Storage error code: ${e.errorCode}")
+                    Log.e("ImageUpload", "Storage error message: ${e.message}")
+                    _event.value = AddEditProductEvent.Error("Errore Firebase Storage: ${e.message}")
+                }
+                is java.io.FileNotFoundException -> {
+                    _event.value = AddEditProductEvent.Error("File immagine non trovato")
+                }
+                is java.io.IOException -> {
+                    _event.value = AddEditProductEvent.Error("Errore di rete durante l'upload")
+                }
+                else -> {
+                    _event.value = AddEditProductEvent.Error("Errore upload immagine: ${e.message}")
+                }
+            }
+            null
+        }
+    }
+
     fun saveProduct() {
         val name = productName.value?.trim()
         val codeId = productCode.value?.trim()
         val description = productDescription.value?.trim()
         val piecesStr = productPieces.value
         val category = productCategory.value?.trim()
-        val amountStr = productAmount.value?.trim() // Ottieni l'importo come stringa
+        val amountStr = productAmount.value?.trim()
 
-        // Aggiungi amountStr alla validazione dei campi obbligatori
         if (name.isNullOrEmpty() || codeId.isNullOrEmpty() || description.isNullOrEmpty() ||
             piecesStr.isNullOrEmpty() || category.isNullOrEmpty() || amountStr.isNullOrEmpty()) {
             _event.value = AddEditProductEvent.Error("Tutti i campi sono obbligatori.")
             return
         }
 
-        if (codeId.contains("/") /* || altri caratteri non validi */) {
+        if (codeId.contains("/")) {
             _event.value = AddEditProductEvent.Error("Il codice prodotto non può contenere caratteri speciali come '/'.")
             return
         }
@@ -116,7 +186,6 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             return
         }
 
-        // Converti e valida l'importo
         val amount = parseStringToDouble(amountStr)
         if (amount == null || amount < 0.0) {
             _event.value = AddEditProductEvent.Error("Importo non valido. Usa '.' come separatore decimale.")
@@ -135,20 +204,29 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
                 }
             }
 
+            // Upload dell'immagine se selezionata
+            var finalImageUrl = productImageUrl.value
+            _selectedImageUri.value?.let { imageUri ->
+                finalImageUrl = uploadImageToStorage(imageUri, codeId)
+                if (finalImageUrl != null) {
+                    productImageUrl.value = finalImageUrl
+                }
+            }
+
             val product = Product(
                 id = codeId,
                 nome = name,
                 descrizione = description,
                 numeroPezzi = pieces,
-                importo = amount, // Salva l'importo come Double
-                imageUrl = null,
-                ordinabile = productOrdinabile.value ?: true // Salva la proprietà ordinabile
+                importo = amount,
+                imageUrl = finalImageUrl,
+                ordinabile = productOrdinabile.value ?: true
             )
+
             Log.d("ViewModel_Save", "Product object before saving: ${product.toString()}")
             productsCollection.document(codeId)
                 .set(product)
                 .addOnSuccessListener {
-                    // In AddEditProductViewModel -> saveProduct() -> addOnSuccessListener
                     Log.d("ViewModel_Save", "Attempting to post ProductSaved event")
                     _isLoading.value = false
                     _event.value = AddEditProductEvent.ProductSaved
@@ -200,5 +278,28 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
 
     fun onEventHandled() {
         _event.value = null
+    }
+
+    // Metodo di test per verificare la connessione a Storage
+    private suspend fun testStorageConnection(): Boolean {
+        return try {
+            val storageRef = storage.reference
+            val testRef = storageRef.child("test/connection_test.txt")
+            Log.d("StorageTest", "Testing storage connection...")
+            Log.d("StorageTest", "Storage bucket: ${storage.reference.bucket}")
+
+            // Prova a ottenere i metadati (questo fallirà se il file non esiste, ma conferma la connessione)
+            try {
+                testRef.metadata.await()
+                Log.d("StorageTest", "Storage connection OK - file exists")
+            } catch (e: Exception) {
+                Log.d("StorageTest", "Storage connection OK - file doesn't exist (normal): ${e.message}")
+            }
+
+            true
+        } catch (e: Exception) {
+            Log.e("StorageTest", "Storage connection FAILED", e)
+            false
+        }
     }
 }

@@ -18,6 +18,6 @@
         android:title="Ordinazioni" />
     <item
         android:id="@+id/profiloFragment"
-    android:icon="@drawable/errore"
+    android:icon="@drawable/account"
     android:title="Profilo Admin" />
 </menu>
