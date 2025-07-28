@@ -276,4 +276,10 @@
         android:label="Feedback Ricevuti"
         tools:layout="@layout/fragment_feedback_list" />
 
+    <fragment
+        android:id="@+id/gestisciTessereFragment"
+        android:name="com.example.circolapp.GestisciTessereFragment"
+        android:label="Gestione Tessere"
+        tools:layout="@layout/fragment_gestisci_tessere" />
+
 </navigation>

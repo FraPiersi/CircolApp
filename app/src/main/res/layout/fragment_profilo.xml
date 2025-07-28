@@ -56,7 +56,61 @@
         android:layout_height="wrap_content"
         android:text="Ruolo: Utente"
         android:textSize="14sp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Sezione Tessera Socio -->
+    <TextView
+        android:id="@+id/text_tessera_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tessera Socio"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/text_tessera_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nessuna tessera"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/text_numero_tessera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/text_scadenza_tessera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/buttonTessera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Richiedi Tessera"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="?attr/colorPrimary"/>
+
+    <Button
+        android:id="@+id/buttonGestisciTessere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gestisci Tessere Utenti"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="?attr/colorSecondary"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/buttonFeedback"

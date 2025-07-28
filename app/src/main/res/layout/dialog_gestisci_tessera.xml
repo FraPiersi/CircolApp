@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Informazioni Utente -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Informazioni Utente"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/text_nome_utente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nome Utente"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/text_uid_utente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="UID: xxxxx"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/text_saldo_utente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Saldo: €0,00"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Stato Tessera -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stato Tessera"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/text_stato_tessera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚪ Nessuna tessera"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/text_dettagli_tessera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dettagli tessera"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Container per i pulsanti dinamici -->
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"/>
+
+</LinearLayout>

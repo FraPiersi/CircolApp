@@ -156,7 +156,7 @@ class AddEditProductFragment : Fragment() {
             .placeholder(R.drawable.ic_image_placeholder)
             .error(R.drawable.ic_image_placeholder)
             .into(binding.ivProductImage)
-
+        
         binding.btnRemoveImage.visibility = View.VISIBLE
     }
 
