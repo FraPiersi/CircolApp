@@ -34,7 +34,6 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
     val productCode = MutableLiveData<String>() // Questo è l'ID
     val productDescription = MutableLiveData<String>()
     val productPieces = MutableLiveData<String>()
-    val productCategory = MutableLiveData<String>()
     val productAmount = MutableLiveData<String>() // << NUOVO LiveData per l'importo (come String per input)
     val productOrdinabile = MutableLiveData<Boolean>(true) // << NUOVO LiveData per ordinabile
 
@@ -68,7 +67,6 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             productCode.value = ""
             productDescription.value = ""
             productPieces.value = ""
-            productCategory.value = ""
             productAmount.value = "" // Inizializza l'importo
             productOrdinabile.value = true // Inizializza ordinabile a true
         }
@@ -166,11 +164,10 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
         val codeId = productCode.value?.trim()
         val description = productDescription.value?.trim()
         val piecesStr = productPieces.value
-        val category = productCategory.value?.trim()
         val amountStr = productAmount.value?.trim()
 
         if (name.isNullOrEmpty() || codeId.isNullOrEmpty() || description.isNullOrEmpty() ||
-            piecesStr.isNullOrEmpty() || category.isNullOrEmpty() || amountStr.isNullOrEmpty()) {
+            piecesStr.isNullOrEmpty() || amountStr.isNullOrEmpty()) {
             _event.value = AddEditProductEvent.Error("Tutti i campi sono obbligatori.")
             return
         }

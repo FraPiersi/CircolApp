@@ -5,12 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.circolapp.adapter.ChatListAdapter
 import com.example.circolapp.databinding.FragmentChatBinding
 import com.example.circolapp.model.ChatConversation
 import com.example.circolapp.viewmodel.ChatListViewModel
@@ -21,7 +21,7 @@ class ChatFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ChatListViewModel by viewModels()
-    private lateinit var listaChat: ListaChat
+    private lateinit var listaChat: ChatListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +58,7 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        listaChat = ListaChat { conversation ->
+        listaChat = ChatListAdapter { conversation ->
             // Naviga alla schermata dei messaggi per questa conversazione
             navigateToChatScreen(conversation)
         }

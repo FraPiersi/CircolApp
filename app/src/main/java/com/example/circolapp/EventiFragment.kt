@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.circolapp.adapter.EventiAdapter
 import com.example.circolapp.databinding.FragmentEventiBinding
 import com.example.circolapp.viewmodel.EventiViewModel
 import com.example.circolapp.model.Evento // Importa la tua classe Evento
@@ -21,7 +22,7 @@ class EventiFragment : Fragment() {
     private var _binding: FragmentEventiBinding? = null // Convenzione per nullable backing property
     private val binding get() = _binding!! // Getter non-nullo
 
-    private lateinit var eventoAdapter: ListaEventi
+    private lateinit var eventoAdapter: EventiAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +54,7 @@ class EventiFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val userRole = activity?.intent?.getStringExtra("USER_ROLE")?.let { UserRole.valueOf(it) } ?: UserRole.USER
-        eventoAdapter = ListaEventi { evento ->
+        eventoAdapter = EventiAdapter { evento ->
             val action = EventiFragmentDirections.actionEventiFragmentToInfoEventoFragment(evento, userRole)
             findNavController().navigate(action)
         }

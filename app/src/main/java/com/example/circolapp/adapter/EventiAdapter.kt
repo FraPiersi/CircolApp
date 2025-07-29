@@ -1,5 +1,5 @@
 // EventoAdapter.kt
-package com.example.circolapp// o la tua package structure
+package com.example.circolapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.circolapp.databinding.ItemEventoBinding
-import com.example.circolapp.model.Evento // Assicurati che il path sia corretto
+import com.example.circolapp.model.Evento
 
-class ListaEventi(private val onItemClicked: (Evento) -> Unit) :
-    ListAdapter<Evento, ListaEventi.EventoViewHolder>(EventoDiffCallback()) {
+class EventiAdapter(private val onItemClicked: (Evento) -> Unit) :
+    ListAdapter<Evento, EventiAdapter.EventoViewHolder>(EventoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventoViewHolder {
         val binding = ItemEventoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -29,14 +29,14 @@ class ListaEventi(private val onItemClicked: (Evento) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(evento: Evento) {
             binding.evento = evento
-            binding.executePendingBindings() // Importante per Data Binding in RecyclerView
+            binding.executePendingBindings()
         }
     }
 }
 
 class EventoDiffCallback : DiffUtil.ItemCallback<Evento>() {
     override fun areItemsTheSame(oldItem: Evento, newItem: Evento): Boolean {
-        return oldItem.id == newItem.id // Assumendo che Evento abbia un 'id' univoco
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: Evento, newItem: Evento): Boolean {

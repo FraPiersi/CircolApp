@@ -1,18 +1,19 @@
-package com.example.circolapp // o il tuo package adapters
+package com.example.circolapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide // Per caricare immagini profilo
-import com.example.circolapp.databinding.ItemChatBinding // Generato da Data Binding
+import com.bumptech.glide.Glide
+import com.example.circolapp.R
+import com.example.circolapp.databinding.ItemChatBinding
 import com.example.circolapp.model.ChatConversation
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ListaChat(private val onItemClicked: (ChatConversation) -> Unit) :
-    ListAdapter<ChatConversation, ListaChat.ChatViewHolder>(ChatConversationDiffCallback()) {
+class ChatListAdapter(private val onItemClicked: (ChatConversation) -> Unit) :
+    ListAdapter<ChatConversation, ChatListAdapter.ChatViewHolder>(ChatConversationDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val binding = ItemChatBinding.inflate(LayoutInflater.from(parent.context), parent, false)

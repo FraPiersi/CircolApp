@@ -6,9 +6,8 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.circolapp.viewmodel.ProductCatalogViewModel" /> <!-- O il tuo ViewModel corretto -->
+            type="com.example.circolapp.viewmodel.ProductCatalogViewModel" />
         <import type="android.view.View"/>
-        <!-- Aggiungi import per il tuo UIState se lo usi per visibilità -->
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -20,24 +19,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Aggiungi qui un selettore di categoria se lo hai -->
-            <Spinner
-                android:id="@+id/spinnerCategoryFilter"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:visibility="gone" /> <!-- Gestisci la sua visibilità -->
-
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewProducts"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@+id/spinnerCategoryFilter"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -52,16 +39,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:visibility="gone"
+                android:visibility="@{viewModel.screenState.isLoading ? View.VISIBLE : View.GONE}"
                 tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/textViewNoProductsCatalog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nessun prodotto disponibile in questa categoria."
+                android:text="Nessun prodotto disponibile."
                 android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:visibility="gone"
+                android:visibility="@{!viewModel.screenState.isLoading &amp;&amp; viewModel.screenState.products.empty ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +59,7 @@
 
         <!-- FAB per Aggiungi Prodotto - VISIBILE SOLO PER ADMIN -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddProductCatalog"
+            android:id="@+id/fabAddProduct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -80,7 +67,7 @@
             android:contentDescription="Aggiungi nuovo prodotto"
             app:srcCompat="@drawable/aggiungi"
             android:visibility="gone"
-        tools:visibility="visible"/>
+            tools:visibility="visible"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

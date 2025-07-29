@@ -118,26 +118,7 @@
                     android:text="@={viewModel.productPieces}" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Categoria -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilProductCategory"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Categoria"
-                app:layout_constraintTop_toBottomOf="@id/tilProductPieces"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etProductCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapWords"
-                    android:text="@={viewModel.productCategory}" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- NUOVO CAMPO IMPORTO -->
+            <!-- Campo Importo -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilProductAmount"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -145,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Importo (€)"
-                app:layout_constraintTop_toBottomOf="@id/tilProductCategory"
+                app:layout_constraintTop_toBottomOf="@id/tilProductPieces"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
