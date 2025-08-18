@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/ProductCatalogFragment"
+        android:icon="@drawable/casa"
+    android:title="Dashboard" />
+    <item
+        android:id="@+id/eventiFragment"
+    android:icon="@drawable/calendario"
+    android:title="Eventi" />
+    <item
+        android:id="@+id/cassaFragment"
+    android:icon="@drawable/euro"
+    android:title="Cassa" />
+    <item
+        android:id="@+id/ordinazioniFragment"
+        android:icon="@drawable/prodotto"
+        android:title="Ordinazioni" />
+    <item
+        android:id="@+id/profiloFragment"
+    android:icon="@drawable/account"
+    android:title="Profilo Admin" />
+</menu>

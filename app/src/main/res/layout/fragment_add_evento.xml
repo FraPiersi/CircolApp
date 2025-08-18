@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/editNomeEvento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Nome evento"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <EditText
+            android:id="@+id/editDescrizioneEvento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Descrizione"
+            app:layout_constraintTop_toBottomOf="@id/editNomeEvento"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnSalvaEvento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Salva"
+            app:layout_constraintTop_toBottomOf="@id/editDescrizioneEvento"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnAnnullaEvento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Annulla"
+            app:layout_constraintTop_toBottomOf="@id/btnSalvaEvento"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+

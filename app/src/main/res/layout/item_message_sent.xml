@@ -1,0 +1,39 @@
+<!-- res/layout/item_message_sent.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="4dp"
+        android:paddingStart="64dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false">
+
+        <TextView
+            android:id="@+id/textViewMessageTextSent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_message_sent"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:maxWidth="280dp"
+        tools:text="Questo è un messaggio inviato dall'utente corrente." />
+
+        <TextView
+            android:id="@+id/textViewMessageTimestampSent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            tools:text="10:30"
+            app:layout_constraintEnd_toEndOf="@id/textViewMessageTextSent"
+            app:layout_constraintTop_toBottomOf="@id/textViewMessageTextSent"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

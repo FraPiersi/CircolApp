@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/homeFragment" android:icon="@drawable/casa" android:title="Home"/>
+    <item android:id="@+id/eventiFragment" android:icon="@drawable/calendario" android:title="Eventi"/>
+    <item android:id="@+id/pagamentoFragment" android:icon="@drawable/euro" android:title="Pagamento"/>
+    <item android:id="@+id/chatFragment" android:icon="@drawable/chat" android:title="Chat"/>
+    <item android:id="@+id/profiloFragment" android:icon="@drawable/account" android:title="Profilo"/>
+</menu>

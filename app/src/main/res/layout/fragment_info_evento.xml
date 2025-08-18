@@ -1,0 +1,93 @@
+<!-- res/layout/fragment_info_evento.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.circolapp.viewmodel.InfoEventoViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        tools:context=".InfoEventoFragment">
+
+        <TextView
+            android:id="@+id/nomeEventoTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@{viewModel.evento.nome}"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Nome Evento Molto Lungo per Test" />
+
+        <ScrollView
+            android:id="@+id/scrollViewDescrizione"
+            android:layout_width="384dp"
+            android:layout_height="495dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toTopOf="@id/btnPartecipa"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nomeEventoTextView"
+            app:layout_constraintVertical_bias="0.0">
+
+            <TextView
+                android:id="@+id/descrizioneEventoTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.evento.descrizione}"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                tools:text="Questa è una descrizione molto dettagliata dell'evento..." />
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/layoutPartecipanti"
+            android:layout_width="318dp"
+            android:layout_height="123dp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/btnPartecipa"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.262"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollViewDescrizione"
+            app:layout_constraintVertical_bias="0.058">
+
+            <TextView
+                android:id="@+id/labelPartecipanti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Partecipanti:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/listaPartecipanti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnPartecipa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{() -> viewModel.onPartecipaClicked()}"
+            android:text="Partecipa"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

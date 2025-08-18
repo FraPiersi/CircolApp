@@ -1,0 +1,87 @@
+<!-- res/layout/fragment_qr_code.xml -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.circolapp.viewmodel.QrCodeViewModel" />
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".QrCodeFragment"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textViewQrTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Il tuo QR Code Personale"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/> <!-- Ridotto un po' il margine per più spazio -->
+
+        <ImageView
+            android:id="@+id/qrCodeImageView"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:contentDescription="QR Code Utente"
+            app:layout_constraintTop_toBottomOf="@id/textViewQrTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_spacer_bottom_image"
+        android:visibility="@{(viewModel.isLoading || viewModel.errorMessage != null) ? View.GONE : View.VISIBLE}"
+        tools:srcCompat="@tools:sample/avatars"
+        app:layout_constraintVertical_bias="0.0" /> <!-- Spingi l'immagine verso l'alto nella sua catena verticale -->
+
+        <!-- Guideline per creare uno spazio sotto l'immagine e prima del fondo,
+             o prima della zona di ProgressBar/TextViewErrore.
+             Questa guideline sarà usata solo per il posizionamento quando l'immagine è visibile. -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_spacer_bottom_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="60dp" /> <!-- Ad esempio, 60dp dal fondo -->
+
+
+        <!-- Posiziona ProgressBar e TextViewErrore in modo che occupino lo stesso spazio,
+             ma solo uno sarà visibile alla volta, e non interferiranno con l'immagine
+             quando l'immagine è visibile e loro sono GONE. -->
+        <ProgressBar
+            android:id="@+id/progressBarQr"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/textViewQrTitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"/>
+
+        <TextView
+            android:id="@+id/textViewQrError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.errorMessage}"
+            android:textColor="@android:color/holo_red_dark"
+            android:textAlignment="center"
+            android:visibility="@{viewModel.errorMessage != null ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/textViewQrTitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="24dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

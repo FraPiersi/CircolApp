@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.circolapp.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/eventiFragment"
+        android:name="com.example.circolapp.EventiFragment"
+        android:label="fragment_eventi"
+        tools:layout="@layout/fragment_eventi" >
+        <action
+            android:id="@+id/action_eventiFragment_to_infoEventoFragment"
+            app:destination="@id/infoEventoFragment" />
+        <action
+            android:id="@+id/action_eventiFragment_to_addEventoFragment"
+            app:destination="@id/addEventoFragment" />
+    </fragment>
+
+
+
+    <fragment
+        android:id="@+id/profiloFragment"
+        android:name="com.example.circolapp.ProfiloFragment"
+        android:label="fragment_profilo"
+        tools:layout="@layout/fragment_profilo" />
+
+    <fragment
+        android:id="@+id/infoEventoFragment"
+        android:name="com.example.circolapp.InfoEventoFragment"
+        android:label="fragment_info_evento"
+        tools:layout="@layout/fragment_info_evento" >
+        <argument
+            android:name="evento"
+            app:argType="com.example.circolapp.model.Evento" />
+        <argument
+            android:name="userRole"
+            app:argType="com.example.circolapp.model.UserRole"
+            android:defaultValue="USER" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/pagamentoFragment"
+        android:name="com.example.circolapp.PagamentoFragment"
+        android:label="Pagamento"
+        tools:layout="@layout/fragment_pagamento">
+        <action
+            android:id="@+id/action_pagamentoFragment_to_qrCodeFragment"
+            app:destination="@id/qrCodeFragment">
+        <argument
+            android:name="userRole"
+            app:argType="com.example.circolapp.model.UserRole" />
+        </action>
+        <!-- Altre azioni da PagamentoFragment se necessario -->
+        <action
+            android:id="@+id/action_pagamentoFragment_to_productCatalogFragment"
+            app:destination="@id/ProductCatalogFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/qrCodeFragment"
+        android:name="com.example.circolapp.QrCodeFragment"
+        android:label="QR Code"
+        tools:layout="@layout/fragment_qr_code" />
+
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.circolapp.ChatFragment"
+        android:label="Chat"
+        tools:layout="@layout/fragment_chat">
+        <action
+            android:id="@+id/action_chatFragment_to_newChatFragment"
+            app:destination="@id/newChatFragment" />
+        <action
+            android:id="@+id/action_chatFragment_to_chatMessageFragment"
+            app:destination="@id/chatMessageFragment">
+            <argument
+                android:name="chatId"
+                app:argType="string" />
+            <argument
+                android:name="otherUserId"
+                app:argType="string" />
+            <argument
+                android:name="contactName"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="contactPhotoUrl"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/newChatFragment"
+        android:name="com.example.circolapp.NewChatFragment"
+        android:label="Nuova Chat"
+        tools:layout="@layout/fragment_new_chat">
+        <action
+            android:id="@+id/action_newChatFragment_to_chatMessageFragment"
+            app:destination="@id/chatMessageFragment">
+            <!-- Definisci gli argomenti che ChatMessageFragment si aspetta -->
+            <argument
+                android:name="chatId"
+                app:argType="string" />
+            <argument
+                android:name="otherUserId"
+                app:argType="string" />
+            <argument
+                android:name="contactName"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="contactPhotoUrl"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+
+
+
+    <fragment
+        android:id="@+id/chatMessageFragment"
+        android:name="com.example.circolapp.ChatMessageFragment"
+        android:label="{contactName}"
+    tools:layout="@layout/fragment_chat_message">
+    <argument
+        android:name="chatId"
+        app:argType="string" />
+    <argument
+        android:name="otherUserId"
+        app:argType="string" />
+    <argument
+        android:name="contactName"
+        app:argType="string"
+        app:nullable="true" />
+    <argument
+        android:name="contactPhotoUrl"
+        app:argType="string"
+        app:nullable="true" />
+</fragment>
+
+
+    <fragment
+        android:id="@+id/ProductCatalogFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
+        android:label="ProductCatalogFragment"
+        tools:layout="@layout/fragment_product_catalog" >
+        <action
+            android:id="@+id/action_ProductCatalogFragment_to_addEditProductFragment"
+            app:destination="@id/addEditProductFragment" />
+        <action
+            android:id="@+id/action_ProductCatalogFragment_to_dettaglioProdottoFragment"
+            app:destination="@id/dettaglioProdottoFragment" />
+    </fragment><!-- Crea questo layout -->
+
+    <fragment
+        android:id="@+id/cassaFragment"
+        android:name="com.example.circolapp.admin.CassaFragment"
+        android:label="Cassa"
+        tools:layout="@layout/fragment_cassa">
+    <action
+        android:id="@+id/action_cassaFragment_to_ricaricaFragment"
+        app:destination="@id/ricaricaFragment">
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </action>
+        <action
+            android:id="@+id/action_cassaFragment_to_riscuotiFragment"
+            app:destination="@id/riscuotiFragment">
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="prodotti"
+            app:argType="string"
+            app:nullable="true" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminManageOrdersFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
+        android:label="Gestione Ordini"
+        tools:layout="@layout/fragment_product_catalog" /> <!-- Crea questo layout -->
+    <fragment
+        android:id="@+id/adminManageUsersFragment"
+        android:name="com.example.circolapp.ProductCatalogFragment"
+        android:label="Gestione Utenti"
+        tools:layout="@layout/fragment_product_catalog" />
+
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.example.circolapp.admin.AddEditProductFragment"
+        android:label="Gestisci Prodotto"
+        tools:layout="@layout/fragment_add_edit_product">
+        <argument
+            android:name="productId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" /> <!-- Default a null per nuovi prodotti -->
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEventoFragment"
+        android:name="com.example.circolapp.AddEventoFragment"
+        android:label="Aggiungi Evento"
+        tools:layout="@layout/fragment_add_evento" />
+
+    <fragment
+        android:id="@+id/ricaricaFragment"
+        android:name="com.example.circolapp.RicaricaFragment"
+        android:label="Ricarica"
+        tools:layout="@layout/fragment_ricarica">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_ricaricaFragment_self"
+            app:destination="@id/ricaricaFragment">
+            <argument
+                android:name="username"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/riscuotiFragment"
+        android:name="com.example.circolapp.RiscuotiFragment"
+        android:label="Riscuoti"
+        tools:layout="@layout/fragment_riscuoti">
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="prodotti"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ordinazioniFragment"
+        android:name="com.example.circolapp.ListaOrdinazioniFragment"
+        android:label="Ordinazioni"
+        tools:layout="@layout/fragment_ordinazioni" />
+
+    <fragment
+        android:id="@+id/notificheFragment"
+        android:name="com.example.circolapp.NotificheFragment"
+        android:label="Notifiche"
+        tools:layout="@layout/fragment_notifiche" />
+
+    <fragment
+        android:id="@+id/dettaglioProdottoFragment"
+        android:name="com.example.circolapp.DettaglioProdottoFragment"
+        android:label="Dettaglio Prodotto"
+        tools:layout="@layout/fragment_dettaglio_prodotto">
+        <argument
+            android:name="product"
+            app:argType="com.example.circolapp.model.Product" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/feedbackListFragment"
+        android:name="com.example.circolapp.FeedbackListFragment"
+        android:label="Feedback Ricevuti"
+        tools:layout="@layout/fragment_feedback_list" />
+
+    <fragment
+        android:id="@+id/gestisciTessereFragment"
+        android:name="com.example.circolapp.GestisciTessereFragment"
+        android:label="Gestione Tessere"
+        tools:layout="@layout/fragment_gestisci_tessere" />
+
+</navigation>

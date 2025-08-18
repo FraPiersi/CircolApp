@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CircolApp</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="saldo_format">Saldo: %s</string>
+    <string name="no_movimenti_found">Nessun movimento trovato.</string>
+    <string name="login_required_saldo">Accedi per visualizzare il saldo</string>
+    <string name="login_required_data">Effettua il login per visualizzare i tuoi dati</string>
 </resources>
