@@ -27,7 +27,8 @@
         android:padding="4dp"
         android:contentDescription="Notifiche"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/icona_notifiche_colore" />
 
     <!-- Testo del Saldo -->
     <TextView

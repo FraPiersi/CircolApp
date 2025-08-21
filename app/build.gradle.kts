@@ -85,6 +85,10 @@ dependencies {
 
     // Image loading library
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.recyclerview)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     // Testing
