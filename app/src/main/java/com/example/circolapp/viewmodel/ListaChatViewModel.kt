@@ -115,6 +115,20 @@ class ChatListViewModel : ViewModel() {
         }
     }
 
+    fun deleteChat(chatId: String) {
+        viewModelScope.launch {
+            try {
+                // Esegue l'operazione di eliminazione su Firestore
+                db.collection("chats").document(chatId).delete().await()
+                Log.d("ChatListViewModel", "Chat con ID $chatId eliminata con successo.")
+                // Grazie all'addSnapshotListener, la UI si aggiornerà automaticamente!
+            } catch (e: Exception) {
+                Log.e("ChatListViewModel", "Errore durante l'eliminazione della chat $chatId", e)
+                _errorMessage.value = "Impossibile eliminare la chat: ${e.message}"
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         conversationsListener?.remove() // Rimuovi il listener quando il ViewModel viene distrutto

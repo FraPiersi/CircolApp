@@ -12,7 +12,11 @@ import com.example.circolapp.model.ChatConversation
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatListAdapter(private val onItemClicked: (ChatConversation) -> Unit) :
+class ChatListAdapter(
+    private val onItemClicked: (ChatConversation) -> Unit,
+    // funzione da chiamare quando si verifica un clic prolungato
+    private val onItemLongClicked: (ChatConversation) -> Boolean,
+    private val getSelectedConversation: () -> ChatConversation? ) :
     ListAdapter<ChatConversation, ChatListAdapter.ChatViewHolder>(ChatConversationDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
@@ -23,8 +27,24 @@ class ChatListAdapter(private val onItemClicked: (ChatConversation) -> Unit) :
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val conversation = getItem(position)
         holder.bind(conversation)
+
+        // Controlla se l'elemento corrente è quello selezionato
+        val isSelected = conversation == getSelectedConversation()
+        holder.itemView.isSelected = isSelected
+        holder.itemView.setBackgroundResource(if (isSelected) R.color.selected_chat_background else 0)
+
+        //clic normali
         holder.itemView.setOnClickListener {
-            onItemClicked(conversation)
+            if (getSelectedConversation() != null) {
+                // Se c'è una selezione, disabilita il clic
+            } else {
+                onItemClicked(conversation)
+            }
+        }
+
+        //listener per clic prolungato
+        holder.itemView.setOnLongClickListener {
+            onItemLongClicked(conversation)
         }
     }
 

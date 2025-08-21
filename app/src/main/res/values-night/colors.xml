@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="icona_notifiche_colore">#FFFFFFFF</color>
+    <color name="selected_chat_background">#333333</color>
 </resources>
