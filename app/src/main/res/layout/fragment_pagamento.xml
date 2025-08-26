@@ -10,14 +10,14 @@
         android:id="@+id/btn_opzione1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Opzione 1"
+        android:text="Paga"
         android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/btn_opzione2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Opzione 2"
+        android:text="Ordina"
         android:layout_marginBottom="16dp"/>
 
 </LinearLayout>

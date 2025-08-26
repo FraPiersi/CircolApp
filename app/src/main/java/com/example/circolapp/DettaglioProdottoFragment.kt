@@ -71,22 +71,35 @@ class DettaglioProdottoFragment : Fragment() {
 
         val db = FirebaseFirestore.getInstance()
         val userRef = db.collection("utenti").document(currentUser.uid)
+        val productRef = db.collection("prodotti").document(product.id)
 
-        // Esegui una transazione per gestire saldo e movimenti atomicamente
+        // Esegui una transazione per gestire saldo, movimenti e quantità prodotto atomicamente
         db.runTransaction { transaction ->
-            val snapshot = transaction.get(userRef)
-            val saldoAttuale = snapshot.getDouble("saldo") ?: 0.0
+            val userSnapshot = transaction.get(userRef)
+            val productSnapshot = transaction.get(productRef)
+
+            val saldoAttuale = userSnapshot.getDouble("saldo") ?: 0.0
+            val quantitaAttuale = productSnapshot.getLong("numeroPezzi")?.toInt() ?: 0
+
+            // Verifica se il prodotto è disponibile
+            if (quantitaAttuale <= 0) {
+                throw Exception("Prodotto non disponibile. Quantità esaurita.")
+            }
 
             // Verifica se l'utente ha saldo sufficiente
             if (saldoAttuale < product.importo) {
                 throw Exception("Saldo insufficiente. Saldo attuale: €${saldoAttuale}, Importo richiesto: €${product.importo}")
             }
 
-            // Calcola il nuovo saldo
+            // Calcola il nuovo saldo e la nuova quantità
             val nuovoSaldo = saldoAttuale - product.importo
+            val nuovaQuantita = quantitaAttuale - 1
 
             // Aggiorna il saldo dell'utente
             transaction.update(userRef, "saldo", nuovoSaldo)
+
+            // Aggiorna la quantità del prodotto
+            transaction.update(productRef, "numeroPezzi", nuovaQuantita)
 
             // Crea il movimento per la transazione
             val movimento = mapOf(
@@ -96,7 +109,7 @@ class DettaglioProdottoFragment : Fragment() {
             )
 
             // Aggiungi il movimento alla lista movimenti dell'utente
-            val movimenti = (snapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
+            val movimenti = (userSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
             movimenti.add(movimento)
             transaction.update(userRef, "movimenti", movimenti)
 
@@ -115,7 +128,7 @@ class DettaglioProdottoFragment : Fragment() {
             transaction.set(ordineRef, ordine)
 
         }.addOnSuccessListener {
-            Toast.makeText(context, "Ordine completato! Importo scalato dal saldo.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Ordine completato! Importo scalato dal saldo e quantità aggiornata.", Toast.LENGTH_SHORT).show()
             findNavController().popBackStack() // Torna indietro
         }.addOnFailureListener { e ->
             Toast.makeText(context, "Errore: ${e.message}", Toast.LENGTH_SHORT).show()
