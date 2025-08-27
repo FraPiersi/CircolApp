@@ -111,4 +111,56 @@ class InfoEventoViewModel : ViewModel() {
     fun onAzionePartecipazioneGestita() {
         _azionePartecipazioneCompletata.value = false
     }
+
+    fun onAnnullaPartecipazioneClicked() {
+        val eventoCorrente = _evento.value
+        if (eventoCorrente == null || eventoCorrente.id.isBlank()) {
+            _messaggioToast.value = "Impossibile annullare: ID evento non valido."
+            return
+        }
+
+        // Ottieni l'utente corrente
+        val currentUser = auth.currentUser
+        val usernamePartecipante = currentUser?.displayName ?: currentUser?.email ?: currentUser?.uid ?: "utente_anonimo"
+
+        if (usernamePartecipante == "utente_anonimo" && currentUser == null) {
+            _messaggioToast.value = "Devi essere loggato per annullare la partecipazione."
+            return
+        }
+
+        _isLoading.value = true // Mostra il loader
+
+        // Riferimento al documento dell'evento specifico in Firestore
+        val eventoRef = db.collection("eventi").document(eventoCorrente.id)
+
+        viewModelScope.launch {
+            try {
+                // Usa FieldValue.arrayRemove per rimuovere lo username dall'array "partecipanti"
+                eventoRef.update("partecipanti", FieldValue.arrayRemove(usernamePartecipante))
+                    .addOnSuccessListener {
+                        Log.d("InfoEventoViewModel", "Utente $usernamePartecipante rimosso dai partecipanti per l'evento: ${eventoCorrente.id}")
+                        _messaggioToast.value = "Partecipazione annullata!"
+                        _azionePartecipazioneCompletata.value = true // Segnala il successo
+                        _isLoading.value = false // Nascondi il loader
+
+                        // Aggiorna localmente la lista dei partecipanti
+                        val updatedPartecipanti = _evento.value?.partecipanti?.toMutableList() ?: mutableListOf()
+                        updatedPartecipanti.remove(usernamePartecipante)
+                        _evento.value = _evento.value?.copy(partecipanti = updatedPartecipanti)
+
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("InfoEventoViewModel", "Errore nell'annullare la partecipazione", e)
+                        _messaggioToast.value = "Errore durante l'annullamento: ${e.message}"
+                        _azionePartecipazioneCompletata.value = false
+                        _isLoading.value = false // Nascondi il loader
+                    }
+            } catch (e: Exception) {
+                Log.e("InfoEventoViewModel", "Eccezione imprevista durante l'annullamento", e)
+                _messaggioToast.value = "Errore imprevisto. Riprova."
+                _azionePartecipazioneCompletata.value = false
+                _isLoading.value = false
+            }
+        }
+    }
 }

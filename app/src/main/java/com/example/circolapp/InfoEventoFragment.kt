@@ -74,6 +74,10 @@ class InfoEventoFragment : Fragment() {
             if (evento == null && viewModel.messaggioToast.value != null) {
                 if(isAdded) findNavController().popBackStack()
             }
+
+            // Controlla se l'utente ha già partecipato e aggiorna la UI
+            controllaPartecipazioneUtente(evento)
+
             // Mostra la lista dei partecipanti se admin
             if (userRole == UserRole.ADMIN && evento != null) {
                 val listaPartecipanti = view?.findViewById<TextView>(R.id.listaPartecipanti)
@@ -96,10 +100,37 @@ class InfoEventoFragment : Fragment() {
         viewModel.azionePartecipazioneCompletata.observe(viewLifecycleOwner) { completata ->
             if (completata) {
                 Log.d("InfoEventoFragment", "Azione partecipazione gestita, eventuale navigazione o UI update qui.")
-                // Esempio: Naviga a una schermata di "mie partecipazioni" o aggiorna la UI
-                // findNavController().navigate(R.id.action_infoEventoFragment_to_miePartecipazioniFragment)
+                // Dopo aver completato la partecipazione, ricontrolla lo stato
+                controllaPartecipazioneUtente(viewModel.evento.value)
                 viewModel.onAzionePartecipazioneGestita() // Resetta lo stato
             }
+        }
+    }
+
+    private fun controllaPartecipazioneUtente(evento: Evento?) {
+        if (evento == null || userRole == UserRole.ADMIN) return
+
+        // Ottieni l'username dell'utente corrente (assumo che sia disponibile tramite Firebase Auth)
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val username = currentUser?.displayName ?: currentUser?.uid
+
+        val btnPartecipa = view?.findViewById<View>(R.id.btnPartecipa)
+        val layoutGiaPartecipante = view?.findViewById<View>(R.id.layoutGiaPartecipante)
+        val btnAnnullaPartecipazione = view?.findViewById<View>(R.id.btnAnnullaPartecipazione)
+
+        if (username != null && evento.partecipanti.contains(username)) {
+            // L'utente ha già partecipato: mostra il messaggio con bottone annulla e nascondi il bottone partecipa
+            btnPartecipa?.visibility = View.GONE
+            layoutGiaPartecipante?.visibility = View.VISIBLE
+
+            // Collega il click listener al bottone annulla
+            btnAnnullaPartecipazione?.setOnClickListener {
+                viewModel.onAnnullaPartecipazioneClicked()
+            }
+        } else {
+            // L'utente non ha ancora partecipato: mostra il bottone partecipa e nascondi il layout partecipante
+            btnPartecipa?.visibility = View.VISIBLE
+            layoutGiaPartecipante?.visibility = View.GONE
         }
     }
 
