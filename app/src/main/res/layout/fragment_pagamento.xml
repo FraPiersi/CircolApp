@@ -10,7 +10,7 @@
         android:id="@+id/btn_opzione1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Paga"
+        android:text="QR Code"
         android:layout_marginBottom="16dp"/>
 
     <Button
