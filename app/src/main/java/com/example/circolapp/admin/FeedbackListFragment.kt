@@ -1,4 +1,4 @@
-package com.example.circolapp
+package com.example.circolapp.admin
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.circolapp.R
 import com.example.circolapp.adapter.FeedbackListAdapter
 import com.example.circolapp.model.Feedback
 import com.google.firebase.firestore.FirebaseFirestore

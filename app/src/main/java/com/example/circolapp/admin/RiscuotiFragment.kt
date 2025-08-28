@@ -1,4 +1,4 @@
-package com.example.circolapp
+package com.example.circolapp.admin
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,10 +10,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.circolapp.R
+import com.example.circolapp.model.Product
 import com.example.circolapp.ui.dialog.BarcodeScannerDialogFragment
 import com.example.circolapp.viewmodel.ProductCatalogViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.circolapp.model.Movimento
 import java.util.Date
 
 class RiscuotiFragment : Fragment() {
@@ -21,7 +22,7 @@ class RiscuotiFragment : Fragment() {
     private var prodotti: String? = null
     private val productCatalogViewModel: ProductCatalogViewModel by viewModels()
     private val prodottiImporti = mutableListOf<Double>()
-    private val prodottiAcquistati = mutableListOf<com.example.circolapp.model.Product>() // Lista dei prodotti acquistati
+    private val prodottiAcquistati = mutableListOf<Product>() // Lista dei prodotti acquistati
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,21 +60,27 @@ class RiscuotiFragment : Fragment() {
                 if (prodotto != null) {
                     // Verifica se il prodotto è disponibile
                     if (prodotto.numeroPezzi <= 0) {
-                        Toast.makeText(requireContext(), "Prodotto '${prodotto.nome}' non disponibile (quantità esaurita)!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Prodotto '${prodotto.nome}' non disponibile (quantità esaurita)!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@BarcodeScannerDialogFragment
                     }
 
                     val nomeProdotto = prodotto.nome
                     val importoProdotto = prodotto.importo
                     val prodottoInfo = "$nomeProdotto (€$importoProdotto)"
-                    prodotti = if (prodotti.isNullOrEmpty()) prodottoInfo else prodotti + "\n" + prodottoInfo
+                    prodotti =
+                        if (prodotti.isNullOrEmpty()) prodottoInfo else prodotti + "\n" + prodottoInfo
                     prodottiImporti.add(importoProdotto)
                     prodottiAcquistati.add(prodotto) // Aggiungi alla lista dei prodotti acquistati
                     labelProdotti.text = "Prodotti:\n$prodotti"
                     val totale = prodottiImporti.sum()
                     labelTotale.text = "Totale: €$totale"
                 } else {
-                    Toast.makeText(requireContext(), "Prodotto non trovato!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Prodotto non trovato!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             dialog.show(parentFragmentManager, "BarcodeScannerDialogProdotti")
@@ -123,7 +130,7 @@ class RiscuotiFragment : Fragment() {
                 val movimentoData = mapOf(
                     "importo" to -totale,
                     "descrizione" to "Pagamento in cassa",
-                    "data" to com.google.firebase.Timestamp(Date())
+                    "data" to Timestamp(Date())
                 )
                 val movimentoRef = userRef.collection("movimenti").document()
                 transaction.set(movimentoRef, movimentoData)
@@ -139,7 +146,7 @@ class RiscuotiFragment : Fragment() {
     }
 
     // Funzione di ricerca prodotto (mock, da collegare a repository reale)
-    private fun cercaProdottoPerCodice(codice: String): com.example.circolapp.model.Product? {
+    private fun cercaProdottoPerCodice(codice: String): Product? {
         val prodottiList = productCatalogViewModel.screenState.value?.products ?: emptyList()
         return prodottiList.find { it.id == codice }
     }

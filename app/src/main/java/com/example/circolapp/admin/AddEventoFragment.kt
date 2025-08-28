@@ -1,4 +1,4 @@
-package com.example.circolapp
+package com.example.circolapp.admin
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -8,10 +8,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.circolapp.R
 import com.example.circolapp.databinding.FragmentAddEventoBinding
+import com.example.circolapp.model.Evento
+import com.example.circolapp.viewmodel.EventiViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class AddEventoFragment : Fragment() {
     private var _binding: FragmentAddEventoBinding? = null
@@ -30,7 +36,7 @@ class AddEventoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = requireActivity().let {
-            androidx.lifecycle.ViewModelProvider(it).get(com.example.circolapp.viewmodel.EventiViewModel::class.java)
+            ViewModelProvider(it).get(EventiViewModel::class.java)
         }
 
         // Gestione del selettore di data
@@ -59,7 +65,7 @@ class AddEventoFragment : Fragment() {
                 }
             }
 
-            val nuovoEvento = com.example.circolapp.model.Evento(
+            val nuovoEvento = Evento(
                 nome = nome,
                 descrizione = descrizione,
                 luogo = luogo,

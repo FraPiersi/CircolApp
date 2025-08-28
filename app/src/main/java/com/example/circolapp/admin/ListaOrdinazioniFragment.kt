@@ -1,15 +1,20 @@
-package com.example.circolapp
+package com.example.circolapp.admin
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.Toast
+import com.example.circolapp.R
 import com.example.circolapp.model.Ordine
+import com.google.firebase.firestore.FieldValue
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -96,7 +101,7 @@ class ListaOrdinazioniFragment : Fragment() {
             Data: $dataString
         """.trimIndent()
 
-        android.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle("Dettaglio Ordinazione")
             .setMessage(msg)
             .setPositiveButton("Completa") { _, _ ->
@@ -124,18 +129,18 @@ class ListaOrdinazioniFragment : Fragment() {
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Errore nell'eliminazione: ${e.message}", Toast.LENGTH_SHORT).show()
-                    android.util.Log.e("ListaOrdinazioniFragment", "Errore eliminazione ordine: ${e.message}")
+                    Log.e("ListaOrdinazioniFragment", "Errore eliminazione ordine: ${e.message}")
                 }
         } else {
             Toast.makeText(context, "ID ordinazione non valido", Toast.LENGTH_SHORT).show()
-            android.util.Log.e("ListaOrdinazioniFragment", "prodottoId vuoto per ordine: $ordine")
+            Log.e("ListaOrdinazioniFragment", "prodottoId vuoto per ordine: $ordine")
         }
     }
 
     private fun inviaNotificaUtente(ordine: Ordine) {
         // Utilizza solo notifiche in-app (senza Firebase Functions)
         salvaNotificaInApp(ordine)
-        android.util.Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata per utente: ${ordine.uidUtente}")
+        Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata per utente: ${ordine.uidUtente}")
     }
 
     private fun salvaNotificaInApp(ordine: Ordine) {
@@ -145,17 +150,17 @@ class ListaOrdinazioniFragment : Fragment() {
             "messaggio" to "La tua ordinazione di ${ordine.nomeProdotto} è stata completata!",
             "tipo" to "ordinazione_completata",
             "letta" to false,
-            "timestamp" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+            "timestamp" to FieldValue.serverTimestamp()
         )
 
         FirebaseFirestore.getInstance().collection("notifiche")
             .add(notifica)
             .addOnSuccessListener {
-                android.util.Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata")
+                Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata")
                 Toast.makeText(context, "Notifica inviata all'utente", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
-                android.util.Log.e("ListaOrdinazioniFragment", "Errore nel salvare notifica in-app: ${e.message}")
+                Log.e("ListaOrdinazioniFragment", "Errore nel salvare notifica in-app: ${e.message}")
             }
     }
 }
@@ -174,12 +179,12 @@ class OrdinazioniAdapter(private val ordinazioni: List<Ordine>, private val onIt
 
 class OrdinazioniViewHolder(itemView: View, private val onItemClick: (Ordine) -> Unit) : RecyclerView.ViewHolder(itemView) {
     fun bind(ordine: Ordine) {
-        itemView.findViewById<android.widget.TextView>(R.id.textViewUtente).text = "Utente: ${ordine.uidUtente}"
-        itemView.findViewById<android.widget.TextView>(R.id.textViewProdotti).text = "Prodotto: ${ordine.nomeProdotto}"
-        itemView.findViewById<android.widget.TextView>(R.id.textViewTotale).text = "Stato: ${ordine.stato}"
+        itemView.findViewById<TextView>(R.id.textViewUtente).text = "Utente: ${ordine.uidUtente}"
+        itemView.findViewById<TextView>(R.id.textViewProdotti).text = "Prodotto: ${ordine.nomeProdotto}"
+        itemView.findViewById<TextView>(R.id.textViewTotale).text = "Stato: ${ordine.stato}"
         val data = ordine.timestamp
         val dataString = if (data != null) SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(data) else "-"
-        itemView.findViewById<android.widget.TextView>(R.id.textViewData).text = "Data: $dataString"
+        itemView.findViewById<TextView>(R.id.textViewData).text = "Data: $dataString"
         itemView.setOnClickListener { onItemClick(ordine) }
     }
 }

@@ -212,13 +212,13 @@
 
     <fragment
         android:id="@+id/addEventoFragment"
-        android:name="com.example.circolapp.AddEventoFragment"
+        android:name="com.example.circolapp.admin.AddEventoFragment"
         android:label="Aggiungi Evento"
         tools:layout="@layout/fragment_add_evento" />
 
     <fragment
         android:id="@+id/ricaricaFragment"
-        android:name="com.example.circolapp.RicaricaFragment"
+        android:name="com.example.circolapp.admin.RicaricaFragment"
         android:label="Ricarica"
         tools:layout="@layout/fragment_ricarica">
         <argument
@@ -235,7 +235,7 @@
 
     <fragment
         android:id="@+id/riscuotiFragment"
-        android:name="com.example.circolapp.RiscuotiFragment"
+        android:name="com.example.circolapp.admin.RiscuotiFragment"
         android:label="Riscuoti"
         tools:layout="@layout/fragment_riscuoti">
         <argument
@@ -250,7 +250,7 @@
 
     <fragment
         android:id="@+id/ordinazioniFragment"
-        android:name="com.example.circolapp.ListaOrdinazioniFragment"
+        android:name="com.example.circolapp.admin.ListaOrdinazioniFragment"
         android:label="Ordinazioni"
         tools:layout="@layout/fragment_ordinazioni" />
 
@@ -272,13 +272,13 @@
 
     <fragment
         android:id="@+id/feedbackListFragment"
-        android:name="com.example.circolapp.FeedbackListFragment"
+        android:name="com.example.circolapp.admin.FeedbackListFragment"
         android:label="Feedback Ricevuti"
         tools:layout="@layout/fragment_feedback_list" />
 
     <fragment
         android:id="@+id/gestisciTessereFragment"
-        android:name="com.example.circolapp.GestisciTessereFragment"
+        android:name="com.example.circolapp.admin.GestisciTessereFragment"
         android:label="Gestione Tessere"
         tools:layout="@layout/fragment_gestisci_tessere" />
 

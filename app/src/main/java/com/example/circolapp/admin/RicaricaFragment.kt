@@ -1,4 +1,4 @@
-package com.example.circolapp
+package com.example.circolapp.admin
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.circolapp.R
+import com.example.circolapp.ui.dialog.BarcodeScannerDialogFragment
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RicaricaFragment : Fragment() {
     private val args: RicaricaFragmentArgs by navArgs()
@@ -34,7 +38,7 @@ class RicaricaFragment : Fragment() {
                 return@setOnClickListener
             }
             val uidQr = args.username
-            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            val db = FirebaseFirestore.getInstance()
             val utentiRef = db.collection("utenti")
 
             // Utilizziamo una transazione per aggiornare sia il saldo che aggiungere il movimento
@@ -56,13 +60,13 @@ class RicaricaFragment : Fragment() {
                 val movimento = hashMapOf(
                     "importo" to importo,
                     "descrizione" to "Ricarica in cassa",
-                    "data" to com.google.firebase.Timestamp.now()
+                    "data" to Timestamp.now()
                 )
                 val movimentoRef = userDocRef.collection("movimenti").document()
                 transaction.set(movimentoRef, movimento)
 
             }.addOnSuccessListener {
-                android.widget.Toast.makeText(requireContext(), "Ricarica effettuata!", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Ricarica effettuata!", Toast.LENGTH_SHORT).show()
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }.addOnFailureListener { e ->
                 etImporto.error = "Errore durante la ricarica: ${e.message}"
@@ -75,7 +79,7 @@ class RicaricaFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         if (args.username.isBlank()) {
             // Mostra dialog per scansione QR code
-            val dialog = com.example.circolapp.ui.dialog.BarcodeScannerDialogFragment { qrCode ->
+            val dialog = BarcodeScannerDialogFragment { qrCode ->
                 val action = RicaricaFragmentDirections.actionRicaricaFragmentSelf(qrCode)
                 // Navigazione corretta dal Fragment
                 requireParentFragment().requireParentFragment().requireView().findNavController().navigate(action)

@@ -1,4 +1,4 @@
-package com.example.circolapp
+package com.example.circolapp.admin
 
 import android.app.Dialog
 import android.os.Bundle
@@ -10,13 +10,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.example.circolapp.model.RichiestaTessera
-import com.example.circolapp.model.TipoRichiesta
+import com.example.circolapp.R
 import com.example.circolapp.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class GestisciTesseraDialog(
     private val utente: User,
