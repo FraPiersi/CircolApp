@@ -18,6 +18,8 @@ import com.example.circolapp.databinding.FragmentInfoEventoBinding
 import com.example.circolapp.model.Evento // Assicurati che il percorso sia corretto
 import com.example.circolapp.model.UserRole
 import com.example.circolapp.viewmodel.InfoEventoViewModel // Importa il ViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class InfoEventoFragment : Fragment() {
 
@@ -68,23 +70,30 @@ class InfoEventoFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // Osserva l'evento nel ViewModel (anche se il binding diretto nel layout dovrebbe bastare per la visualizzazione)
-        // Questo è utile se devi reagire a cambiamenti dell'evento nel Fragment
+        // Osserva l'evento nel ViewModel
         viewModel.evento.observe(viewLifecycleOwner) { evento ->
             if (evento == null && viewModel.messaggioToast.value != null) {
                 if(isAdded) findNavController().popBackStack()
             }
 
+            // Aggiorna la visualizzazione della data formattata
+            aggiornaDataEvento(evento)
+
             // Controlla se l'utente ha già partecipato e aggiorna la UI
             controllaPartecipazioneUtente(evento)
+        }
 
-            // Mostra la lista dei partecipanti se admin
-            if (userRole == UserRole.ADMIN && evento != null) {
+        // Osserva i partecipanti dalla sottocollezione (per admin)
+        viewModel.partecipanti.observe(viewLifecycleOwner) { partecipanti ->
+            if (userRole == UserRole.ADMIN) {
                 val listaPartecipanti = view?.findViewById<TextView>(R.id.listaPartecipanti)
-                // Log per debug
-                android.util.Log.d("InfoEventoFragment", "Partecipanti evento: ${evento.partecipanti}")
-                val partecipanti = if (evento.partecipanti.isNotEmpty()) evento.partecipanti.joinToString(separator = "\n") else "Nessuno"
-                listaPartecipanti?.text = partecipanti
+                val partecipantiText = if (partecipanti.isNotEmpty()) {
+                    partecipanti.joinToString(separator = "\n")
+                } else {
+                    "Nessun partecipante"
+                }
+                listaPartecipanti?.text = partecipantiText
+                android.util.Log.d("InfoEventoFragment", "Partecipanti aggiornati: $partecipanti")
             }
         }
 
@@ -110,27 +119,36 @@ class InfoEventoFragment : Fragment() {
     private fun controllaPartecipazioneUtente(evento: Evento?) {
         if (evento == null || userRole == UserRole.ADMIN) return
 
-        // Ottieni l'username dell'utente corrente (assumo che sia disponibile tramite Firebase Auth)
-        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-        val username = currentUser?.displayName ?: currentUser?.uid
-
         val btnPartecipa = view?.findViewById<View>(R.id.btnPartecipa)
         val layoutGiaPartecipante = view?.findViewById<View>(R.id.layoutGiaPartecipante)
         val btnAnnullaPartecipazione = view?.findViewById<View>(R.id.btnAnnullaPartecipazione)
 
-        if (username != null && evento.partecipanti.contains(username)) {
-            // L'utente ha già partecipato: mostra il messaggio con bottone annulla e nascondi il bottone partecipa
-            btnPartecipa?.visibility = View.GONE
-            layoutGiaPartecipante?.visibility = View.VISIBLE
+        // Utilizza il nuovo metodo del ViewModel per verificare la partecipazione tramite sottocollezione
+        viewModel.verificaPartecipazioneUtente(evento.id) { staPartecipando ->
+            if (staPartecipando) {
+                // L'utente ha già partecipato: mostra il messaggio con bottone annulla e nascondi il bottone partecipa
+                btnPartecipa?.visibility = View.GONE
+                layoutGiaPartecipante?.visibility = View.VISIBLE
 
-            // Collega il click listener al bottone annulla
-            btnAnnullaPartecipazione?.setOnClickListener {
-                viewModel.onAnnullaPartecipazioneClicked()
+                // Collega il click listener al bottone annulla
+                btnAnnullaPartecipazione?.setOnClickListener {
+                    viewModel.onAnnullaPartecipazioneClicked()
+                }
+            } else {
+                // L'utente non ha ancora partecipato: mostra il bottone partecipa e nascondi il layout partecipante
+                btnPartecipa?.visibility = View.VISIBLE
+                layoutGiaPartecipante?.visibility = View.GONE
             }
+        }
+    }
+
+    private fun aggiornaDataEvento(evento: Evento?) {
+        val dataTextView = view?.findViewById<TextView>(R.id.dataEventoTextView)
+        if (evento?.data != null) {
+            val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY)
+            dataTextView?.text = dateFormatter.format(evento.data)
         } else {
-            // L'utente non ha ancora partecipato: mostra il bottone partecipa e nascondi il layout partecipante
-            btnPartecipa?.visibility = View.VISIBLE
-            layoutGiaPartecipante?.visibility = View.GONE
+            dataTextView?.text = "Data non specificata"
         }
     }
 

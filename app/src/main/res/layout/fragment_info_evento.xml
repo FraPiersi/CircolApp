@@ -9,133 +9,199 @@
             type="com.example.circolapp.viewmodel.InfoEventoViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        tools:context=".InfoEventoFragment">
+        android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/nomeEventoTextView"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@{viewModel.evento.nome}"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-            android:textAlignment="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Nome Evento Molto Lungo per Test" />
+            android:padding="16dp"
+            tools:context=".InfoEventoFragment">
 
-        <ScrollView
-            android:id="@+id/scrollViewDescrizione"
-            android:layout_width="384dp"
-            android:layout_height="495dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:fillViewport="true"
-            app:layout_constraintBottom_toTopOf="@id/btnPartecipa"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nomeEventoTextView"
-            app:layout_constraintVertical_bias="0.0">
+            <TextView
+                android:id="@+id/nomeEventoTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@{viewModel.evento.nome}"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Nome Evento" />
+
+            <!-- Data dell'evento -->
+            <LinearLayout
+                android:id="@+id/dataEventoLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@id/nomeEventoTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="Data evento" />
+
+                <TextView
+                    android:id="@+id/dataEventoTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textColor="@color/design_default_color_primary"
+                    tools:text="25/12/2024" />
+
+            </LinearLayout>
+
+            <!-- Luogo dell'evento -->
+            <LinearLayout
+                android:id="@+id/luogoEventoLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@id/dataEventoLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_dialog_map"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="Luogo evento" />
+
+                <TextView
+                    android:id="@+id/luogoEventoTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.evento.luogo}"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textColor="@color/design_default_color_primary"
+                    tools:text="Centro Sportivo Comunale" />
+
+            </LinearLayout>
+
+            <!-- Descrizione dell'evento -->
+            <TextView
+                android:id="@+id/labelDescrizione"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Descrizione"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/luogoEventoLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/descrizioneEventoTextView"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@{viewModel.evento.descrizione}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                tools:text="Questa è una descrizione molto dettagliata dell'evento..." />
-        </ScrollView>
+                android:lineSpacingExtra="4dp"
+                app:layout_constraintTop_toBottomOf="@id/labelDescrizione"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Questa è una descrizione dettagliata dell'evento con tutte le informazioni necessarie per i partecipanti." />
 
-        <LinearLayout
-            android:id="@+id/layoutPartecipanti"
-            android:layout_width="318dp"
-            android:layout_height="123dp"
-            android:orientation="vertical"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/btnPartecipa"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.262"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollViewDescrizione"
-            app:layout_constraintVertical_bias="0.058">
-
-            <TextView
-                android:id="@+id/labelPartecipanti"
-                android:layout_width="wrap_content"
+            <!-- Layout per partecipanti (visibile solo agli admin) -->
+            <LinearLayout
+                android:id="@+id/layoutPartecipanti"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Partecipanti:"
-                android:textStyle="bold" />
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/descrizioneEventoTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/listaPartecipanti"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Partecipanti:"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/listaPartecipanti"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:background="@android:color/darker_gray"
+                    android:padding="12dp"
+                    android:minHeight="60dp"
+                    tools:text="Mario Rossi\nLuigi Verdi\nGiulia Bianchi" />
+
+            </LinearLayout>
+
+            <!-- Layout per utenti che hanno già partecipato -->
+            <LinearLayout
+                android:id="@+id/layoutGiaPartecipante"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="-" />
-        </LinearLayout>
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:background="@color/design_default_color_secondary_variant"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutPartecipanti"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
-            android:id="@+id/btnPartecipa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:onClick="@{() -> viewModel.onPartecipaClicked()}"
-            android:text="Partecipa"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🎉 Parteciperai a questo evento!"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="12dp" />
 
-        <TextView
-            android:id="@+id/txtGiaPartecipante"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="Parteciperai a questo evento"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:textColor="@android:color/holo_green_dark"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+                <Button
+                    android:id="@+id/btnAnnullaPartecipazione"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Annulla Partecipazione"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-        <LinearLayout
-            android:id="@+id/layoutGiaPartecipante"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Parteciperai a questo evento"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                android:textColor="@android:color/holo_green_dark"
-                android:textStyle="bold"
-                android:layout_marginEnd="16dp" />
-
+            <!-- Bottone per partecipare -->
             <Button
-                android:id="@+id/btnAnnullaPartecipazione"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnPartecipa"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Annulla"
-                android:backgroundTint="@android:color/holo_red_light"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:minHeight="40dp"
-                android:paddingHorizontal="16dp" />
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                android:text="Partecipa"
+                android:textSize="16sp"
+                android:onClick="@{() -> viewModel.onPartecipaClicked()}"
+                style="@style/Widget.MaterialComponents.Button"
+                app:layout_constraintTop_toBottomOf="@id/layoutGiaPartecipante"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
 </layout>

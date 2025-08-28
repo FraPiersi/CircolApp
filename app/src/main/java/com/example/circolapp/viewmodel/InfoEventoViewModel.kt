@@ -32,6 +32,10 @@ class InfoEventoViewModel : ViewModel() {
     // Istanza di FirebaseAuth (esempio per ottenere username/userId)
     private val auth = FirebaseAuth.getInstance()
 
+    // Aggiungi questi LiveData per gestire i partecipanti dalla sottocollezione
+    private val _partecipanti = MutableLiveData<List<String>>()
+    val partecipanti: LiveData<List<String>> get() = _partecipanti
+
     fun caricaEvento(eventoCaricato: Evento?) {
         if (eventoCaricato == null) {
             Log.e("InfoEventoViewModel", "Tentativo di caricare un evento nullo.")
@@ -39,9 +43,53 @@ class InfoEventoViewModel : ViewModel() {
             return
         }
         _evento.value = eventoCaricato
-        // Potresti voler controllare se l'utente corrente è già tra i partecipanti
-        // e aggiornare lo stato del pulsante "Partecipa" (es. renderlo "Annulla Partecipazione")
-        // Questa logica può essere aggiunta qui o quando l'evento viene caricato.
+        // Carica i partecipanti dalla sottocollezione
+        caricaPartecipantiDaSottocollezione(eventoCaricato.id)
+    }
+
+    private fun caricaPartecipantiDaSottocollezione(eventoId: String) {
+        if (eventoId.isBlank()) return
+
+        val eventoRef = db.collection("eventi").document(eventoId)
+        eventoRef.collection("partecipanti")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("InfoEventoViewModel", "Errore nel caricamento partecipanti", error)
+                    _partecipanti.value = emptyList()
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val listaPartecipanti = snapshot.documents.mapNotNull { document ->
+                        document.getString("username")
+                    }
+                    _partecipanti.value = listaPartecipanti
+
+                    // Aggiorna anche l'evento locale per compatibilità
+                    _evento.value = _evento.value?.copy(partecipanti = listaPartecipanti)
+                } else {
+                    _partecipanti.value = emptyList()
+                }
+            }
+    }
+
+    // Metodo per verificare se l'utente corrente sta già partecipando
+    fun verificaPartecipazioneUtente(eventoId: String, callback: (Boolean) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            callback(false)
+            return
+        }
+
+        val eventoRef = db.collection("eventi").document(eventoId)
+        eventoRef.collection("partecipanti").document(currentUser.uid)
+            .get()
+            .addOnSuccessListener { document ->
+                callback(document.exists())
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
     }
 
     fun onPartecipaClicked() {
@@ -51,51 +99,51 @@ class InfoEventoViewModel : ViewModel() {
             return
         }
 
-        // Ottieni l'utente corrente. Sostituisci con il tuo metodo.
-        // È preferibile usare l'UID dell'utente se disponibile e consistente.
+        // Ottieni l'utente corrente (o username/displayName)
         val currentUser = auth.currentUser
-        val usernamePartecipante = currentUser?.displayName ?: currentUser?.email ?: currentUser?.uid ?: "utente_anonimo"
-
-        if (usernamePartecipante == "utente_anonimo" && currentUser == null) {
-            _messaggioToast.value = "Devi essere loggato per partecipare."
-            // Potresti voler avviare un flusso di login qui
+        if (currentUser == null) {
+            _messaggioToast.value = "Utente non autenticato."
             return
         }
 
+        val usernamePartecipante = currentUser.displayName ?: currentUser.email ?: "UtenteAnonimo"
         _isLoading.value = true // Mostra il loader
 
         // Riferimento al documento dell'evento specifico in Firestore
-        // Assumendo che tu abbia una collection "eventi"
         val eventoRef = db.collection("eventi").document(eventoCorrente.id)
 
         viewModelScope.launch {
             try {
-                // Usa FieldValue.arrayUnion per aggiungere lo username all'array "partecipanti"
-                // Questo previene duplicati se l'utente clicca più volte.
-                eventoRef.update("partecipanti", FieldValue.arrayUnion(usernamePartecipante))
+                // Aggiungi il partecipante nella sottocollezione "partecipanti"
+                val partecipanteData = mapOf(
+                    "uid" to currentUser.uid,
+                    "username" to usernamePartecipante,
+                    "email" to (currentUser.email ?: ""),
+                    "dataPartecipazione" to com.google.firebase.Timestamp.now()
+                )
+
+                val partecipanteRef = eventoRef.collection("partecipanti").document(currentUser.uid)
+                partecipanteRef.set(partecipanteData)
                     .addOnSuccessListener {
                         Log.d("InfoEventoViewModel", "Utente $usernamePartecipante aggiunto ai partecipanti per l'evento: ${eventoCorrente.id}")
                         _messaggioToast.value = "Partecipazione confermata!"
-                        _azionePartecipazioneCompletata.value = true // Segnala il successo
-                        _isLoading.value = false // Nascondi il loader
+                        _azionePartecipazioneCompletata.value = true
+                        _isLoading.value = false
 
-                        // (Opzionale) Ricarica l'evento per aggiornare la UI se necessario,
-                        // o aggiorna localmente la lista dei partecipanti nell'oggetto _evento.value
-                        // Se l'oggetto Evento in Kotlin ha un campo List<String> partecipanti, aggiornalo:
+                        // Aggiorna localmente la lista dei partecipanti
                         val updatedPartecipanti = _evento.value?.partecipanti?.toMutableList() ?: mutableListOf()
                         if (!updatedPartecipanti.contains(usernamePartecipante)) {
                             updatedPartecipanti.add(usernamePartecipante)
                         }
                         _evento.value = _evento.value?.copy(partecipanti = updatedPartecipanti)
-
                     }
                     .addOnFailureListener { e ->
                         Log.e("InfoEventoViewModel", "Errore nell'aggiornare i partecipanti", e)
                         _messaggioToast.value = "Errore durante la partecipazione: ${e.message}"
                         _azionePartecipazioneCompletata.value = false
-                        _isLoading.value = false // Nascondi il loader
+                        _isLoading.value = false
                     }
-            } catch (e: Exception) { // Catch per eccezioni impreviste nello scope
+            } catch (e: Exception) {
                 Log.e("InfoEventoViewModel", "Eccezione imprevista durante la partecipazione", e)
                 _messaggioToast.value = "Errore imprevisto. Riprova."
                 _azionePartecipazioneCompletata.value = false
@@ -121,13 +169,12 @@ class InfoEventoViewModel : ViewModel() {
 
         // Ottieni l'utente corrente
         val currentUser = auth.currentUser
-        val usernamePartecipante = currentUser?.displayName ?: currentUser?.email ?: currentUser?.uid ?: "utente_anonimo"
-
-        if (usernamePartecipante == "utente_anonimo" && currentUser == null) {
+        if (currentUser == null) {
             _messaggioToast.value = "Devi essere loggato per annullare la partecipazione."
             return
         }
 
+        val usernamePartecipante = currentUser.displayName ?: currentUser.email ?: "UtenteAnonimo"
         _isLoading.value = true // Mostra il loader
 
         // Riferimento al documento dell'evento specifico in Firestore
@@ -135,25 +182,25 @@ class InfoEventoViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Usa FieldValue.arrayRemove per rimuovere lo username dall'array "partecipanti"
-                eventoRef.update("partecipanti", FieldValue.arrayRemove(usernamePartecipante))
+                // Rimuovi il partecipante dalla sottocollezione "partecipanti"
+                val partecipanteRef = eventoRef.collection("partecipanti").document(currentUser.uid)
+                partecipanteRef.delete()
                     .addOnSuccessListener {
                         Log.d("InfoEventoViewModel", "Utente $usernamePartecipante rimosso dai partecipanti per l'evento: ${eventoCorrente.id}")
                         _messaggioToast.value = "Partecipazione annullata!"
-                        _azionePartecipazioneCompletata.value = true // Segnala il successo
-                        _isLoading.value = false // Nascondi il loader
+                        _azionePartecipazioneCompletata.value = true
+                        _isLoading.value = false
 
                         // Aggiorna localmente la lista dei partecipanti
                         val updatedPartecipanti = _evento.value?.partecipanti?.toMutableList() ?: mutableListOf()
                         updatedPartecipanti.remove(usernamePartecipante)
                         _evento.value = _evento.value?.copy(partecipanti = updatedPartecipanti)
-
                     }
                     .addOnFailureListener { e ->
                         Log.e("InfoEventoViewModel", "Errore nell'annullare la partecipazione", e)
                         _messaggioToast.value = "Errore durante l'annullamento: ${e.message}"
                         _azionePartecipazioneCompletata.value = false
-                        _isLoading.value = false // Nascondi il loader
+                        _isLoading.value = false
                     }
             } catch (e: Exception) {
                 Log.e("InfoEventoViewModel", "Eccezione imprevista durante l'annullamento", e)
