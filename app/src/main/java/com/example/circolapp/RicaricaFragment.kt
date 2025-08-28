@@ -36,32 +36,36 @@ class RicaricaFragment : Fragment() {
             val uidQr = args.username
             val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
             val utentiRef = db.collection("utenti")
-            utentiRef.document(uidQr).get().addOnSuccessListener { doc ->
-                if (doc.exists()) {
-                    val saldoAttuale = doc.getDouble("saldo") ?: 0.0
-                    val nuovoSaldo = saldoAttuale + importo
-                    // Crea movimento
-                    val movimento = hashMapOf(
-                        "importo" to importo,
-                        "descrizione" to "Ricarica in cassa",
-                        "data" to com.google.firebase.Timestamp.now()
-                    )
-                    utentiRef.document(uidQr).update(
-                        mapOf(
-                            "saldo" to nuovoSaldo,
-                            "movimenti" to com.google.firebase.firestore.FieldValue.arrayUnion(movimento)
-                        )
-                    ).addOnSuccessListener {
-                        android.widget.Toast.makeText(requireContext(), "Ricarica effettuata!", android.widget.Toast.LENGTH_SHORT).show()
-                        requireActivity().onBackPressedDispatcher.onBackPressed()
-                    }.addOnFailureListener {
-                        etImporto.error = "Errore durante la ricarica"
-                    }
-                } else {
-                    etImporto.error = "Utente non trovato"
+
+            // Utilizziamo una transazione per aggiornare sia il saldo che aggiungere il movimento
+            db.runTransaction { transaction ->
+                val userDocRef = utentiRef.document(uidQr)
+                val userSnapshot = transaction.get(userDocRef)
+
+                if (!userSnapshot.exists()) {
+                    throw Exception("Utente non trovato")
                 }
-            }.addOnFailureListener {
-                etImporto.error = "Errore di connessione"
+
+                val saldoAttuale = userSnapshot.getDouble("saldo") ?: 0.0
+                val nuovoSaldo = saldoAttuale + importo
+
+                // Aggiorna il saldo
+                transaction.update(userDocRef, "saldo", nuovoSaldo)
+
+                // Aggiungi il movimento nella sottocollezione
+                val movimento = hashMapOf(
+                    "importo" to importo,
+                    "descrizione" to "Ricarica in cassa",
+                    "data" to com.google.firebase.Timestamp.now()
+                )
+                val movimentoRef = userDocRef.collection("movimenti").document()
+                transaction.set(movimentoRef, movimento)
+
+            }.addOnSuccessListener {
+                android.widget.Toast.makeText(requireContext(), "Ricarica effettuata!", android.widget.Toast.LENGTH_SHORT).show()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }.addOnFailureListener { e ->
+                etImporto.error = "Errore durante la ricarica: ${e.message}"
             }
         }
         return view

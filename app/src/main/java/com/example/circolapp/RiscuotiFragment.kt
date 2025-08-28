@@ -119,21 +119,14 @@ class RiscuotiFragment : Fragment() {
                 val nuovoSaldo = saldoAttuale - totale
                 transaction.update(userRef, "saldo", nuovoSaldo)
 
-                // Registra il movimento
-                val movimento = Movimento(
-                    importo = -totale,
-                    descrizione = "Pagamento in cassa",
-                    data = Date()
+                // Registra il movimento nella sottocollezione
+                val movimentoData = mapOf(
+                    "importo" to -totale,
+                    "descrizione" to "Pagamento in cassa",
+                    "data" to com.google.firebase.Timestamp(Date())
                 )
-                val movimenti = (userSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
-                movimenti.add(
-                    mapOf(
-                        "importo" to movimento.importo,
-                        "descrizione" to movimento.descrizione,
-                        "data" to movimento.data
-                    )
-                )
-                transaction.update(userRef, "movimenti", movimenti)
+                val movimentoRef = userRef.collection("movimenti").document()
+                transaction.set(movimentoRef, movimentoData)
 
             }.addOnSuccessListener {
                 Toast.makeText(requireContext(), "Pagamento registrato e quantità aggiornate!", Toast.LENGTH_SHORT).show()

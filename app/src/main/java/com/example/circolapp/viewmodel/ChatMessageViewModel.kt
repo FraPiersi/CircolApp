@@ -154,32 +154,29 @@ class ChatMessageViewModel(
                     transaction.update(senderRef, "saldo", newSenderBalance)
                     transaction.update(recipientRef, "saldo", newRecipientBalance)
 
-                    // Crea i movimenti per entrambi gli utenti
+                    // Crea i movimenti per entrambi gli utenti nella sottocollezione
                     val currentTime = com.google.firebase.Timestamp.now()
 
                     // Movimento per il mittente (negativo)
-                    val senderMovimento = mapOf(
+                    val senderMovimentoData = mapOf(
                         "importo" to -amount,
                         "descrizione" to "Trasferimento a ${recipientSnapshot.getString("displayName") ?: "Utente"}",
                         "data" to currentTime
                     )
 
                     // Movimento per il destinatario (positivo)
-                    val recipientMovimento = mapOf(
+                    val recipientMovimentoData = mapOf(
                         "importo" to amount,
                         "descrizione" to "Ricevuto da ${senderSnapshot.getString("displayName") ?: "Utente"}",
                         "data" to currentTime
                     )
 
-                    // Aggiorna i movimenti del mittente
-                    val senderMovimenti = (senderSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
-                    senderMovimenti.add(senderMovimento)
-                    transaction.update(senderRef, "movimenti", senderMovimenti)
+                    // Aggiungi i movimenti nelle sottocollezioni
+                    val senderMovimentoRef = senderRef.collection("movimenti").document()
+                    transaction.set(senderMovimentoRef, senderMovimentoData)
 
-                    // Aggiorna i movimenti del destinatario
-                    val recipientMovimenti = (recipientSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
-                    recipientMovimenti.add(recipientMovimento)
-                    transaction.update(recipientRef, "movimenti", recipientMovimenti)
+                    val recipientMovimentoRef = recipientRef.collection("movimenti").document()
+                    transaction.set(recipientMovimentoRef, recipientMovimentoData)
 
                     // Crea il messaggio di trasferimento denaro nella chat
                     val transferMessage = Message(

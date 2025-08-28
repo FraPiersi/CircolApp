@@ -53,39 +53,67 @@ class HomeRepository {
         val liveData = MutableLiveData<List<Movimento>>()
         if (userUid.isBlank()) {
             Log.w("HomeRepository", "User UID è vuoto, impossibile recuperare i movimenti.")
-            liveData.value = emptyList() // O gestisci l'errore diversamente
+            liveData.value = emptyList()
             return liveData
         }
 
-        // L'ID del documento è l'UID dell'utente
-        utentiCollection.document(userUid).addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w("HomeRepository", "Errore nell'ascoltare i movimenti per UID: $userUid", error)
-                liveData.value = emptyList() // O gestisci l'errore diversamente
-                return@addSnapshotListener
-            }
+        // Utilizziamo la sottocollezione "movimenti" dentro il documento utente
+        utentiCollection.document(userUid).collection("movimenti")
+            .orderBy("data", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w("HomeRepository", "Errore nell'ascoltare i movimenti per UID: $userUid", error)
+                    liveData.value = emptyList()
+                    return@addSnapshotListener
+                }
 
-            if (snapshot != null && snapshot.exists()) {
-                // Assumendo che 'movimenti' sia un array di mappe nel documento utente
-                val movimentiList = snapshot.get("movimenti") as? List<Map<String, Any>> ?: emptyList()
-                val movimenti = movimentiList.mapNotNull {
-                    try {
-                        Movimento(
-                            importo = (it["importo"] as? Number)?.toDouble() ?: 0.0,
-                            descrizione = it["descrizione"] as? String ?: "",
-                            data = (it["data"] as? Timestamp)?.toDate() ?: Date(0L) // Default a Epoch se data non valida
-                        )
-                    } catch (e: Exception) {
-                        Log.e("HomeRepository", "Errore nel parsing di un movimento per UID: $userUid", e)
-                        null // Salta il movimento se c'è un errore di parsing
+                if (snapshot != null) {
+                    val movimenti = snapshot.documents.mapNotNull { document ->
+                        try {
+                            Movimento(
+                                importo = document.getDouble("importo") ?: 0.0,
+                                descrizione = document.getString("descrizione") ?: "",
+                                data = document.getTimestamp("data")?.toDate() ?: Date(0L)
+                            )
+                        } catch (e: Exception) {
+                            Log.e("HomeRepository", "Errore nel parsing di un movimento per UID: $userUid", e)
+                            null
+                        }
                     }
-                }.sortedByDescending { it.data } // Ordina i movimenti dal più recente al meno recente
-                liveData.value = movimenti
-            } else {
-                Log.d("HomeRepository", "Documento non trovato per i movimenti UID: $userUid")
-                liveData.value = emptyList() // Se il documento non esiste
+                    liveData.value = movimenti
+                } else {
+                    Log.d("HomeRepository", "Nessun movimento trovato per UID: $userUid")
+                    liveData.value = emptyList()
+                }
             }
-        }
         return liveData
+    }
+
+    /**
+     * Aggiunge un movimento alla sottocollezione movimenti dell'utente
+     */
+    fun aggiungiMovimento(userUid: String, movimento: Movimento, callback: (Boolean) -> Unit) {
+        if (userUid.isBlank()) {
+            Log.w("HomeRepository", "User UID è vuoto, impossibile aggiungere movimento.")
+            callback(false)
+            return
+        }
+
+        val movimentoData = mapOf(
+            "importo" to movimento.importo,
+            "descrizione" to movimento.descrizione,
+            "data" to com.google.firebase.Timestamp(movimento.data)
+        )
+
+        utentiCollection.document(userUid).collection("movimenti")
+            .add(movimentoData)
+            .addOnSuccessListener {
+                Log.d("HomeRepository", "Movimento aggiunto con successo per UID: $userUid")
+                callback(true)
+            }
+            .addOnFailureListener { e ->
+                Log.e("HomeRepository", "Errore nell'aggiungere movimento per UID: $userUid", e)
+                callback(false)
+            }
     }
 }

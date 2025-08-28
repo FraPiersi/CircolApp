@@ -307,16 +307,19 @@ class ProfiloFragment : Fragment() {
         db.runTransaction { transaction ->
             // PRIMA: Esegui tutte le letture
             val userDoc = transaction.get(userRef)
-            val currentMovimenti = userDoc.get("movimenti") as? List<Map<String, Any>> ?: emptyList()
 
             // DOPO: Esegui tutte le scritture
             // Aggiorna il saldo
             transaction.update(userRef, "saldo", nuovoSaldo)
 
-            // Aggiunge il movimento alla lista movimenti
-            val newMovimenti = currentMovimenti.toMutableList()
-            newMovimenti.add(movimentoData)
-            transaction.update(userRef, "movimenti", newMovimenti)
+            // Aggiungi il movimento nella sottocollezione movimenti
+            val movimentoDataForSubcollection = mapOf(
+                "importo" to -QUOTA_TESSERA,
+                "descrizione" to "Pagamento tessera socio",
+                "data" to com.google.firebase.Timestamp(Date())
+            )
+            val movimentoRef = userRef.collection("movimenti").document()
+            transaction.set(movimentoRef, movimentoDataForSubcollection)
 
             // Aggiorna il flag di richiesta in corso
             transaction.update(userRef, "richiestaRinnovoInCorso", true)

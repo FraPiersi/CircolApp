@@ -101,17 +101,16 @@ class DettaglioProdottoFragment : Fragment() {
             // Aggiorna la quantità del prodotto
             transaction.update(productRef, "numeroPezzi", nuovaQuantita)
 
-            // Crea il movimento per la transazione
-            val movimento = mapOf(
+            // Crea il movimento per la transazione nella sottocollezione
+            val movimentoData = mapOf(
                 "importo" to -product.importo, // Negativo perché è un pagamento
                 "descrizione" to "Ordine: ${product.nome}",
-                "data" to Date()
+                "data" to com.google.firebase.Timestamp(Date())
             )
 
-            // Aggiungi il movimento alla lista movimenti dell'utente
-            val movimenti = (userSnapshot.get("movimenti") as? List<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
-            movimenti.add(movimento)
-            transaction.update(userRef, "movimenti", movimenti)
+            // Aggiungi il movimento nella sottocollezione movimenti
+            val movimentoRef = userRef.collection("movimenti").document()
+            transaction.set(movimentoRef, movimentoData)
 
             // Crea l'ordine
             val ordine = Ordine(
