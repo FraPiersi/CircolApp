@@ -19,7 +19,40 @@ import org.hamcrest.Matchers.*
 
 /**
  * Instrumented tests per le principali funzionalità di CircolApp
- * Testa: registrazione, login, logout, prodotti, ordini, eventi, tessera, ricariche e pagamenti
+ * 
+ * Questi test coprono i flussi principali dell'applicazione:
+ * 1. Registrazione e autenticazione utenti
+ * 2. Gestione prodotti e ordinazioni
+ * 3. Gestione eventi e partecipazione
+ * 4. Sistema tessere (richiesta e assegnazione)
+ * 5. Ricariche e pagamenti
+ * 6. Differenze di permessi tra utenti e admin
+ * 
+ * NOTA: Questi sono test di UI che verificano l'accessibilità e la presenza
+ * degli elementi dell'interfaccia. Per test completamente funzionali,
+ * sarebbe necessario configurare un ambiente di test Firebase con dati di test.
+ * 
+ * Per eseguire i test:
+ * ./gradlew connectedAndroidTest
+ * 
+ * Funzionalità testate:
+ * - Registrazione nuovo utente
+ * - Login utente esistente
+ * - Logout
+ * - Aggiunta nuovo prodotto (admin)
+ * - Ordinazione prodotto
+ * - Partecipazione ad eventi
+ * - Creazione eventi (admin)
+ * - Richiesta tessera
+ * - Assegnazione tessera (admin)
+ * - Ricarica utente
+ * - Pagamento in cassa
+ * - Validazione form e permessi
+ * 
+ * IMPORTANTE: Per test completi con Firebase, configurare:
+ * 1. Firebase Test Lab o Firebase Auth Emulator
+ * 2. Utenti di test specifici
+ * 3. Dati di test nel database Firestore
  */
 @RunWith(AndroidJUnit4::class)
 class AppTest {
