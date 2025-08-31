@@ -6,7 +6,11 @@ plugins {
 }
 
 buildscript {
-    // ...
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
     dependencies {
         // ...
         val nav_version = "2.7.7" // Usa l'ultima versione di Navigation
