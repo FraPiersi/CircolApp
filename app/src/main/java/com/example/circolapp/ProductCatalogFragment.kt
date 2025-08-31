@@ -1,6 +1,7 @@
 package com.example.circolapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,10 +44,13 @@ class ProductCatalogFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("ProductCatalogFragment", "onResume chiamato")
 
         // Assicurati sempre che l'adapter sia configurato
         val currentState = viewModel.screenState.value
         if (currentState != null) {
+            Log.d("ProductCatalogFragment", "onResume: riconfigurazione UI con stato esistente")
+
             // Forza la riconfigurazione dell'adapter
             forceReconfigureAdapter(currentState.currentUserRole, currentState.products)
 
@@ -55,11 +59,16 @@ class ProductCatalogFragment : Fragment() {
 
         // Solo ricarica se non ci sono già prodotti caricati o se c'è stato un errore
         if (currentState?.products?.isEmpty() == true && !currentState.isLoading) {
+            Log.d("ProductCatalogFragment", "onResume: ricaricando dati perché lista vuota")
             viewModel.refreshData()
+        } else {
+            Log.d("ProductCatalogFragment", "onResume: dati già presenti, non ricarico")
         }
     }
 
     private fun forceReconfigureAdapter(userRole: UserRole?, products: List<Product>) {
+        Log.d("ProductCatalogFragment", "forceReconfigureAdapter: userRole=$userRole, products.size=${products.size}")
+
         if (userRole != null) {
             // Forza la ricreazione dell'adapter
             productAdapter = ProductCatalogAdapter(
@@ -71,12 +80,16 @@ class ProductCatalogFragment : Fragment() {
                 }
             )
 
+            Log.d("ProductCatalogFragment", "Assegnando adapter al RecyclerView")
             binding.recyclerViewProducts.adapter = productAdapter
 
             // Subito dopo assegna la lista
             if (products.isNotEmpty()) {
+                Log.d("ProductCatalogFragment", "Assegnando ${products.size} prodotti all'adapter")
                 productAdapter.submitList(products)
             }
+        } else {
+            Log.w("ProductCatalogFragment", "userRole è null, non posso configurare l'adapter")
         }
     }
 
