@@ -68,12 +68,24 @@ class AppTest {
 
     @Before
     fun setUp() {
+        // Inizializza Firebase per i test
+        FirebaseTestConfig.initializeFirebaseForTesting()
+        
+        // Configura Firestore per evitare errori protobuf
+        FirestoreTestHelper.configureFirestoreForTesting()
+        
         // Setup iniziale per ogni test
         Thread.sleep(1000)
     }
 
     @After
     fun tearDown() {
+        // Cleanup Firebase Auth dopo ogni test per evitare interferenze
+        FirebaseTestConfig.clearFirebaseAuth()
+        
+        // Cleanup dati di test
+        FirestoreTestHelper.cleanupTestData()
+        
         // Cleanup dopo ogni test se necessario
     }
 
