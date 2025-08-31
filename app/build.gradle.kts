@@ -52,10 +52,10 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.4.2")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
 
     // Firebase UI per autenticazione
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
@@ -95,21 +95,21 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     // Testing
-    testImplementation("org.mockito:mockito-core:5.7.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.0")
+    testImplementation("org.mockito:mockito-core:5.19.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0") // Changed version
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.0") // Changed version
-    androidTestImplementation("androidx.fragment:fragment-testing:1.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.7.0") // Changed version
+    debugImplementation("androidx.fragment:fragment-testing:1.8.9")
     //androidTestImplementation("androidx.test:core:1.5.0") // Removed this line
-    androidTestImplementation("androidx.test:runner:1.5.0") // Changed version
-    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.7.0") // Changed version
+    androidTestImplementation("androidx.test:rules:1.7.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.7.6")
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.0") // Changed version
-    androidTestImplementation("androidx.test:core-ktx:1.5.0") // Ensured this ktx version is present
+    androidTestImplementation("androidx.navigation:navigation-testing:2.9.3")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.7.0") // Changed version
+    androidTestImplementation("androidx.test:core-ktx:1.7.0") // Ensured this ktx version is present
     androidTestImplementation("androidx.test:monitor:1.6.0") // Explicitly set to 1.6.0
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0") // UIAutomator for advanced testing
-    debugImplementation("androidx.fragment:fragment-testing:1.7.0")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0") // UIAutomator for advanced testing
+    debugImplementation("androidx.fragment:fragment-testing:1.8.9")
 }
