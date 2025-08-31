@@ -110,5 +110,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.0") // Changed version
     androidTestImplementation("androidx.test:core-ktx:1.5.0") // Ensured this ktx version is present
     androidTestImplementation("androidx.test:monitor:1.6.0") // Explicitly set to 1.6.0
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0") // UIAutomator for advanced testing
     debugImplementation("androidx.fragment:fragment-testing:1.7.0")
 }
