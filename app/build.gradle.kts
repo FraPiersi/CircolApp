@@ -1,7 +1,7 @@
 plugins {
     id("com.google.gms.google-services")
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     id ("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
 }
