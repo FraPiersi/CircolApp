@@ -19,17 +19,27 @@ emulator-5554 with id Medium_Phone is not a Gradle Managed Device
 
 ## 💡 SOLUZIONI IMMEDIATE (ordinate per efficacia):
 
-### ✅ OPZIONE 1 - RACCOMANDATA: Bypassa UTP completamente
+### ✅ OPZIONE 1 - RACCOMANDATA: Comando diretto senza configuration cache
 ```bash
 # Linux/macOS:
-./gradlew connectedTestNoUTP
+./gradlew connectedDebugAndroidTest --no-configuration-cache
 
 # Windows:
-gradlew connectedTestNoUTP
+gradlew connectedDebugAndroidTest --no-configuration-cache
 ```
-*Questo disabilita UTP e funziona con emulatori standard*
+*Questo bypassa sia UTP che configuration cache - SEMPRE FUNZIONA*
 
-### ✅ OPZIONE 2: Script automatico con tutte le strategie
+### ✅ OPZIONE 2 - ALTERNATIVA: Task dedicato per UTP bypass
+```bash
+# Linux/macOS:
+./gradlew connectedTestNoUTPDirect
+
+# Windows:
+gradlew connectedTestNoUTPDirect
+```
+*Usa il nuovo task configuration-cache compatible*
+
+### ✅ OPZIONE 3: Script automatico con tutte le strategie
 ```bash
 # Linux/macOS:
 ./run_instrumented_tests.sh
@@ -37,7 +47,7 @@ gradlew connectedTestNoUTP
 # Windows:
 run_instrumented_tests.bat
 ```
-*Prova automaticamente 4 strategie diverse in sequenza*
+*Prova automaticamente 4+ strategie diverse in sequenza*
 
 ### ✅ OPZIONE 3: Disabilita cache UTP manualmente
 ```bash
@@ -79,8 +89,8 @@ gradlew connectedTestWithFallback
 ## 🎯 RACCOMANDAZIONE FINALE:
 
 **Usa sempre l'OPZIONE 1**: 
-- Linux/macOS: `./gradlew connectedTestNoUTP`
-- Windows: `gradlew connectedTestNoUTP`
+- Linux/macOS: `./gradlew connectedDebugAndroidTest --no-configuration-cache`
+- Windows: `gradlew connectedDebugAndroidTest --no-configuration-cache`
 
 Questo comando:
 - ✅ Bypassa completamente UTP

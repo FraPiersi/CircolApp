@@ -63,7 +63,8 @@ run_tests() {
         # Strategy 2: Try without UTP to avoid protobuf configuration issues
         echo ""
         echo "📋 Strategia 2: Test senza UTP per evitare errori protobuf/configurazione"
-        ./gradlew connectedTestNoUTP --continue --stacktrace
+        echo "   Usando il nuovo task configuration-cache compatible..."
+        ./gradlew connectedTestNoUTPDirect --continue --stacktrace
         
         exit_code=$?
         
@@ -71,7 +72,23 @@ run_tests() {
             echo "✅ Test completati con successo senza UTP!"
             return 0
         else
-            echo "❌ Test senza UTP falliti, provo modalità offline..."
+            echo "❌ Test con task NoUTPDirect falliti, provo comando diretto..."
+            
+            # Strategy 2b: Direct command without configuration cache
+            echo ""
+            echo "📋 Strategia 2b: Comando diretto senza configuration cache"
+            ./gradlew connectedDebugAndroidTest --no-configuration-cache --no-build-cache \
+                -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
+                -Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000 \
+                --continue --stacktrace
+            
+            exit_code=$?
+            
+            if [ $exit_code -eq 0 ]; then
+                echo "✅ Test completati con successo usando comando diretto!"
+                return 0
+            else
+                echo "❌ Test con comando diretto falliti, provo modalità offline..."
             
             # Strategy 3: Try with increased timeout and offline mode
             echo ""
