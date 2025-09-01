@@ -44,7 +44,7 @@ class ChatListViewModel : ViewModel() {
 
         _isLoading.value = true
 
-        conversationsListener?.remove() // Rimuovi listener precedente se esiste
+        conversationsListener?.remove()
 
         conversationsListener = db.collection("chats")
             .whereArrayContains("participants", currentUserId)
@@ -72,11 +72,9 @@ class ChatListViewModel : ViewModel() {
                             val chatId = doc.id
 
                             if (participants != null) {
-                                // Trova l'UID dell'altro utente (per chat 1-a-1)
                                 val otherUserId = participants.firstOrNull { it != currentUserId }
 
                                 if (otherUserId != null) {
-                                    // Recupera i dettagli dell'altro utente
                                     val otherUserDetails = getUserDetails(otherUserId)
 
                                     chatConversationList.add(
@@ -87,7 +85,6 @@ class ChatListViewModel : ViewModel() {
                                             otherUserPhotoUrl = otherUserDetails?.photoUrl,
                                             lastMessageText = lastMessageText,
                                             lastMessageTimestamp = lastMessageTimestamp
-                                            // unreadCount = ... (da implementare)
                                         )
                                     )
                                 }
@@ -104,11 +101,10 @@ class ChatListViewModel : ViewModel() {
             }
     }
 
-    // Funzione helper per recuperare i dettagli dell'utente
     private suspend fun getUserDetails(userId: String): User? {
         return try {
             val document = db.collection("users").document(userId).get().await()
-            document.toObject(User::class.java) // Assicurati che User.kt sia Parcelable o abbia un costruttore vuoto
+            document.toObject(User::class.java)
         } catch (e: Exception) {
             Log.e("ChatListViewModel", "Errore nel recuperare i dettagli utente $userId", e)
             null
@@ -118,10 +114,8 @@ class ChatListViewModel : ViewModel() {
     fun deleteChat(chatId: String) {
         viewModelScope.launch {
             try {
-                // Esegue l'operazione di eliminazione su Firestore
                 db.collection("chats").document(chatId).delete().await()
                 Log.d("ChatListViewModel", "Chat con ID $chatId eliminata con successo.")
-                // Grazie all'addSnapshotListener, la UI si aggiornerà automaticamente!
             } catch (e: Exception) {
                 Log.e("ChatListViewModel", "Errore durante l'eliminazione della chat $chatId", e)
                 _errorMessage.value = "Impossibile eliminare la chat: ${e.message}"
@@ -131,20 +125,6 @@ class ChatListViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        conversationsListener?.remove() // Rimuovi il listener quando il ViewModel viene distrutto
+        conversationsListener?.remove()
     }
 }
-
-// User.kt (Modello dati semplice, assicurati sia allineato con Firestore)
-// package com.example.circolapp.model
-// import android.os.Parcelable
-// import kotlinx.parcelize.Parcelize
-
-// @Parcelize
-// data class User(
-//    val uid: String = "",
-//    val displayName: String? = null,
-//    val email: String? = null,
-//    val photoUrl: String? = null
-//    // Altri campi necessari
-// ) : Parcelable

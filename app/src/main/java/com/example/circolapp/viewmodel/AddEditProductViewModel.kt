@@ -31,11 +31,11 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
 
     // Dati del prodotto
     val productName = MutableLiveData<String>()
-    val productCode = MutableLiveData<String>() // Questo è l'ID
+    val productCode = MutableLiveData<String>()
     val productDescription = MutableLiveData<String>()
     val productPieces = MutableLiveData<String>()
-    val productAmount = MutableLiveData<String>() // << NUOVO LiveData per l'importo (come String per input)
-    val productOrdinabile = MutableLiveData<Boolean>(true) // << NUOVO LiveData per ordinabile
+    val productAmount = MutableLiveData<String>()
+    val productOrdinabile = MutableLiveData<Boolean>(true)
 
     // Gestione immagine
     val productImageUrl = MutableLiveData<String?>()
@@ -67,8 +67,8 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             productCode.value = ""
             productDescription.value = ""
             productPieces.value = ""
-            productAmount.value = "" // Inizializza l'importo
-            productOrdinabile.value = true // Inizializza ordinabile a true
+            productAmount.value = ""
+            productOrdinabile.value = true
         }
     }
 
@@ -81,13 +81,11 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
                     val product = document.toObject(Product::class.java)
                     product?.let {
                         productName.value = it.nome
-                        // productCode è già settato
                         productDescription.value = it.descrizione
                         productPieces.value = it.numeroPezzi.toString()
-                        // Formatta il double in stringa per il campo di testo, considerando la localizzazione
                         productAmount.value = formatDoubleToString(it.importo)
-                        productOrdinabile.value = it.ordinabile // Carica la proprietà ordinabile
-                        productImageUrl.value = it.imageUrl // Carica l'URL dell'immagine
+                        productOrdinabile.value = it.ordinabile
+                        productImageUrl.value = it.imageUrl
                     }
                 } else {
                     _event.value = AddEditProductEvent.Error("Prodotto con codice '$productId' non trovato.")
@@ -254,19 +252,13 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             }
     }
 
-    // Helper per formattare Double in Stringa per l'EditText (es. "12.99")
     private fun formatDoubleToString(value: Double): String {
-        // Usa NumberFormat per una formattazione più robusta se necessario,
-        // ma per input semplici, String.format può bastare.
-        // Assicurati di usare il punto come separatore decimale per coerenza con l'input.
-        return String.format(Locale.US, "%.2f", value) // Formatta a 2 decimali, usa Locale.US per avere '.'
+        return String.format(Locale.US, "%.2f", value)
     }
 
-    // Helper per parsare la Stringa in Double dall'EditText
     private fun parseStringToDouble(value: String?): Double? {
         if (value.isNullOrBlank()) return null
         return try {
-            // Sostituisci la virgola con il punto se gli utenti potrebbero inserirla
             value.replace(',', '.').toDouble()
         } catch (e: NumberFormatException) {
             null
@@ -277,7 +269,6 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
         _event.value = null
     }
 
-    // Metodo di test per verificare la connessione a Storage
     private suspend fun testStorageConnection(): Boolean {
         return try {
             val storageRef = storage.reference
@@ -285,7 +276,6 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             Log.d("StorageTest", "Testing storage connection...")
             Log.d("StorageTest", "Storage bucket: ${storage.reference.bucket}")
 
-            // Prova a ottenere i metadati (questo fallirà se il file non esiste, ma conferma la connessione)
             try {
                 testRef.metadata.await()
                 Log.d("StorageTest", "Storage connection OK - file exists")
