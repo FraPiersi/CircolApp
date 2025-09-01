@@ -46,6 +46,20 @@ android {
             isReturnDefaultValues = true
         }
     }
+    
+    // Exclude conflicting protobuf versions from transitive dependencies
+    configurations.all {
+        resolutionStrategy {
+            force("com.google.protobuf:protobuf-javalite:3.25.3")
+            // Ensure consistent protobuf versions across all dependencies
+            eachDependency {
+                if (requested.group == "com.google.protobuf" && requested.name == "protobuf-java") {
+                    useTarget("com.google.protobuf:protobuf-javalite:3.25.3")
+                }
+            }
+        }
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
 }
 
 dependencies {
@@ -57,16 +71,25 @@ dependencies {
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-auth") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
+    implementation("com.google.firebase:firebase-firestore") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
+    implementation("com.google.firebase:firebase-storage") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
     
     // Explicitly manage protobuf version to avoid conflicts
-    implementation("com.google.protobuf:protobuf-javalite:3.21.12")
-    androidTestImplementation("com.google.protobuf:protobuf-javalite:3.21.12")
+    // Updated to newer version compatible with Firebase BOM 33.0.0
+    implementation("com.google.protobuf:protobuf-javalite:3.25.3")
+    androidTestImplementation("com.google.protobuf:protobuf-javalite:3.25.3")
 
     // Firebase UI per autenticazione
-    implementation("com.firebaseui:firebase-ui-auth:8.0.2")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
 
     // ML Kit per barcode scanning
     implementation ("com.google.mlkit:barcode-scanning:17.3.0")
@@ -108,8 +131,12 @@ dependencies {
     testImplementation(libs.junit)
     
     // Firebase testing dependencies
-    androidTestImplementation("com.google.firebase:firebase-firestore")
-    androidTestImplementation("com.google.firebase:firebase-auth")
+    androidTestImplementation("com.google.firebase:firebase-firestore") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
+    androidTestImplementation("com.google.firebase:firebase-auth") {
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+    }
     
     // Android Testing
     androidTestImplementation(libs.androidx.junit)
