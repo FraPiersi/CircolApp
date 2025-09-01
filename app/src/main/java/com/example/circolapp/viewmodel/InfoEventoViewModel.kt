@@ -109,7 +109,7 @@ class InfoEventoViewModel : ViewModel() {
         val usernamePartecipante = currentUser.displayName ?: currentUser.email ?: "UtenteAnonimo"
         _isLoading.value = true // Mostra il loader
 
-        // Riferimento al documento dell'evento specifico in Firestore
+        
         val eventoRef = db.collection("eventi").document(eventoCorrente.id)
 
         viewModelScope.launch {
@@ -177,7 +177,7 @@ class InfoEventoViewModel : ViewModel() {
         val usernamePartecipante = currentUser.displayName ?: currentUser.email ?: "UtenteAnonimo"
         _isLoading.value = true // Mostra il loader
 
-        // Riferimento al documento dell'evento specifico in Firestore
+        
         val eventoRef = db.collection("eventi").document(eventoCorrente.id)
 
         viewModelScope.launch {

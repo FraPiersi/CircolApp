@@ -10,7 +10,7 @@ class ProductTest {
 
     @Test
     fun `test product creation with valid data`() {
-        // Arrange
+        
         val id = "test123"
         val nome = "Prodotto Test"
         val descrizione = "Descrizione del prodotto"
@@ -18,7 +18,7 @@ class ProductTest {
         val importo = 25.50
         val ordinabile = true
 
-        // Act
+        
         val product = Product(
             id = id,
             nome = nome,
@@ -28,7 +28,7 @@ class ProductTest {
             ordinabile = ordinabile
         )
 
-        // Assert
+        
         assertEquals(id, product.id)
         assertEquals(nome, product.nome)
         assertEquals(descrizione, product.descrizione)
@@ -39,10 +39,10 @@ class ProductTest {
 
     @Test
     fun `test product default constructor`() {
-        // Act
+        
         val product = Product()
 
-        // Assert
+        
         assertEquals("", product.id)
         assertEquals("", product.nome)
         assertEquals("", product.descrizione)
@@ -54,7 +54,7 @@ class ProductTest {
 
     @Test
     fun `test product with negative price should maintain value`() {
-        // Arrange & Act
+         & Act
         val product = Product(
             id = "test",
             nome = "Test",
@@ -63,13 +63,13 @@ class ProductTest {
             importo = -10.0
         )
 
-        // Assert
+        
         assertEquals(-10.0, product.importo, 0.01)
     }
 
     @Test
     fun `test product availability when stock is zero`() {
-        // Arrange & Act
+         & Act
         val product = Product(
             id = "test",
             nome = "Test",
@@ -77,7 +77,7 @@ class ProductTest {
             ordinabile = true
         )
 
-        // Assert
+        
         assertEquals(0, product.numeroPezzi)
         assertTrue(product.ordinabile) // Il prodotto può essere ordinabile anche senza stock
     }

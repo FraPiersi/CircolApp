@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Helper per gestire Firestore nei test instrumented
- * Risolve i problemi di compatibilità protobuf
  */
 object FirestoreTestHelper {
     

@@ -19,47 +19,12 @@ import org.hamcrest.Matchers.*
 
 /**
  * Instrumented tests per le principali funzionalità di CircolApp
- *
- * Questi test coprono i flussi principali dell'applicazione:
- * 1. Registrazione e autenticazione utenti
- * 2. Gestione prodotti e ordinazioni
- * 3. Gestione eventi e partecipazione
- * 4. Sistema tessere (richiesta e assegnazione)
- * 5. Ricariche e pagamenti
- * 6. Differenze di permessi tra utenti e admin
- *
- * NOTA: Questi sono test di UI che verificano l'accessibilità e la presenza
- * degli elementi dell'interfaccia. Per test completamente funzionali,
- * sarebbe necessario configurare un ambiente di test Firebase con dati di test.
- *
- * Per eseguire i test:
- * ./gradlew connectedAndroidTest
- *
- * Funzionalità testate:
- * - Registrazione nuovo utente
- * - Login utente esistente
- * - Logout
- * - Aggiunta nuovo prodotto (admin)
- * - Ordinazione prodotto
- * - Partecipazione ad eventi
- * - Creazione eventi (admin)
- * - Richiesta tessera
- * - Assegnazione tessera (admin)
- * - Ricarica utente
- * - Pagamento in cassa
- * - Validazione form e permessi
- *
- * IMPORTANTE: Per test completi con Firebase, configurare:
- * 1. Firebase Test Lab o Firebase Auth Emulator
- * 2. Utenti di test specifici
- * 3. Dati di test nel database Firestore
  */
 @RunWith(AndroidJUnit4::class)
 class AppTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    // Email e dati di test
     private val testEmail = "test.user@circolapp.com"
     private val testPassword = "password123"
     private val testDisplayName = "Test User"
@@ -68,37 +33,23 @@ class AppTest {
 
     @Before
     fun setUp() {
-        // Inizializza Firebase per i test
         FirebaseTestConfig.initializeFirebaseForTesting()
-        
-        // Configura Firestore per evitare errori protobuf
         FirestoreTestHelper.configureFirestoreForTesting()
-        
-        // Setup iniziale per ogni test
         Thread.sleep(1000)
     }
 
     @After
     fun tearDown() {
-        // Cleanup Firebase Auth dopo ogni test per evitare interferenze
         FirebaseTestConfig.clearFirebaseAuth()
-        
-        // Cleanup dati di test
         FirestoreTestHelper.cleanupTestData()
-        
-        // Cleanup dopo ogni test se necessario
     }
 
-    /**
-     * Test 1: Registrazione nuovo utente
-     */
     @Test
     fun testUserRegistration() {
         val intent = Intent(context, RegisterActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         ActivityScenario.launch<RegisterActivity>(intent).use {
-            // Inserisci dati di registrazione
             onView(withId(R.id.editTextDisplayName))
                 .perform(typeText(testDisplayName))
 
@@ -108,33 +59,26 @@ class AppTest {
             onView(withId(R.id.editTextPasswordRegister))
                 .perform(typeText(testPassword))
 
-            // Chiudi la tastiera
             onView(withId(R.id.editTextPasswordRegister))
                 .perform(closeSoftKeyboard())
 
-            // Clicca il pulsante di registrazione
             onView(withId(R.id.buttonRegister))
                 .perform(click())
 
-            // Verifica che il progress bar sia visibile durante il caricamento
             onView(withId(R.id.progressBarRegister))
                 .check(matches(isDisplayed()))
 
-            // Attendi il completamento (timeout lungo per operazioni Firebase)
             Thread.sleep(5000)
         }
     }
 
-    /**
-     * Test 2: Login utente esistente
-     */
     @Test
     fun testUserLogin() {
         val intent = Intent(context, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         ActivityScenario.launch<LoginActivity>(intent).use {
-            // Inserisci credenziali di login
+            
             onView(withId(R.id.editTextEmail))
                 .perform(typeText(testEmail))
 
@@ -144,28 +88,25 @@ class AppTest {
             onView(withId(R.id.editTextPassword))
                 .perform(closeSoftKeyboard())
 
-            // Clicca il pulsante di login
+            
             onView(withId(R.id.buttonLogin))
                 .perform(click())
 
-            // Verifica che il progress bar sia visibile
+            
             onView(withId(R.id.progressBarLogin))
                 .check(matches(isDisplayed()))
 
-            // Attendi il completamento del login
+            
             Thread.sleep(5000)
 
-            // Verifica che sia stata avviata MainActivity (il login è riuscito)
-            // Questo test verifica che non siamo più nella LoginActivity
         }
     }
 
     /**
-     * Test 3: Logout utente
      */
     @Test
     fun testUserLogout() {
-        // Avvia MainActivity (simulando che l'utente sia già loggato)
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -173,27 +114,24 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(2000)
 
-            // Naviga al profilo
+            
             onView(withId(R.id.profiloFragment))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che il pulsante logout sia presente
+            
             onView(withId(R.id.buttonLogout))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica la presenza del pulsante logout
-            // L'azione di logout effettiva richiederebbe un ambiente di test più complesso
         }
     }
 
     /**
-     * Test 4: Aggiunta nuovo prodotto (funzionalità admin)
      */
     @Test
     fun testAddNewProduct() {
-        // Avvia MainActivity come admin
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.ADMIN.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -201,18 +139,18 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(3000)
 
-            // Verifica che siamo nel catalogo prodotti (default per admin)
+            
             onView(withId(R.id.recyclerViewProducts))
                 .check(matches(isDisplayed()))
 
-            // Verifica che il FAB per aggiungere prodotti sia visibile
+            
             onView(withId(R.id.fabAddProduct))
                 .check(matches(isDisplayed()))
                 .perform(click())
 
             Thread.sleep(1000)
 
-            // Compila i campi del nuovo prodotto
+            
             onView(withId(R.id.etProductName))
                 .perform(typeText("Prodotto Test"))
 
@@ -228,21 +166,19 @@ class AppTest {
             onView(withId(R.id.etProductAmount))
                 .perform(closeSoftKeyboard())
 
-            // Verifica che il pulsante salva sia presente
+            
             onView(withId(R.id.btnSaveProduct))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica l'accesso alla funzionalità e la presenza dei campi
             // Il salvataggio effettivo richiederebbe un ambiente di test più complesso
         }
     }
 
     /**
-     * Test 5: Ordinazione prodotto
      */
     @Test
     fun testProductOrdering() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -256,27 +192,24 @@ class AppTest {
 
             Thread.sleep(1000)
 
-            // Clicca per vedere i prodotti
+            
             onView(withId(R.id.btn_opzione2))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che il catalogo prodotti sia visibile
+            
             onView(withId(R.id.recyclerViewProducts))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica l'accesso al catalogo prodotti per ordinare
-            // L'ordinazione effettiva richiederebbe prodotti nel database e autenticazione
         }
     }
 
     /**
-     * Test 6: Partecipazione ad un evento
      */
     @Test
     fun testEventParticipation() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -290,21 +223,18 @@ class AppTest {
 
             Thread.sleep(2000)
 
-            // Verifica che la lista eventi sia presente
+            
             onView(withId(R.id.eventiRecyclerView))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica l'accesso alla lista eventi
-            // La partecipazione effettiva richiederebbe eventi nel database
         }
     }
 
     /**
-     * Test 7: Creazione evento (funzionalità admin)
      */
     @Test
     fun testEventCreation() {
-        // Avvia MainActivity come admin
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.ADMIN.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -318,14 +248,14 @@ class AppTest {
 
             Thread.sleep(2000)
 
-            // Verifica che il FAB per aggiungere eventi sia presente (solo admin)
+            
             onView(withId(R.id.fabAddEvento))
                 .check(matches(isDisplayed()))
                 .perform(click())
 
             Thread.sleep(1000)
 
-            // Compila i dati dell'evento
+            
             onView(withId(R.id.editNomeEvento))
                 .perform(typeText("Evento Test"))
 
@@ -335,20 +265,18 @@ class AppTest {
             onView(withId(R.id.editDescrizioneEvento))
                 .perform(closeSoftKeyboard())
 
-            // Verifica che il pulsante salva sia presente
+            
             onView(withId(R.id.btnSalvaEvento))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica l'accesso alla funzionalità di creazione eventi per admin
         }
     }
 
     /**
-     * Test 8: Richiesta tessera
      */
     @Test
     fun testTesseraRequest() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -356,27 +284,24 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(2000)
 
-            // Naviga al profilo
+            
             onView(withId(R.id.profiloFragment))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che il pulsante tessera sia presente
+            
             onView(withId(R.id.buttonTessera))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica la presenza della funzionalità tessera
-            // La richiesta effettiva richiederebbe l'autenticazione Firebase
         }
     }
 
     /**
-     * Test 9: Assegnazione tessera (funzionalità admin)
      */
     @Test
     fun testTesseraAssignment() {
-        // Avvia MainActivity come admin
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.ADMIN.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -384,26 +309,24 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(2000)
 
-            // Naviga al profilo
+            
             onView(withId(R.id.profiloFragment))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che il pulsante gestisci tessere sia presente (visibile solo agli admin)
+            
             onView(withId(R.id.buttonGestisciTessere))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica l'accesso alla funzionalità admin per gestire tessere
         }
     }
 
     /**
-     * Test 10: Ricarica utente
      */
     @Test
     fun testUserRecharge() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -417,26 +340,24 @@ class AppTest {
 
             Thread.sleep(1000)
 
-            // Clicca per la ricarica tramite QR
+            
             onView(withId(R.id.btn_opzione1))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che siamo nella pagina QR (che gestisce anche ricariche)
+            
             onView(withId(R.id.qrCodeImageView))
                 .check(matches(isDisplayed()))
 
-            // Il test verifica l'accesso alla funzionalità di ricarica tramite QR
         }
     }
 
     /**
-     * Test 11: Pagamento in cassa
      */
     @Test
     fun testCashPayment() {
-        // Avvia MainActivity come admin (per gestire pagamenti in cassa)
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.ADMIN.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -444,27 +365,25 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(2000)
 
-            // Naviga al fragment cassa
+            
             onView(withId(R.id.cassaFragment))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Il test verifica l'accesso alla funzionalità di cassa per gli admin
         }
     }
 
     /**
-     * Test 12: Verifica funzionalità di base dell'app
      */
     @Test
     fun testBasicAppFunctionality() {
-        // Verifica che l'app si avvii correttamente con LoginActivity
+        
         val intent = Intent(context, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         ActivityScenario.launch<LoginActivity>(intent).use {
-            // Verifica che tutti gli elementi di login siano presenti
+            
             onView(withId(R.id.editTextEmail))
                 .check(matches(isDisplayed()))
 
@@ -489,7 +408,7 @@ class AppTest {
         }
     }
 
-    // Helper methods per semplificare i test
+    
 
     /**
      * Esegue login come utente di test
@@ -518,11 +437,10 @@ class AppTest {
     }
 
     /**
-     * Test 13: Verifica funzionalità QR Code
      */
     @Test
     fun testQrCodeGeneration() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -530,7 +448,7 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(2000)
 
-            // Naviga al QR Code tramite il menu pagamento
+            
             onView(withId(R.id.pagamentoFragment))
                 .perform(click())
 
@@ -541,11 +459,11 @@ class AppTest {
 
             Thread.sleep(2000)
 
-            // Verifica che l'ImageView del QR code sia presente
+            
             onView(withId(R.id.qrCodeImageView))
                 .check(matches(isDisplayed()))
 
-            // Verifica che il titolo sia visualizzato
+            
             onView(withId(R.id.textViewQrTitle))
                 .check(matches(isDisplayed()))
                 .check(matches(not(withText(""))))
@@ -553,11 +471,10 @@ class AppTest {
     }
 
     /**
-     * Test 14: Verifica gestione saldo utente
      */
     @Test
     fun testUserBalanceManagement() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -565,34 +482,33 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(2000)
 
-            // Naviga al profilo per vedere il saldo
+            
             onView(withId(R.id.profiloFragment))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che il saldo sia visibile nel profilo
+            
             onView(withId(R.id.text_saldo))
                 .check(matches(isDisplayed()))
 
-            // Naviga alla home per vedere i movimenti
+            
             onView(withId(R.id.homeFragment))
                 .perform(click())
 
             Thread.sleep(2000)
 
-            // Verifica che la lista movimenti sia presente
+            
             onView(withId(R.id.recyclerViewMovimenti))
                 .check(matches(isDisplayed()))
         }
     }
 
     /**
-     * Test 15: Verifica accesso diverse funzionalità utente
      */
     @Test
     fun testUserAccessToFeatures() {
-        // Avvia MainActivity come utente
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.USER.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -637,12 +553,12 @@ class AppTest {
      */
     @Test
     fun testAppConnectivityAndState() {
-        // Verifica che l'app si avvii correttamente
+        
         val intent = Intent(context, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         ActivityScenario.launch<LoginActivity>(intent).use {
-            // Verifica che la schermata di login sia presente
+            
             onView(withId(R.id.editTextEmail))
                 .check(matches(isDisplayed()))
 
@@ -655,7 +571,7 @@ class AppTest {
             onView(withId(R.id.textViewRegister))
                 .check(matches(isDisplayed()))
 
-            // Verifica che i campi siano inizialmente vuoti
+            
             onView(withId(R.id.editTextEmail))
                 .check(matches(withText("")))
 
@@ -673,13 +589,13 @@ class AppTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         ActivityScenario.launch<RegisterActivity>(intent).use {
-            // Testa registrazione con campi vuoti
+            
             onView(withId(R.id.buttonRegister))
                 .perform(click())
 
             Thread.sleep(1000)
 
-            // Testa con password troppo corta
+            
             onView(withId(R.id.editTextDisplayName))
                 .perform(typeText("Test User"))
 
@@ -687,7 +603,7 @@ class AppTest {
                 .perform(typeText("test@test.com"))
 
             onView(withId(R.id.editTextPasswordRegister))
-                .perform(typeText("123")) // Password troppo corta
+                .perform(typeText("123")) // 
 
             onView(withId(R.id.editTextPasswordRegister))
                 .perform(closeSoftKeyboard())
@@ -697,7 +613,7 @@ class AppTest {
 
             Thread.sleep(2000)
 
-            // Verifica che non sia avvenuta navigazione (siamo ancora in RegisterActivity)
+            
             onView(withId(R.id.buttonRegister))
                 .check(matches(isDisplayed()))
         }
@@ -712,17 +628,17 @@ class AppTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         ActivityScenario.launch<LoginActivity>(intent).use {
-            // Testa login con campi vuoti
+            
             onView(withId(R.id.buttonLogin))
                 .perform(click())
 
             Thread.sleep(1000)
 
-            // Verifica che siamo ancora nella schermata di login
+            
             onView(withId(R.id.buttonLogin))
                 .check(matches(isDisplayed()))
 
-            // Testa con email non valida
+            
             onView(withId(R.id.editTextEmail))
                 .perform(typeText("email-non-valida"))
 
@@ -737,7 +653,7 @@ class AppTest {
 
             Thread.sleep(2000)
 
-            // Verifica che il login non sia riuscito
+            
             onView(withId(R.id.editTextEmail))
                 .check(matches(isDisplayed()))
         }
@@ -748,7 +664,7 @@ class AppTest {
      */
     @Test
     fun testAdminPermissions() {
-        // Avvia MainActivity come admin
+        
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("USER_ROLE", UserRole.ADMIN.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -756,11 +672,11 @@ class AppTest {
         ActivityScenario.launch<MainActivity>(intent).use {
             Thread.sleep(3000)
 
-            // Verifica che il catalogo prodotti sia visibile (default per admin)
+            
             onView(withId(R.id.recyclerViewProducts))
                 .check(matches(isDisplayed()))
 
-            // Verifica che il FAB per aggiungere prodotti sia visibile
+            
             onView(withId(R.id.fabAddProduct))
                 .check(matches(isDisplayed()))
 

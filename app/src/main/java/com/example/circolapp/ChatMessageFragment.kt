@@ -25,15 +25,14 @@ class ChatMessageFragment : Fragment() {
     private var _binding: FragmentChatMessageBinding? = null
     private val binding get() = _binding!!
 
-    private val args: ChatMessageFragmentArgs by navArgs() // Generato da Safe Args
+    private val args: ChatMessageFragmentArgs by navArgs()
 
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val viewModelFactory: ChatMessageViewModelFactory by lazy {
         if (currentUserId == null) {
             Toast.makeText(requireContext(), "Utente non autenticato!", Toast.LENGTH_LONG).show()
-            findNavController().popBackStack() // Torna indietro se l'utente non è loggato
-            // Potrebbe essere necessario un placeholder factory o gestire meglio questo caso
+            findNavController().popBackStack()
             throw IllegalStateException("Utente non autenticato, impossibile creare ViewModel")
         }
         ChatMessageViewModelFactory(args.chatId, currentUserId!!, args.otherUserId)
@@ -66,15 +65,15 @@ class ChatMessageFragment : Fragment() {
 
         binding.editTextMessageInput.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                // Scrolla alla fine quando l'EditText prende il focus,
-                // utile se la tastiera copre l'ultimo messaggio.
+                
+                
                 binding.recyclerViewMessages.postDelayed({
                     scrollToBottom()
                 }, 200)
             }
         }
 
-        // Gestisci il click del pulsante per inviare denaro
+        
         binding.buttonSendMoney.setOnClickListener {
             showMoneyTransferDialog()
         }
@@ -92,7 +91,7 @@ class ChatMessageFragment : Fragment() {
     private fun setupRecyclerView() {
         messageListAdapter = MessageListAdapter(currentUserId!!) // Passa l'UID dell'utente corrente
         val layoutManager = LinearLayoutManager(context)
-        // layoutManager.stackFromEnd = true // I nuovi messaggi appaiono in fondo e spingono i vecchi in alto
+        // layoutManager.stackFromEnd = true 
         binding.recyclerViewMessages.apply {
             this.layoutManager = layoutManager
             adapter = messageListAdapter
@@ -102,12 +101,12 @@ class ChatMessageFragment : Fragment() {
     private fun setupObservers() {
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             messageListAdapter.submitList(messages) {
-                // Scrolla alla fine solo se l'utente non sta scrollando attivamente all'indietro
-                // o se è il primo caricamento / un nuovo messaggio aggiunto alla fine.
+                
+                
                 val itemCount = messageListAdapter.itemCount
                 if (itemCount > 0) {
                     val lastVisiblePosition = (binding.recyclerViewMessages.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-                    // Se l'ultimo elemento visibile è vicino alla fine della lista, o se è il primo caricamento
+                    
                     if (lastVisiblePosition == -1 || (itemCount - 1) - lastVisiblePosition < 5) {
                         scrollToBottom()
                     }
@@ -137,11 +136,11 @@ class ChatMessageFragment : Fragment() {
             android.R.layout.select_dialog_item, null
         )
 
-        // Creo un dialog personalizzato
+        
         val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
         builder.setTitle("Invia denaro a ${args.contactName}")
 
-        // Creo un layout personalizzato per il dialog
+        
         val customView = LayoutInflater.from(requireContext()).inflate(
             R.layout.dialog_money_transfer, null
         )
@@ -149,7 +148,7 @@ class ChatMessageFragment : Fragment() {
         val editAmount = customView.findViewById<android.widget.EditText>(R.id.editTextAmount)
         val textBalance = customView.findViewById<android.widget.TextView>(R.id.textViewBalance)
 
-        // Mostro il saldo attuale dell'utente
+        
         viewModel.getCurrentUserBalance { balance ->
             textBalance.text = "Saldo disponibile: €${String.format("%.2f", balance)}"
         }

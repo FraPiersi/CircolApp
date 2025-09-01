@@ -13,57 +13,57 @@ class AuthResultTest {
 
     @Test
     fun `test AuthResult Success creation`() {
-        // Arrange
+        
         val mockFirebaseUser = mock<FirebaseUser>()
         val userRole = UserRole.ADMIN
 
-        // Act
+        
         val result = AuthResult.Success(userRole, mockFirebaseUser)
 
-        // Assert
+        
         assertEquals(userRole, result.userRole)
         assertEquals(mockFirebaseUser, result.user)
     }
 
     @Test
     fun `test AuthResult Error creation`() {
-        // Arrange
+        
         val errorMessage = "Login failed"
 
-        // Act
+        
         val result = AuthResult.Error(errorMessage)
 
-        // Assert
+        
         assertEquals(errorMessage, result.message)
     }
 
     @Test
     fun `test AuthResult Loading and Idle states`() {
-        // Act & Assert
+        
         val loadingResult = AuthResult.Loading
         val idleResult = AuthResult.Idle
 
-        // Test che sono istanze della classe corretta
+        
         assertNotNull(loadingResult)
         assertNotNull(idleResult)
 
-        // Test che sono diversi tra loro
+        
         assertNotEquals(loadingResult, idleResult)
 
-        // Test più semplice per evitare warning del compilatore
+        
         assertEquals(AuthResult.Loading, loadingResult)
         assertEquals(AuthResult.Idle, idleResult)
     }
 
     @Test
     fun `test email validation logic`() {
-        // Test per logica di validazione email (simula il comportamento del ViewModel)
+        
 
-        // Valid emails
+        
         assertTrue(isValidEmail("test@example.com"))
         assertTrue(isValidEmail("user.name@domain.co.uk"))
 
-        // Invalid emails
+        
         assertFalse(isValidEmail(""))
         assertFalse(isValidEmail("invalid-email"))
         assertFalse(isValidEmail("@domain.com"))
@@ -72,13 +72,13 @@ class AuthResultTest {
 
     @Test
     fun `test password validation logic`() {
-        // Test per logica di validazione password
+        
 
-        // Valid passwords
+        
         assertTrue(isValidPassword("password123"))
         assertTrue(isValidPassword("mySecurePass"))
 
-        // Invalid passwords
+        
         assertFalse(isValidPassword(""))
         assertFalse(isValidPassword("   "))
         assertFalse(isValidPassword("123")) // troppo corta
@@ -86,7 +86,7 @@ class AuthResultTest {
 
     @Test
     fun `test user role mapping from string`() {
-        // Test per mappatura ruoli da stringa
+        
         assertEquals(UserRole.ADMIN, mapStringToUserRole("admin"))
         assertEquals(UserRole.ADMIN, mapStringToUserRole("ADMIN"))
         assertEquals(UserRole.USER, mapStringToUserRole("user"))
@@ -95,7 +95,7 @@ class AuthResultTest {
         assertEquals(UserRole.USER, mapStringToUserRole(null))
     }
 
-    // Funzioni di utilità che simulano la logica del ViewModel
+    
     private fun isValidEmail(email: String): Boolean {
         if (email.isBlank()) return false
 

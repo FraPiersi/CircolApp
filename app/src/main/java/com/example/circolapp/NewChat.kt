@@ -59,7 +59,7 @@ class NewChatFragment : Fragment() {
         viewModel.navigateToChat.observe(viewLifecycleOwner) { navigationEvent ->
             navigationEvent?.let {
                 // Naviga alla schermata dei messaggi
-                // Assicurati di avere un'azione nel nav_graph da NewChatFragment a ChatMessageFragment
+                
                 // che accetti chatId e otherUserId (o come hai definito la tua schermata messaggi)
                 val action = NewChatFragmentDirections.actionNewChatFragmentToChatMessageFragment(
                     chatId = it.chatId,

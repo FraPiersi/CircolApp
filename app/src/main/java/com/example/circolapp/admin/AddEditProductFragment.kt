@@ -68,9 +68,9 @@ class AddEditProductFragment : Fragment() {
     private var cameraProvider: ProcessCameraProvider? = null
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var imageAnalysis: ImageAnalysis? = null
-    private var cameraPreview: Preview? = null // Rinominato da 'preview' per evitare conflitto con CameraX Preview
-    private var scannerDialog: AlertDialog? = null // Riferimento al dialog per chiuderlo
-    private var cameraXPreviewView: PreviewView? = null // Riferimento alla PreviewView nel dialog
+    private var cameraPreview: Preview? = null 
+    private var scannerDialog: AlertDialog? = null 
+    private var cameraXPreviewView: PreviewView? = null 
     // --- Fine Variabili per Barcode Scanning con CameraX ---
 
     private val requestPermissionLauncher =
@@ -190,7 +190,7 @@ class AddEditProductFragment : Fragment() {
 
     private fun startBarcodeScanningFlow() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_barcode_scanner, null)
-        cameraXPreviewView = dialogView.findViewById(R.id.camerax_preview_view_scanner) // Usa il nuovo ID
+        cameraXPreviewView = dialogView.findViewById(R.id.camerax_preview_view_scanner) 
 
         scannerDialog = AlertDialog.Builder(requireContext())
             .setTitle("Scansiona Codice Prodotto")
@@ -200,7 +200,7 @@ class AddEditProductFragment : Fragment() {
                 dialog.dismiss()
             }
             .setOnDismissListener {
-                stopCameraAndScanner() // Assicurati di fermare la camera e lo scanner
+                stopCameraAndScanner() 
             }
             .create()
 

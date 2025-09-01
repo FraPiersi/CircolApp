@@ -10,7 +10,7 @@ import java.util.Date
 
 class HomeRepository {
     private val db = FirebaseFirestore.getInstance()
-    private val utentiCollection = db.collection("utenti") // Riferimento alla collection
+    private val utentiCollection = db.collection("utenti") 
 
     /**
      * Recupera il saldo dell'utente in tempo reale da Firestore usando l'UID.

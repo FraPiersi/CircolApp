@@ -59,7 +59,7 @@ class EventiFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        binding.eventiRecyclerView.apply { // Assicurati di avere un RecyclerView nel tuo layout
+        binding.eventiRecyclerView.apply { 
             adapter = eventoAdapter
             layoutManager = LinearLayoutManager(context)
         }

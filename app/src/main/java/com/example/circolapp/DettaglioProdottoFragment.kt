@@ -48,7 +48,7 @@ class DettaglioProdottoFragment : Fragment() {
             editRichiesteAggiuntive.visibility = View.VISIBLE
             btnOrdina.visibility = View.VISIBLE
 
-            // Gestisci il click del bottone Ordina
+            
             btnOrdina.setOnClickListener {
                 ordinaProdotto(product, editRichiesteAggiuntive.text.toString())
             }
