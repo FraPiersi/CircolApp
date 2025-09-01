@@ -176,13 +176,13 @@ tasks.register("connectedTestWithFallback") {
             exec {
                 commandLine("./gradlew", "connectedDebugAndroidTest", "--continue")
             }
-        } catch (Exception e) {
+        } catch (e: Exception) {
             println("Standard tests failed, trying offline mode...")
             try {
                 exec {
                     commandLine("./gradlew", "connectedDebugAndroidTest", "--offline", "--continue")
                 }
-            } catch (Exception e2) {
+            } catch (e2: Exception) {
                 println("Offline tests also failed, running only device connectivity tests...")
                 exec {
                     commandLine("./gradlew", "connectedDebugAndroidTest",
