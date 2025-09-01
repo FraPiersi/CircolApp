@@ -4,6 +4,10 @@
  * 🚨 UTP ERROR FIX: If you see "Failed to receive UTP test results" or protobuf errors:
  *    Use: ./gradlew connectedTestNoUTP
  *    See: QUICK_UTP_FIX.md for immediate solutions
+ *
+ * 🔧 CONFIGURATION CACHE FIX: 
+ *    Fixed "Task.project invocation at execution time" errors in custom tasks
+ *    Tasks now store project.rootDir during configuration phase for cache compatibility
  */
 
 plugins {
@@ -191,6 +195,9 @@ tasks.register("connectedTestWithFallback") {
     group = "verification"
     description = "Runs connected tests with fallback strategies for connectivity issues"
     
+    // Store project root directory at configuration time to avoid using project during execution
+    val projectRootDir = project.rootDir
+    
     doLast {
         println("🧪 Running connected tests with fallback strategies...")
         
@@ -205,7 +212,7 @@ tasks.register("connectedTestWithFallback") {
             // Try standard connected tests first
             exec {
                 commandLine(gradleExec, "connectedDebugAndroidTest", "--continue", "--stacktrace")
-                workingDir = project.rootDir
+                workingDir = projectRootDir
             }
             println("✅ Standard tests completed successfully!")
         } catch (e: Exception) {
@@ -218,7 +225,7 @@ tasks.register("connectedTestWithFallback") {
                         "--no-build-cache",
                         "-Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000",
                         "--continue", "--stacktrace")
-                    workingDir = project.rootDir
+                    workingDir = projectRootDir
                 }
                 println("✅ UTP-less tests completed successfully!")
             } catch (e2: Exception) {
@@ -231,7 +238,7 @@ tasks.register("connectedTestWithFallback") {
                             "--continue", 
                             "--stacktrace",
                             "-Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000")
-                        workingDir = project.rootDir
+                        workingDir = projectRootDir
                     }
                     println("✅ Offline tests completed successfully!")
                 } catch (e3: Exception) {
@@ -241,7 +248,7 @@ tasks.register("connectedTestWithFallback") {
                         commandLine(gradleExec, "connectedDebugAndroidTest",
                             "-Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest",
                             "--continue", "--stacktrace")
-                        workingDir = project.rootDir
+                        workingDir = projectRootDir
                     }
                     println("✅ Basic connectivity tests completed!")
                 }
@@ -255,13 +262,12 @@ tasks.register("connectedTestNoUTP") {
     group = "verification"
     description = "Runs connected tests without UTP when UTP configuration fails"
     
+    // Store project root directory at configuration time to avoid using project during execution
+    val projectRootDir = project.rootDir
+    
     doLast {
         println("🔧 Running tests without UTP to avoid protobuf configuration issues...")
         println("   Disabling configuration cache and build cache...")
-        
-        // Set system properties to disable UTP features
-        System.setProperty("gradle.configuration-cache", "false")
-        System.setProperty("gradle.build-cache", "false")
         
         try {
             // Use gradle executable directly to avoid recursive calls
@@ -280,7 +286,7 @@ tasks.register("connectedTestNoUTP") {
                     "-Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000",
                     "--continue",
                     "--stacktrace")
-                workingDir = project.rootDir
+                workingDir = projectRootDir
             }
         } catch (e: Exception) {
             println("⚠️  Standard UTP-less execution failed: ${e.message}")
@@ -299,7 +305,7 @@ tasks.register("connectedTestNoUTP") {
                     "--no-build-cache", 
                     "--continue",
                     "--stacktrace")
-                workingDir = project.rootDir
+                workingDir = projectRootDir
             }
         }
     }

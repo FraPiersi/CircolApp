@@ -49,6 +49,8 @@ emulator-5554 with id Medium_Phone is not a Gradle Managed Device
 - **"Fatal error with proto_config"** → Errore di configurazione protobuf di UTP  
 - **"not a Gradle Managed Device"** → UTP preferisce device gestiti ma il tuo emulatore è normale
 - **"GRAVE: Fatal error"** → UTP ha problemi con i file di configurazione
+- **"cannot serialize Gradle script object references"** → Problemi con configuration cache (RISOLTO ✅)
+- **"invocation of 'Task.project' at execution time"** → Reference 'project' durante esecuzione (RISOLTO ✅)
 
 ## 🎯 RACCOMANDAZIONE FINALE:
 
@@ -56,9 +58,10 @@ emulator-5554 with id Medium_Phone is not a Gradle Managed Device
 
 Questo comando:
 - ✅ Bypassa completamente UTP
-- ✅ Funziona con emulatori standard
+- ✅ Funziona con emulatori standard  
 - ✅ Evita errori protobuf
 - ✅ È più veloce e affidabile
+- ✅ Compatible con configuration cache (AGGIORNATO)
 
 ## 📚 Documentazione completa:
 - Vedi `UTP_ISSUES_SOLUTION.md` per dettagli tecnici
