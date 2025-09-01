@@ -56,7 +56,7 @@ class RicaricaFragment : Fragment() {
                 // Aggiorna il saldo
                 transaction.update(userDocRef, "saldo", nuovoSaldo)
 
-                // Aggiungi il movimento nella sottocollezione
+                
                 val movimento = hashMapOf(
                     "importo" to importo,
                     "descrizione" to "Ricarica in cassa",

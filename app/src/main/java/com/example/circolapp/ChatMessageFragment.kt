@@ -55,7 +55,7 @@ class ChatMessageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (currentUserId == null) { // Controllo aggiuntivo per sicurezza
+        if (currentUserId == null) { 
             return
         }
 
@@ -80,7 +80,7 @@ class ChatMessageFragment : Fragment() {
     }
 
     private fun setupToolbar() {
-        binding.toolbarChatMessage.title = args.contactName ?: "Chat" // Usa il nome del contatto passato
+        binding.toolbarChatMessage.title = args.contactName ?: "Chat" 
         (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbarChatMessage)
         (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbarChatMessage.setNavigationOnClickListener {
@@ -89,7 +89,7 @@ class ChatMessageFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        messageListAdapter = MessageListAdapter(currentUserId!!) // Passa l'UID dell'utente corrente
+        messageListAdapter = MessageListAdapter(currentUserId!!) 
         val layoutManager = LinearLayoutManager(context)
         // layoutManager.stackFromEnd = true 
         binding.recyclerViewMessages.apply {
@@ -123,7 +123,7 @@ class ChatMessageFragment : Fragment() {
     }
 
     private fun scrollToBottom() {
-        binding.recyclerViewMessages.post { // Usa post per assicurarti che il layout sia completo
+        binding.recyclerViewMessages.post { 
             val itemCount = messageListAdapter.itemCount
             if (itemCount > 0) {
                 binding.recyclerViewMessages.smoothScrollToPosition(itemCount - 1)

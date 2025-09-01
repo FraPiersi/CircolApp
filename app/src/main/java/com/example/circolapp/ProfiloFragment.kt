@@ -71,7 +71,7 @@ class ProfiloFragment : Fragment() {
         buttonGestisciTessere = view.findViewById(R.id.buttonGestisciTessere)
         buttonFeedback = view.findViewById(R.id.buttonFeedback)
 
-        // Aggiungi ProgressBar programmaticamente se non presente nel layout
+        
         progressBar = ProgressBar(requireContext()).apply {
             visibility = View.VISIBLE
         }
@@ -312,7 +312,7 @@ class ProfiloFragment : Fragment() {
             // Aggiorna il saldo
             transaction.update(userRef, "saldo", nuovoSaldo)
 
-            // Aggiungi il movimento nella sottocollezione movimenti
+            
             val movimentoDataForSubcollection = mapOf(
                 "importo" to -QUOTA_TESSERA,
                 "descrizione" to "Pagamento tessera socio",

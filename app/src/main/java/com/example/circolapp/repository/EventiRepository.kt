@@ -30,7 +30,7 @@ class EventiRepository {
                     val eventiList = snapshot.documents.mapNotNull { document ->
                         try {
                             val evento = document.toObject(Evento::class.java)
-                            evento?.copy(id = document.id) // Aggiungi l'ID del documento
+                            evento?.copy(id = document.id) 
                         } catch (e: Exception) {
                             Log.e("EventiRepository", "Errore nel parsing evento: ${document.id}", e)
                             null

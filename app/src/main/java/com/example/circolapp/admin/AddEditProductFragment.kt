@@ -20,7 +20,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView // Import corretto per CameraX
+import androidx.camera.view.PreviewView 
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -51,7 +51,7 @@ class AddEditProductFragment : Fragment() {
     private val viewModel: AddEditProductViewModel by viewModels()
     private val args: AddEditProductFragmentArgs by navArgs()
 
-    // Launcher per la selezione delle immagini
+    
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -62,7 +62,7 @@ class AddEditProductFragment : Fragment() {
         }
     }
 
-    // --- Inizio Variabili per Barcode Scanning con CameraX ---
+    
     private lateinit var cameraExecutor: ExecutorService
     private var barcodeScanner: BarcodeScanner? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -71,7 +71,7 @@ class AddEditProductFragment : Fragment() {
     private var cameraPreview: Preview? = null 
     private var scannerDialog: AlertDialog? = null 
     private var cameraXPreviewView: PreviewView? = null 
-    // --- Fine Variabili per Barcode Scanning con CameraX ---
+    
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -238,25 +238,25 @@ class AddEditProductFragment : Fragment() {
             return
         }
 
-        // Configura le opzioni dello scanner di codici a barre
+        
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
             .build()
         barcodeScanner = BarcodeScanning.getClient(options)
 
-        // Preview Use Case
+        
         cameraPreview = Preview.Builder()
             .build()
             .also {
                 it.setSurfaceProvider(cameraXPreviewView!!.surfaceProvider)
             }
 
-        // ImageAnalysis Use Case
+        
         imageAnalysis = ImageAnalysis.Builder()
-            // Imposta una dimensione di target ragionevole per l'analisi.
-            // Dimensioni troppo grandi possono rallentare l'analisi.
-            .setTargetResolution(Size(1280, 720)) // Esempio, puoi adattarla
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // Processa solo l'ultimo frame
+            
+            
+            .setTargetResolution(Size(1280, 720)) 
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) 
             .build()
 
         imageAnalysis?.setAnalyzer(cameraExecutor, ImageAnalysis.Analyzer { imageProxy ->
@@ -271,34 +271,34 @@ class AddEditProductFragment : Fragment() {
                             val barcodeValue = firstBarcode.rawValue
                             Log.d("BarcodeScan", "Barcode CameraX scansionato: $barcodeValue")
 
-                            // Esegui sul thread UI per aggiornare ViewModel e UI
+                            
                             requireActivity().runOnUiThread {
                                 viewModel.productCode.postValue(barcodeValue)
-                                scannerDialog?.dismiss() // Chiudi il dialog
-                                stopCameraAndScanner()   // Ferma la camera e lo scanner
+                                scannerDialog?.dismiss() 
+                                stopCameraAndScanner()   
                                 Toast.makeText(context, "Codice scansionato: $barcodeValue", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
                     .addOnFailureListener { e ->
                         Log.e("BarcodeScan", "Errore durante la scansione del barcode con CameraX", e)
-                        // Non mostrare Toast continui qui, potrebbe essere fastidioso
+                        
                     }
                     .addOnCompleteListener {
-                        imageProxy.close() // Molto importante chiudere imageProxy
+                        imageProxy.close() 
                     }
             } else {
-                imageProxy.close() // Chiudi anche se mediaImage è null
+                imageProxy.close() 
             }
         })
 
         try {
-            cameraProvider!!.unbindAll() // Svincola use case precedenti
+            cameraProvider!!.unbindAll() 
             cameraProvider!!.bindToLifecycle(
-                this as LifecycleOwner, // Il Fragment è un LifecycleOwner
+                this as LifecycleOwner, 
                 cameraSelector,
                 cameraPreview,
-                imageAnalysis // Aggiungi imageAnalysis qui
+                imageAnalysis 
             )
             Log.d("BarcodeScan", "CameraX Use Cases associati al lifecycle.")
         } catch (exc: Exception) {
@@ -310,14 +310,14 @@ class AddEditProductFragment : Fragment() {
     private fun stopCameraAndScanner() {
         Log.d("BarcodeScan", "Stopping CameraX and BarcodeScanner")
         try {
-            cameraProvider?.unbindAll() // Svincola tutti gli use case
+            cameraProvider?.unbindAll() 
         } catch (e: Exception) {
             Log.e("BarcodeScan", "Errore nello svincolare CameraX Use Cases", e)
         }
-        barcodeScanner?.close() // Rilascia lo scanner ML Kit
+        barcodeScanner?.close() 
         barcodeScanner = null
-        // Non è necessario nullificare cameraProvider, cameraPreview, imageAnalysis
-        // perché verranno reinizializzati se necessario.
+        
+        
         // cameraXPreviewView diventerà null quando il dialog viene distrutto.
     }
 

@@ -165,7 +165,7 @@ class ChatMessageViewModel(
                         "data" to currentTime
                     )
 
-                    // Aggiungi i movimenti nelle sottocollezioni
+                    
                     val senderMovimentoRef = senderRef.collection("movimenti").document()
                     transaction.set(senderMovimentoRef, senderMovimentoData)
 
@@ -181,7 +181,7 @@ class ChatMessageViewModel(
                         transferStatus = "COMPLETED"
                     )
 
-                    // Aggiungi il messaggio alla chat
+                    
                     val messageRef = messagesRef.document()
                     transaction.set(messageRef, transferMessage)
 

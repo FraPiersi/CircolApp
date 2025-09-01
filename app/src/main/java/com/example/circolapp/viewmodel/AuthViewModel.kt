@@ -108,7 +108,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     // Funzione per creare il documento utente se non esiste
     private suspend fun createFirestoreUserDocument(firebaseUser: FirebaseUser, defaultRole: UserRole) {
         val userDocRef = firestore.collection("utenti").document(firebaseUser.uid)
-        // Non è necessario un altro check if exists qui se chiamato solo quando sappiamo che non esiste.
+        
         // Ma se potesse essere chiamato in altri contesti, un check è più sicuro.
         // Per ora, assumiamo che venga chiamato quando il documento non esiste.
         try {

@@ -74,7 +74,7 @@ class RiscuotiFragment : Fragment() {
                     prodotti =
                         if (prodotti.isNullOrEmpty()) prodottoInfo else prodotti + "\n" + prodottoInfo
                     prodottiImporti.add(importoProdotto)
-                    prodottiAcquistati.add(prodotto) // Aggiungi alla lista dei prodotti acquistati
+                    prodottiAcquistati.add(prodotto) 
                     labelProdotti.text = "Prodotti:\n$prodotti"
                     val totale = prodottiImporti.sum()
                     labelTotale.text = "Totale: €$totale"

@@ -32,7 +32,7 @@ class InfoEventoViewModel : ViewModel() {
     // Istanza di FirebaseAuth (esempio per ottenere username/userId)
     private val auth = FirebaseAuth.getInstance()
 
-    // Aggiungi questi LiveData per gestire i partecipanti dalla sottocollezione
+    
     private val _partecipanti = MutableLiveData<List<String>>()
     val partecipanti: LiveData<List<String>> get() = _partecipanti
 
@@ -114,7 +114,7 @@ class InfoEventoViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Aggiungi il partecipante nella sottocollezione "partecipanti"
+                
                 val partecipanteData = mapOf(
                     "uid" to currentUser.uid,
                     "username" to usernamePartecipante,

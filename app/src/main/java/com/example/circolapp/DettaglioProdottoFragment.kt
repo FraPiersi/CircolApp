@@ -108,7 +108,7 @@ class DettaglioProdottoFragment : Fragment() {
                 "data" to com.google.firebase.Timestamp(Date())
             )
 
-            // Aggiungi il movimento nella sottocollezione movimenti
+            
             val movimentoRef = userRef.collection("movimenti").document()
             transaction.set(movimentoRef, movimentoData)
 
