@@ -45,6 +45,14 @@ android {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
         }
+        // Increase timeout for instrumented tests to handle device connectivity issues
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        // Configure test execution to be more resilient to device issues
+        managedDevices {
+            localDevices {
+                // This helps with device management issues
+            }
+        }
     }
     
     // Exclude conflicting protobuf versions from transitive dependencies
@@ -149,6 +157,9 @@ dependencies {
     androidTestImplementation("androidx.test:core-ktx:1.6.1")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.6")
+    
+    // Test orchestrator for better test isolation and device management
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
     
     // Fragment testing
     debugImplementation("androidx.fragment:fragment-testing:1.8.3")

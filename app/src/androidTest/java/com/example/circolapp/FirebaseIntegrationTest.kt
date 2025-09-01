@@ -54,6 +54,7 @@ class FirebaseIntegrationTest {
         
         val latch = CountDownLatch(1)
         var connectionSuccess = false
+        var testCompleted = false
         
         try {
             val firestore = FirebaseFirestore.getInstance()
@@ -63,20 +64,23 @@ class FirebaseIntegrationTest {
                 .limit(1)
                 .get()
                 .addOnCompleteListener { task ->
-                    connectionSuccess = task.isSuccessful || task.exception?.message?.contains("permission") == true
-                    Log.d(TAG, "Test connessione Firestore: ${if (connectionSuccess) "OK" else "FAILED"}")
-                    if (!connectionSuccess) {
-                        Log.w(TAG, "Errore connessione: ${task.exception?.message}")
+                    if (!testCompleted) {
+                        connectionSuccess = task.isSuccessful || task.exception?.message?.contains("permission") == true
+                        Log.d(TAG, "Test connessione Firestore: ${if (connectionSuccess) "OK" else "FAILED"}")
+                        if (!connectionSuccess) {
+                            Log.w(TAG, "Errore connessione: ${task.exception?.message}")
+                        }
+                        testCompleted = true
+                        latch.countDown()
                     }
-                    latch.countDown()
                 }
             
-            // Aspetta massimo 10 secondi
-            val completed = latch.await(10, TimeUnit.SECONDS)
+            // Aspetta massimo 15 secondi per permettere maggiore tolleranza
+            val completed = latch.await(15, TimeUnit.SECONDS)
             
-            if (!completed) {
-                Log.w(TAG, "Timeout nel test di connessione Firestore")
-                connectionSuccess = true // Non falliamo per timeout di rete
+            if (!completed || !testCompleted) {
+                Log.w(TAG, "Timeout nel test di connessione Firestore - considerato normale se dispositivo offline")
+                connectionSuccess = true // Non falliamo per timeout di rete o dispositivo offline
             }
             
             assertTrue("Connessione Firestore fallita", connectionSuccess)
@@ -92,8 +96,8 @@ class FirebaseIntegrationTest {
             if (isProtobufError) {
                 fail("Errore protobuf rilevato: ${e.message}")
             } else {
-                // Altri errori possono essere dovuti a configurazione di rete/auth, li ignoriamo
-                Log.w(TAG, "Errore non-critico nel test Firestore: ${e.message}")
+                // Altri errori possono essere dovuti a configurazione di rete/auth/device offline, li ignoriamo
+                Log.w(TAG, "Errore non-critico nel test Firestore (normale se offline): ${e.message}")
             }
         }
     }
@@ -120,26 +124,36 @@ class FirebaseIntegrationTest {
             // Test di scrittura (può fallire per permessi, ma non dovrebbe dare errori protobuf)
             val latch = CountDownLatch(1)
             var protobufErrorOccurred = false
+            var testCompleted = false
             
             firestore.collection("test_protobuf")
                 .add(testData)
                 .addOnCompleteListener { task ->
-                    if (!task.isSuccessful) {
-                        val error = task.exception
-                        protobufErrorOccurred = error?.message?.contains("protobuf") == true ||
-                                               error?.message?.contains("GeneratedMessageLite") == true ||
-                                               error?.message?.contains("registerDefaultInstance") == true
-                        
-                        if (protobufErrorOccurred) {
-                            Log.e(TAG, "Errore protobuf rilevato durante test scrittura", error)
-                        } else {
-                            Log.d(TAG, "Errore non-protobuf (normale): ${error?.message}")
+                    if (!testCompleted) {
+                        if (!task.isSuccessful) {
+                            val error = task.exception
+                            protobufErrorOccurred = error?.message?.contains("protobuf") == true ||
+                                                   error?.message?.contains("GeneratedMessageLite") == true ||
+                                                   error?.message?.contains("registerDefaultInstance") == true
+                            
+                            if (protobufErrorOccurred) {
+                                Log.e(TAG, "Errore protobuf rilevato durante test scrittura", error)
+                            } else {
+                                Log.d(TAG, "Errore non-protobuf (normale): ${error?.message}")
+                            }
                         }
+                        testCompleted = true
+                        latch.countDown()
                     }
-                    latch.countDown()
                 }
             
-            latch.await(10, TimeUnit.SECONDS)
+            // Aspetta massimo 15 secondi con maggiore tolleranza
+            val completed = latch.await(15, TimeUnit.SECONDS)
+            
+            if (!completed || !testCompleted) {
+                Log.w(TAG, "Timeout nel test operazioni Firestore - considerato normale se dispositivo offline")
+                // Non falliamo il test per timeout se non ci sono errori protobuf
+            }
             
             assertFalse("Errore protobuf rilevato durante le operazioni Firestore", protobufErrorOccurred)
             
@@ -151,7 +165,7 @@ class FirebaseIntegrationTest {
             if (isProtobufError) {
                 fail("Errore protobuf rilevato: ${e.message}")
             } else {
-                Log.w(TAG, "Errore non-protobuf durante test: ${e.message}")
+                Log.w(TAG, "Errore non-protobuf durante test (normale se dispositivo offline): ${e.message}")
             }
         }
     }
