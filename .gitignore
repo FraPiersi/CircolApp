@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Test artifacts and reports
+/app/build/reports/
+/app/build/test-results/
+*.log
+
+# Firebase test artifacts
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
