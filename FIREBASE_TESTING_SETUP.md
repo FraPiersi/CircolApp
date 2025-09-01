@@ -20,13 +20,19 @@ java.lang.NoSuchMethodError: No static method registerDefaultInstance(Ljava/lang
 ```kotlin
 // Firebase con gestione protobuf
 implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-implementation("com.google.firebase:firebase-auth")
-implementation("com.google.firebase:firebase-firestore")
-implementation("com.google.firebase:firebase-storage")
+implementation("com.google.firebase:firebase-auth") {
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+}
+implementation("com.google.firebase:firebase-firestore") {
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+}
+implementation("com.google.firebase:firebase-storage") {
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+}
 
-// Gestione esplicita versione protobuf
-implementation("com.google.protobuf:protobuf-javalite:3.21.12")
-androidTestImplementation("com.google.protobuf:protobuf-javalite:3.21.12")
+// Gestione esplicita versione protobuf (aggiornata per compatibilità)
+implementation("com.google.protobuf:protobuf-javalite:3.25.3")
+androidTestImplementation("com.google.protobuf:protobuf-javalite:3.25.3")
 ```
 
 ### 2. Configurazione Test Runner Personalizzato
