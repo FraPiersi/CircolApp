@@ -4,9 +4,10 @@
 
 Your Android instrumented tests were failing with these errors:
 - `connectedDebugAndroidTest` failing with "There were failing tests"
+- **UTP (Unified Test Platform) failures**: "Failed to receive the UTP test results"
+- **Protobuf configuration errors**: "Fatal error while executing main with args: --proto_config"
 - **Device connectivity issues**: "Device is OFFLINE" 
 - **Emulator management**: "emulator-5554 is not a Gradle Managed Device"
-- **UTP failure**: "Failed to receive the UTP test results"
 
 ## ✅ Solution Implemented
 
@@ -42,17 +43,23 @@ I've created a comprehensive solution that addresses all these issues while main
 ```
 This automatically handles all connectivity issues and provides fallback strategies.
 
-### Option 2: Standard Gradle
+### Option 2: No-UTP Execution (New!)
+```bash
+./gradlew connectedTestNoUTP
+```
+This bypasses UTP (Unified Test Platform) issues that cause protobuf configuration errors.
+
+### Option 3: Standard Gradle
 ```bash
 ./gradlew connectedDebugAndroidTest
 ```
 
-### Option 3: Gradle with Fallback
+### Option 4: Gradle with Fallback
 ```bash
 ./gradlew connectedTestWithFallback
 ```
 
-### Option 4: Basic Tests Only
+### Option 5: Basic Tests Only
 ```bash
 ./gradlew connectedDebugAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest
