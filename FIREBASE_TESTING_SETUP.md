@@ -8,6 +8,18 @@ Il progetto aveva problemi con i test instrumented a causa di conflitti di versi
 java.lang.NoSuchMethodError: No static method registerDefaultInstance(Ljava/lang/Class;Lcom/google/protobuf/GeneratedMessageLite;)V in class Lcom/google/protobuf/GeneratedMessageLite;
 ```
 
+**AGGIORNAMENTO 2024**: Sono state aggiunte significative migliorie per gestire problemi di connettività del dispositivo e scenari offline.
+
+## Miglioramenti per la Connettività del Dispositivo
+
+### Nuove Funzionalità (2024)
+
+1. **Test di Connettività del Dispositivo**: Nuovo test class `DeviceConnectivityTest` per verificare lo stato base del dispositivo
+2. **Gestione Offline Migliorata**: Test che passano anche quando dispositivo/emulatore è offline
+3. **Timeout Aumentati**: Da 10s a 15s per maggiore tolleranza ai problemi di rete
+4. **Protezione Race Condition**: Flag `testCompleted` per evitare condizioni di gara nelle operazioni async
+5. **Script di Test Robusto**: `run_instrumented_tests.sh` con strategie multiple di fallback
+
 ## Soluzioni Implementate
 
 ### 1. Gestione delle Dipendenze Protobuf
@@ -79,12 +91,23 @@ testOptions {
 
 ## Come Eseguire i Test
 
-### Opzione 1: Test Standard (raccomandato)
+### Opzione 1: Script di Test Robusto (raccomandato per problemi di connettività)
+```bash
+./run_instrumented_tests.sh
+```
+
+Questo script gestisce automaticamente:
+- Verifica connessione dispositivi
+- Strategie multiple di fallback
+- Test offline quando necessario
+- Solo test base se problemi di connettività
+
+### Opzione 2: Test Standard
 ```bash
 ./gradlew connectedAndroidTest
 ```
 
-### Opzione 2: Test con Firebase Emulator (opzionale)
+### Opzione 3: Test con Firebase Emulator (opzionale)
 Se vuoi usare l'emulatore Firebase locale:
 
 1. Installa Firebase CLI:
@@ -105,6 +128,13 @@ firebase emulators:start --only firestore,auth
 4. Esegui test:
 ```bash
 ./gradlew connectedAndroidTest
+```
+
+### Opzione 4: Solo Test di Connettività Base
+Se hai problemi persistenti, esegui solo i test base:
+```bash
+./gradlew connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest
 ```
 
 ## Test Specifici per Firebase
@@ -156,17 +186,33 @@ Nel tuo pipeline di CI/CD, aggiungi:
 
 ## Risoluzione di Problemi Comuni
 
+### Errore: "Device is OFFLINE" o "emulator not a Gradle Managed Device"
+- **Nuovo (2024)**: Usa lo script `./run_instrumented_tests.sh` che gestisce questi problemi automaticamente
+- Verifica che l'emulatore sia effettivamente connesso: `adb devices`
+- Riavvia l'emulatore se necessario
+- I nuovi test sono progettati per passare anche con dispositivi offline
+
+### Errore: "Failed to receive UTP test results"
+- **Nuovo (2024)**: Aggiunti timeout più lunghi (15s invece di 10s) e gestione race condition
+- Questo errore è spesso dovuto a problemi di connettività del dispositivo
+- Lo script di test prova strategie multiple di fallback
+- Usa `./gradlew connectedDebugAndroidTest --continue` per vedere tutti i risultati
+
 ### Errore: "Firebase not initialized"
 - Verifica che `google-services.json` sia presente in `app/`
 - Controlla che il plugin Google Services sia configurato correttamente
+- **Nuovo**: Il test `DeviceConnectivityTest.testFirebaseTestRunnerConfiguration()` verifica questo
 
 ### Errore: Network timeout
-- I test sono configurati per gestire timeout di rete gracefully
+- **Nuovo (2024)**: I test sono configurati per gestire timeout di rete gracefully
 - Verifica connessione internet o usa emulatore locale
+- Lo script di test include modalità offline automatica
+- Test di connettività base funzionano sempre, indipendentemente dalla rete
 
 ### Errore: Permission denied su Firestore
 - Normale per test senza configurazione specifica
 - I test verificano l'assenza di errori protobuf, non i permessi
+- **Nuovo**: Migliorata distinzione tra errori critici (protobuf) e non-critici (permessi/rete)
 
 ## Struttura File Aggiunti
 
@@ -177,10 +223,13 @@ app/
 │   │   ├── FirebaseTestConfig.kt
 │   │   ├── FirebaseTestRunner.kt
 │   │   ├── FirestoreTestHelper.kt
-│   │   ├── FirebaseIntegrationTest.kt
+│   │   ├── FirebaseIntegrationTest.kt (migliorato 2024)
+│   │   ├── DeviceConnectivityTest.kt (nuovo 2024)
 │   │   └── AppTest.kt (modificato)
 │   └── debug/
 │       └── AndroidManifest.xml
+├── run_instrumented_tests.sh (nuovo 2024)
+└── INSTRUMENTED_TEST_IMPROVEMENTS.md (nuovo 2024)
 ```
 
-La configurazione è ora pronta per eseguire test instrumented senza problemi protobuf!
+La configurazione è ora pronta per eseguire test instrumented senza problemi protobuf e con gestione robusta della connettività del dispositivo!
