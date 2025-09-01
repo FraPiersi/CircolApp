@@ -56,9 +56,10 @@ if defined ANDROID_HOME (
 )
 
 REM Check ADB devices
-for /f %%i in ('!ADB_CMD! devices 2^>nul ^| find /c /v "List of devices attached"') do set device_lines=%%i
-set /a devices=!device_lines!-1
-if !devices! lss 1 set devices=0
+set devices=0
+for /f "delims=" %%i in ('!ADB_CMD! devices 2^>nul') do (
+    echo %%i | find "device" >nul && set /a devices+=1
+)
 
 if !devices! equ 0 (
     echo ⚠️  Nessun dispositivo/emulatore connesso
