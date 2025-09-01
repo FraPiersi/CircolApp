@@ -90,14 +90,27 @@ if !strategy1_result! equ 0 (
     REM Strategy 2: Try without UTP to avoid protobuf configuration issues
     echo.
     echo 📋 Strategia 2: Test senza UTP per evitare errori protobuf/configurazione
-    gradlew connectedTestNoUTP --continue --stacktrace
+    echo    Usando il nuovo task configuration-cache compatible...
+    gradlew connectedTestNoUTPDirect --continue --stacktrace
     set strategy2_result=!errorlevel!
     
     if !strategy2_result! equ 0 (
         echo ✅ Test completati con successo senza UTP!
         exit /b 0
     ) else (
-        echo ❌ Test senza UTP falliti, provo modalità offline...
+        echo ❌ Test con task NoUTPDirect falliti, provo comando diretto...
+        
+        REM Strategy 2b: Direct command without configuration cache
+        echo.
+        echo 📋 Strategia 2b: Comando diretto senza configuration cache
+        gradlew connectedDebugAndroidTest --no-configuration-cache --no-build-cache -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false -Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000 --continue --stacktrace
+        set strategy2b_result=!errorlevel!
+        
+        if !strategy2b_result! equ 0 (
+            echo ✅ Test completati con successo usando comando diretto!
+            exit /b 0
+        ) else (
+            echo ❌ Test con comando diretto falliti, provo modalità offline...
         
         REM Strategy 3: Try with increased timeout and offline mode
         echo.
