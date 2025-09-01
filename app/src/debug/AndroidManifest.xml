@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Firebase Test Configuration -->
-    <application android:usesCleartextTraffic="true">
-        <!-- Permetti connessioni non cifrate per l'emulatore Firebase locale -->
-    </application>
-</manifest>
