@@ -1,9 +1,17 @@
 #!/bin/bash
 
-# Script per eseguire i test instrumented con gestione di problemi di connettività
+# Script per eseguire i test instrumented con gestione completa di problemi UTP e connettività
+# 
+# 🎯 QUESTO SCRIPT RISOLVE:
+# - Errori UTP (Unified Test Platform): "Failed to receive UTP test results"  
+# - Errori protobuf: "Fatal error with proto_config"
+# - Problemi device: "emulator is not a Gradle Managed Device"
+# - Problemi di connettività e timeout
+#
 # Usage: ./run_instrumented_tests.sh
 
-echo "🚀 Avvio test instrumented CircolApp con gestione problemi di connettività..."
+echo "🚀 Avvio test instrumented CircolApp con gestione UTP e connettività..."
+echo "   Questo script risolve automaticamente gli errori UTP comuni"
 
 # Check if we're in the right directory
 if [ ! -f "app/build.gradle.kts" ]; then

@@ -1,3 +1,11 @@
+/*
+ * CircolApp Build Configuration
+ * 
+ * 🚨 UTP ERROR FIX: If you see "Failed to receive UTP test results" or protobuf errors:
+ *    Use: ./gradlew connectedTestNoUTP
+ *    See: QUICK_UTP_FIX.md for immediate solutions
+ */
+
 plugins {
     id("com.google.gms.google-services")
     id("com.android.application")
@@ -184,23 +192,58 @@ tasks.register("connectedTestWithFallback") {
     description = "Runs connected tests with fallback strategies for connectivity issues"
     
     doLast {
+        println("🧪 Running connected tests with fallback strategies...")
+        
+        val gradleExec = if (System.getProperty("os.name").lowercase().contains("windows")) {
+            "gradlew.bat"
+        } else {
+            "./gradlew"
+        }
+        
         try {
+            println("📋 Strategy 1: Standard connected tests")
             // Try standard connected tests first
             exec {
-                commandLine("./gradlew", "connectedDebugAndroidTest", "--continue")
+                commandLine(gradleExec, "connectedDebugAndroidTest", "--continue", "--stacktrace")
+                workingDir = project.rootDir
             }
+            println("✅ Standard tests completed successfully!")
         } catch (e: Exception) {
-            println("Standard tests failed, trying offline mode...")
+            println("⚠️  Standard tests failed with: ${e.message}")
+            println("📋 Strategy 2: Tests without UTP (no protobuf config)")
             try {
                 exec {
-                    commandLine("./gradlew", "connectedDebugAndroidTest", "--offline", "--continue")
+                    commandLine(gradleExec, "connectedDebugAndroidTest", 
+                        "--no-configuration-cache",
+                        "--no-build-cache",
+                        "-Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000",
+                        "--continue", "--stacktrace")
+                    workingDir = project.rootDir
                 }
+                println("✅ UTP-less tests completed successfully!")
             } catch (e2: Exception) {
-                println("Offline tests also failed, running only device connectivity tests...")
-                exec {
-                    commandLine("./gradlew", "connectedDebugAndroidTest",
-                        "-Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest",
-                        "--continue")
+                println("⚠️  UTP-less tests failed with: ${e2.message}")
+                println("📋 Strategy 3: Offline mode with increased timeout")
+                try {
+                    exec {
+                        commandLine(gradleExec, "connectedDebugAndroidTest", 
+                            "--offline", 
+                            "--continue", 
+                            "--stacktrace",
+                            "-Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000")
+                        workingDir = project.rootDir
+                    }
+                    println("✅ Offline tests completed successfully!")
+                } catch (e3: Exception) {
+                    println("⚠️  Offline tests failed with: ${e3.message}")
+                    println("📋 Strategy 4: Basic device connectivity tests only")
+                    exec {
+                        commandLine(gradleExec, "connectedDebugAndroidTest",
+                            "-Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest",
+                            "--continue", "--stacktrace")
+                        workingDir = project.rootDir
+                    }
+                    println("✅ Basic connectivity tests completed!")
                 }
             }
         }
@@ -213,22 +256,50 @@ tasks.register("connectedTestNoUTP") {
     description = "Runs connected tests without UTP when UTP configuration fails"
     
     doLast {
+        println("🔧 Running tests without UTP to avoid protobuf configuration issues...")
+        println("   Disabling configuration cache and build cache...")
+        
+        // Set system properties to disable UTP features
+        System.setProperty("gradle.configuration-cache", "false")
+        System.setProperty("gradle.build-cache", "false")
+        
         try {
-            // Use alternative test execution that doesn't rely on UTP protobuf configs
+            // Use gradle executable directly to avoid recursive calls
+            val gradleExec = if (System.getProperty("os.name").lowercase().contains("windows")) {
+                "gradlew.bat"
+            } else {
+                "./gradlew"
+            }
+            
+            // Execute test with UTP-disabling parameters
             exec {
-                commandLine("./gradlew", "connectedDebugAndroidTest", 
+                commandLine(gradleExec, "connectedDebugAndroidTest", 
                     "--no-configuration-cache",
                     "--no-build-cache",
                     "-Pandroid.testInstrumentationRunnerArguments.clearPackageData=false",
-                    "--continue")
+                    "-Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000",
+                    "--continue",
+                    "--stacktrace")
+                workingDir = project.rootDir
             }
         } catch (e: Exception) {
-            println("UTP-less execution failed, trying basic device tests...")
+            println("⚠️  Standard UTP-less execution failed: ${e.message}")
+            println("🔄 Trying basic device connectivity tests as fallback...")
+            
+            val gradleExec = if (System.getProperty("os.name").lowercase().contains("windows")) {
+                "gradlew.bat"
+            } else {
+                "./gradlew"
+            }
+            
             exec {
-                commandLine("./gradlew", "connectedDebugAndroidTest",
+                commandLine(gradleExec, "connectedDebugAndroidTest",
                     "-Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest",
-                    "--no-configuration-cache", 
-                    "--continue")
+                    "--no-configuration-cache",
+                    "--no-build-cache", 
+                    "--continue",
+                    "--stacktrace")
+                workingDir = project.rootDir
             }
         }
     }

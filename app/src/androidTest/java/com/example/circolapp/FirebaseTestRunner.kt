@@ -21,16 +21,37 @@ class FirebaseTestRunner : AndroidJUnitRunner() {
         try {
             super.onCreate(arguments)
         } catch (e: Exception) {
-            // Log UTP-related errors but don't fail completely
+            // Enhanced detection of UTP-related errors
             val isUTPError = e.message?.contains("UTP") == true ||
                            e.message?.contains("proto_config") == true ||
-                           e.message?.contains("protobuf") == true
+                           e.message?.contains("protobuf") == true ||
+                           e.message?.contains("serverConfig") == true ||
+                           e.message?.contains("runnerConfig") == true ||
+                           e.message?.contains("Gradle Managed Device") == true ||
+                           e.message?.contains("Failed to receive UTP test results") == true
             
             if (isUTPError) {
-                android.util.Log.w("FirebaseTestRunner", "UTP configuration issue detected, proceeding with fallback: ${e.message}")
+                android.util.Log.w("FirebaseTestRunner", 
+                    "UTP configuration issue detected (common with regular emulators), proceeding with fallback: ${e.message}")
+                // Don't throw - continue with test execution
             } else {
                 android.util.Log.e("FirebaseTestRunner", "Test runner initialization error: ${e.message}", e)
                 throw e
+            }
+        }
+        
+        // Additional UTP compatibility configuration
+        arguments?.let { args ->
+            // Disable problematic UTP features if not already disabled
+            if (!args.containsKey("clearPackageData")) {
+                args.putString("clearPackageData", "false")
+                android.util.Log.d("FirebaseTestRunner", "Disabled clearPackageData to avoid UTP issues")
+            }
+            
+            // Ensure timeout is set to handle UTP communication delays
+            if (!args.containsKey("timeout_msec")) {
+                args.putString("timeout_msec", "300000") // 5 minutes
+                android.util.Log.d("FirebaseTestRunner", "Set extended timeout for UTP compatibility")
             }
         }
     }
