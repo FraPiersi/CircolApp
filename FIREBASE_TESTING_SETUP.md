@@ -194,9 +194,11 @@ Nel tuo pipeline di CI/CD, aggiungi:
 
 ### Errore: "Failed to receive UTP test results"
 - **Nuovo (2024)**: Aggiunti timeout più lunghi (15s invece di 10s) e gestione race condition
-- Questo errore è spesso dovuto a problemi di connettività del dispositivo
-- Lo script di test prova strategie multiple di fallback
+- **SOLUZIONE UTP**: Usa `./gradlew connectedTestNoUTP` per bypassare i problemi UTP
+- Questo errore è spesso dovuto a problemi di connettività del dispositivo o configurazione UTP
+- Lo script di test prova strategie multiple di fallback inclusa esecuzione senza UTP
 - Usa `./gradlew connectedDebugAndroidTest --continue` per vedere tutti i risultati
+- **UTP Issues**: Se vedi errori "proto_config" o "protobuf", è un problema di configurazione UTP
 
 ### Errore: "Firebase not initialized"
 - Verifica che `google-services.json` sia presente in `app/`

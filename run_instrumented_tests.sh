@@ -15,8 +15,14 @@ fi
 check_device() {
     echo "📱 Verifica connessione dispositivi/emulatori..."
     
+    # Use proper adb path
+    ADB_CMD="adb"
+    if [ -n "$ANDROID_HOME" ]; then
+        ADB_CMD="$ANDROID_HOME/platform-tools/adb"
+    fi
+    
     # Check ADB devices
-    devices=$(adb devices | grep -v "List of devices attached" | grep -v "^$" | wc -l)
+    devices=$($ADB_CMD devices | grep -v "List of devices attached" | grep -v "^$" | wc -l)
     
     if [ $devices -eq 0 ]; then
         echo "⚠️  Nessun dispositivo/emulatore connesso"
@@ -24,7 +30,7 @@ check_device() {
         return 1
     else
         echo "✅ Trovati $devices dispositivo/i connesso/i"
-        adb devices
+        $ADB_CMD devices
         return 0
     fi
 }
@@ -46,63 +52,89 @@ run_tests() {
     else
         echo "⚠️  Test falliti con codice $exit_code"
         
-        # Strategy 2: Try with increased timeout and offline mode
+        # Strategy 2: Try without UTP to avoid protobuf configuration issues
         echo ""
-        echo "📋 Strategia 2: Test con timeout aumentato e modalità offline"
-        ./gradlew connectedDebugAndroidTest --offline --continue --stacktrace \
-            -Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000
+        echo "📋 Strategia 2: Test senza UTP per evitare errori protobuf/configurazione"
+        ./gradlew connectedTestNoUTP --continue --stacktrace
         
         exit_code=$?
         
         if [ $exit_code -eq 0 ]; then
-            echo "✅ Test completati con successo in modalità offline!"
+            echo "✅ Test completati con successo senza UTP!"
             return 0
         else
-            echo "❌ Test falliti anche in modalità offline"
+            echo "❌ Test senza UTP falliti, provo modalità offline..."
             
-            # Strategy 3: Run only basic connectivity tests
+            # Strategy 3: Try with increased timeout and offline mode
             echo ""
-            echo "📋 Strategia 3: Solo test di connettività base"
-            ./gradlew connectedDebugAndroidTest \
-                -Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest \
-                --continue --stacktrace
+            echo "📋 Strategia 3: Test con timeout aumentato e modalità offline"
+            ./gradlew connectedDebugAndroidTest --offline --continue --stacktrace \
+                -Pandroid.testInstrumentationRunnerArguments.timeout_msec=300000
             
             exit_code=$?
             
             if [ $exit_code -eq 0 ]; then
-                echo "✅ Test di base completati - il dispositivo e l'app sono configurati correttamente"
-                echo "⚠️  I test Firebase potrebbero fallire per problemi di connettività"
+                echo "✅ Test completati con successo in modalità offline!"
                 return 0
             else
-                echo "❌ Anche i test di base falliscono - problema di configurazione dell'app"
-                return $exit_code
+                echo "❌ Test falliti anche in modalità offline"
+                
+                # Strategy 4: Run only basic connectivity tests
+                echo ""
+                echo "📋 Strategia 4: Solo test di connettività base"
+                ./gradlew connectedDebugAndroidTest \
+                    -Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest \
+                    --continue --stacktrace
+                
+                exit_code=$?
+                
+                if [ $exit_code -eq 0 ]; then
+                    echo "✅ Test di base completati - il dispositivo e l'app sono configurati correttamente"
+                    echo "⚠️  I test Firebase potrebbero fallire per problemi di connettività o UTP"
+                    return 0
+                else
+                    echo "❌ Anche i test di base falliscono - problema di configurazione dell'app"
+                    return $exit_code
+                fi
             fi
         fi
     fi
 }
 
-# Function to provide troubleshooting info
 show_troubleshooting() {
     echo ""
     echo "🔧 RISOLUZIONE PROBLEMI:"
     echo ""
+    
+    # Use proper adb path
+    ADB_CMD="adb"
+    if [ -n "$ANDROID_HOME" ]; then
+        ADB_CMD="$ANDROID_HOME/platform-tools/adb"
+    fi
+    
     echo "Se i test continuano a fallire, verifica:"
     echo "1. 📱 Emulatore/dispositivo connesso e online:"
-    echo "   adb devices"
+    echo "   $ADB_CMD devices"
     echo ""
     echo "2. 🌐 Connettività di rete del dispositivo:"
-    echo "   adb shell ping -c 3 8.8.8.8"
+    echo "   $ADB_CMD shell ping -c 3 8.8.8.8"
     echo ""
-    echo "3. 🔥 File google-services.json presente:"
+    echo "3. 🔧 PROBLEMI UTP (Unified Test Platform):"
+    echo "   Se vedi 'Failed to receive UTP test results' o errori 'proto_config':"
+    echo "   - Prova: ./gradlew connectedTestNoUTP"
+    echo "   - Oppure: ./gradlew connectedDebugAndroidTest --no-configuration-cache"
+    echo "   - È spesso dovuto a problemi di configurazione protobuf in UTP"
+    echo ""
+    echo "4. 🔥 File google-services.json presente:"
     echo "   ls -la app/google-services.json"
     echo ""
-    echo "4. 📋 Log dettagliati dei test:"
-    echo "   adb logcat -s TestRunner,FirebaseTestApplication,FirebaseIntegrationTest"
+    echo "5. 📋 Log dettagliati dei test:"
+    echo "   $ADB_CMD logcat -s TestRunner,FirebaseTestApplication,FirebaseIntegrationTest"
     echo ""
-    echo "5. 🧹 Clean e rebuild:"
+    echo "6. 🧹 Clean e rebuild:"
     echo "   ./gradlew clean && ./gradlew assembleDebug"
     echo ""
-    echo "I test sono progettati per essere tolleranti ai problemi di connettività."
+    echo "I test sono progettati per essere tolleranti ai problemi di connettività e UTP."
     echo "Se falliscono, probabilmente c'è un problema di configurazione dell'app."
 }
 
