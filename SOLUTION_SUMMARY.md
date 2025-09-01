@@ -26,7 +26,7 @@ I've created a comprehensive solution that addresses all these issues while main
    - 🔍 Critical configuration error detection
 
 3. **Robust Test Runner Script**
-   - 📝 `run_instrumented_tests.sh` - comprehensive test execution with fallbacks
+   - 📝 `run_instrumented_tests.sh` (Linux/macOS) and `run_instrumented_tests.bat` (Windows) - comprehensive test execution with fallbacks
    - 🔄 Multiple strategies: standard → offline → basic tests
    - 📱 Automatic device connectivity verification
 
@@ -39,13 +39,21 @@ I've created a comprehensive solution that addresses all these issues while main
 
 ### Option 1: Robust Script (Recommended)
 ```bash
+# Linux/macOS:
 ./run_instrumented_tests.sh
+
+# Windows:
+run_instrumented_tests.bat
 ```
 This automatically handles all connectivity issues and provides fallback strategies.
 
 ### Option 2: No-UTP Execution (New!)
 ```bash
+# Linux/macOS:
 ./gradlew connectedTestNoUTP
+
+# Windows:
+gradlew connectedTestNoUTP
 ```
 This bypasses UTP (Unified Test Platform) issues that cause protobuf configuration errors.
 
@@ -100,4 +108,4 @@ The solution maintains **100% backward compatibility** while adding robust error
 
 ---
 
-**Ready to test?** Run `./run_instrumented_tests.sh` and see the difference! 🚀
+**Ready to test?** Run `./run_instrumented_tests.sh` (Linux/macOS) or `run_instrumented_tests.bat` (Windows) and see the difference! 🚀

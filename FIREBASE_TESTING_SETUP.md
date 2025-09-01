@@ -18,7 +18,7 @@ java.lang.NoSuchMethodError: No static method registerDefaultInstance(Ljava/lang
 2. **Gestione Offline Migliorata**: Test che passano anche quando dispositivo/emulatore è offline
 3. **Timeout Aumentati**: Da 10s a 15s per maggiore tolleranza ai problemi di rete
 4. **Protezione Race Condition**: Flag `testCompleted` per evitare condizioni di gara nelle operazioni async
-5. **Script di Test Robusto**: `run_instrumented_tests.sh` con strategie multiple di fallback
+5. **Script di Test Robusto**: `run_instrumented_tests.sh` (Linux/macOS) e `run_instrumented_tests.bat` (Windows) con strategie multiple di fallback
 
 ## Soluzioni Implementate
 
@@ -93,7 +93,11 @@ testOptions {
 
 ### Opzione 1: Script di Test Robusto (raccomandato per problemi di connettività)
 ```bash
+# Linux/macOS:
 ./run_instrumented_tests.sh
+
+# Windows:
+run_instrumented_tests.bat
 ```
 
 Questo script gestisce automaticamente:
@@ -104,7 +108,11 @@ Questo script gestisce automaticamente:
 
 ### Opzione 2: Test Standard
 ```bash
+# Linux/macOS:
 ./gradlew connectedAndroidTest
+
+# Windows:
+gradlew connectedAndroidTest
 ```
 
 ### Opzione 3: Test con Firebase Emulator (opzionale)
@@ -187,7 +195,7 @@ Nel tuo pipeline di CI/CD, aggiungi:
 ## Risoluzione di Problemi Comuni
 
 ### Errore: "Device is OFFLINE" o "emulator not a Gradle Managed Device"
-- **Nuovo (2024)**: Usa lo script `./run_instrumented_tests.sh` che gestisce questi problemi automaticamente
+- **Nuovo (2024)**: Usa lo script `./run_instrumented_tests.sh` (Linux/macOS) o `run_instrumented_tests.bat` (Windows) che gestisce questi problemi automaticamente
 - Verifica che l'emulatore sia effettivamente connesso: `adb devices`
 - Riavvia l'emulatore se necessario
 - I nuovi test sono progettati per passare anche con dispositivi offline
@@ -230,7 +238,8 @@ app/
 │   │   └── AppTest.kt (modificato)
 │   └── debug/
 │       └── AndroidManifest.xml
-├── run_instrumented_tests.sh (nuovo 2024)
+├── run_instrumented_tests.sh (nuovo 2024, Linux/macOS)
+├── run_instrumented_tests.bat (nuovo 2024, Windows)
 └── INSTRUMENTED_TEST_IMPROVEMENTS.md (nuovo 2024)
 ```
 

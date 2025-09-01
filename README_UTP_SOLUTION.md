@@ -39,7 +39,11 @@ We've implemented **5 different solutions**, ranked by effectiveness:
 
 ### 2. 🥈 **Enhanced Test Script** (Automatic Fallback)
 ```bash
+# Linux/macOS:
 ./run_instrumented_tests.sh
+
+# Windows:
+run_instrumented_tests.bat
 ```
 - Tries 4 strategies automatically
 - Falls back to working solutions
@@ -79,9 +83,9 @@ We've implemented **5 different solutions**, ranked by effectiveness:
 ### Files Modified/Created:
 - `app/build.gradle.kts` - Enhanced UTP tasks with better error handling
 - `app/src/androidTest/java/com/example/circolapp/FirebaseTestRunner.kt` - Better UTP error detection
-- `run_instrumented_tests.sh` - UTP-aware messaging and strategies
+- `run_instrumented_tests.sh` / `run_instrumented_tests.bat` - UTP-aware messaging and strategies (Linux/macOS and Windows)
 - `QUICK_UTP_FIX.md` - Immediate solution guide
-- `utp_fix_demo.sh` - Interactive demonstration script
+- `utp_fix_demo.sh` / `utp_fix_demo.bat` - Interactive demonstration script (Linux/macOS and Windows)
 - `UTP_FIXES_COMPLETE.md` - Comprehensive summary
 
 ## 🧪 **VALIDATION**

@@ -3,7 +3,11 @@
 ## ⚡ SOLUZIONE VELOCE:
 Se vedi errori UTP, usa questo comando invece:
 ```bash
+# Linux/macOS:
 ./gradlew connectedTestNoUTP
+
+# Windows:
+gradlew connectedTestNoUTP
 ```
 
 ## Il tuo errore:
@@ -17,29 +21,49 @@ emulator-5554 with id Medium_Phone is not a Gradle Managed Device
 
 ### ✅ OPZIONE 1 - RACCOMANDATA: Bypassa UTP completamente
 ```bash
+# Linux/macOS:
 ./gradlew connectedTestNoUTP
+
+# Windows:
+gradlew connectedTestNoUTP
 ```
 *Questo disabilita UTP e funziona con emulatori standard*
 
 ### ✅ OPZIONE 2: Script automatico con tutte le strategie
 ```bash
+# Linux/macOS:
 ./run_instrumented_tests.sh
+
+# Windows:
+run_instrumented_tests.bat
 ```
 *Prova automaticamente 4 strategie diverse in sequenza*
 
 ### ✅ OPZIONE 3: Disabilita cache UTP manualmente
 ```bash
+# Linux/macOS:
 ./gradlew connectedDebugAndroidTest --no-configuration-cache --no-build-cache
+
+# Windows:
+gradlew connectedDebugAndroidTest --no-configuration-cache --no-build-cache
 ```
 
 ### ✅ OPZIONE 4: Solo test di base (sempre funziona)
 ```bash
+# Linux/macOS:
 ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest
+
+# Windows:
+gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.circolapp.DeviceConnectivityTest
 ```
 
 ### ✅ OPZIONE 5: Strategia completa con fallback
 ```bash
+# Linux/macOS:
 ./gradlew connectedTestWithFallback
+
+# Windows:
+gradlew connectedTestWithFallback
 ```
 *Prova diverse strategie automaticamente*
 
@@ -52,7 +76,9 @@ emulator-5554 with id Medium_Phone is not a Gradle Managed Device
 
 ## 🎯 RACCOMANDAZIONE FINALE:
 
-**Usa sempre l'OPZIONE 1**: `./gradlew connectedTestNoUTP`
+**Usa sempre l'OPZIONE 1**: 
+- Linux/macOS: `./gradlew connectedTestNoUTP`
+- Windows: `gradlew connectedTestNoUTP`
 
 Questo comando:
 - ✅ Bypassa completamente UTP
