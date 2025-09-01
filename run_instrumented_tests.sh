@@ -15,8 +15,14 @@ fi
 check_device() {
     echo "📱 Verifica connessione dispositivi/emulatori..."
     
+    # Use proper adb path
+    ADB_CMD="adb"
+    if [ -n "$ANDROID_HOME" ]; then
+        ADB_CMD="$ANDROID_HOME/platform-tools/adb"
+    fi
+    
     # Check ADB devices
-    devices=$(adb devices | grep -v "List of devices attached" | grep -v "^$" | wc -l)
+    devices=$($ADB_CMD devices | grep -v "List of devices attached" | grep -v "^$" | wc -l)
     
     if [ $devices -eq 0 ]; then
         echo "⚠️  Nessun dispositivo/emulatore connesso"
@@ -24,7 +30,7 @@ check_device() {
         return 1
     else
         echo "✅ Trovati $devices dispositivo/i connesso/i"
-        adb devices
+        $ADB_CMD devices
         return 0
     fi
 }
@@ -95,17 +101,23 @@ run_tests() {
     fi
 }
 
-# Function to provide troubleshooting info
 show_troubleshooting() {
     echo ""
     echo "🔧 RISOLUZIONE PROBLEMI:"
     echo ""
+    
+    # Use proper adb path
+    ADB_CMD="adb"
+    if [ -n "$ANDROID_HOME" ]; then
+        ADB_CMD="$ANDROID_HOME/platform-tools/adb"
+    fi
+    
     echo "Se i test continuano a fallire, verifica:"
     echo "1. 📱 Emulatore/dispositivo connesso e online:"
-    echo "   adb devices"
+    echo "   $ADB_CMD devices"
     echo ""
     echo "2. 🌐 Connettività di rete del dispositivo:"
-    echo "   adb shell ping -c 3 8.8.8.8"
+    echo "   $ADB_CMD shell ping -c 3 8.8.8.8"
     echo ""
     echo "3. 🔧 PROBLEMI UTP (Unified Test Platform):"
     echo "   Se vedi 'Failed to receive UTP test results' o errori 'proto_config':"
@@ -117,7 +129,7 @@ show_troubleshooting() {
     echo "   ls -la app/google-services.json"
     echo ""
     echo "5. 📋 Log dettagliati dei test:"
-    echo "   adb logcat -s TestRunner,FirebaseTestApplication,FirebaseIntegrationTest"
+    echo "   $ADB_CMD logcat -s TestRunner,FirebaseTestApplication,FirebaseIntegrationTest"
     echo ""
     echo "6. 🧹 Clean e rebuild:"
     echo "   ./gradlew clean && ./gradlew assembleDebug"
