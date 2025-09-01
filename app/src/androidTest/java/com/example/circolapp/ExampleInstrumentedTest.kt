@@ -2,6 +2,7 @@ package com.example.circolapp
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import android.util.Log
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,8 +18,13 @@ import org.junit.Assert.*
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.circolapp", appContext.packageName)
+        try {
+            // Context of the app under test.
+            val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+            assertEquals("com.example.circolapp", appContext.packageName)
+        } catch (e: Exception) {
+            Log.e("ExampleInstrumentedTest", "Errore nel test di contesto: ${e.message}", e)
+            throw e
+        }
     }
 }
