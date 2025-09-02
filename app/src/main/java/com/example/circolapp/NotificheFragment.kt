@@ -16,7 +16,45 @@ import java.util.Locale
 class NotificheFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificheAdapter
-    private                notifiche.addAll(notificheList.sortedByDescending { it.timestamp?.toDate() })
+    private val notifiche = mutableListOf<Notifica>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_notifiche, container, false)
+        recyclerView = view.findViewById(R.id.recyclerViewNotifiche)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        adapter = NotificheAdapter(notifiche) { notifica ->
+            mostraNotificaDialog(notifica)
+        }
+        recyclerView.adapter = adapter
+        caricaNotificheDaFirestore()
+        return view
+    }
+
+    private fun caricaNotificheDaFirestore() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            Toast.makeText(context, "Utente non autenticato", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        FirebaseFirestore.getInstance().collection("notifiche")
+            .whereEqualTo("uidUtente", currentUser.uid)
+            .get()
+            .addOnSuccessListener { result ->
+                notifiche.clear()
+                val notificheList = result.documents.mapNotNull { document ->
+                    try {
+                        document.toObject(Notifica::class.java)?.copy(id = document.id)
+                    } catch (e: Exception) {
+                        android.util.Log.e("NotificheFragment", "Errore nel convertire notifica: ${e.message}")
+                        null
+                    }
+                }
+                // Ordina per timestamp in memoria (più recenti prima)
+                notifiche.addAll(notificheList.sortedByDescending { it.timestamp?.toDate() })
                 adapter.notifyDataSetChanged()
 
                 android.util.Log.d("NotificheFragment", "Caricate ${notifiche.size} notifiche per utente ${currentUser.uid}")
@@ -47,6 +85,7 @@ class NotificheFragment : Fragment() {
                 .document(notifica.id)
                 .update("letta", true)
                 .addOnSuccessListener {
+                    // Aggiorna la lista locale
                     val index = notifiche.indexOfFirst { it.id == notifica.id }
                     if (index != -1) {
                         notifiche[index] = notifica.copy(letta = true)

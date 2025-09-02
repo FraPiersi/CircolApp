@@ -64,6 +64,7 @@ class GestisciTessereFragment : Fragment() {
                         )
                         utenti.add(utente)
                     } catch (e: Exception) {
+                        // Ignora utenti con dati malformati
                     }
                 }
                 adapter.notifyDataSetChanged()
@@ -74,7 +75,9 @@ class GestisciTessereFragment : Fragment() {
     }
 
     private fun mostraDettagliUtente(utente: User) {
+        // Mostra dialog con dettagli e azioni per l'utente
         val dialog = GestisciTesseraDialog(utente) {
+            // Callback per aggiornare la lista quando viene fatta un'azione
             caricaUtenti()
         }
         dialog.show(parentFragmentManager, "GestisciTesseraDialog")

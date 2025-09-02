@@ -19,7 +19,44 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class ListaOrdinazioniFragment : Fragment() {
-    private lateinit                val uids = ordiniTmp.map { it.uidUtente }.distinct().filter { it.isNotBlank() }
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: OrdinazioniAdapter
+    private val ordinazioni = mutableListOf<Ordine>()
+    private val mappaUidOriginali = mutableMapOf<String, String>() // Map: ID documento -> UID originale
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_ordinazioni, container, false)
+        recyclerView = view.findViewById(R.id.recyclerViewOrdinazioni)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        adapter = OrdinazioniAdapter(ordinazioni) { ordine ->
+            mostraDettaglioOrdinazione(ordine)
+        }
+        recyclerView.adapter = adapter
+        caricaOrdinazioniDaFirestore()
+        return view
+    }
+
+    private fun caricaOrdinazioniDaFirestore() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("ordinazioni")
+            .get()
+            .addOnSuccessListener { result ->
+                ordinazioni.clear()
+                mappaUidOriginali.clear() // Pulisci la mappa
+                val utentiMap = mutableMapOf<String, String>()
+                val ordiniTmp = mutableListOf<Ordine>()
+                for (document in result) {
+                    val ordine = document.toObject(Ordine::class.java)
+                    val ordineConId = ordine.copy(prodottoId = document.id)
+                    ordiniTmp.add(ordineConId)
+                    // Salva l'UID originale nella mappa
+                    mappaUidOriginali[document.id] = ordine.uidUtente
+                }
+                // Recupera i nomi utenti in batch
+                val uids = ordiniTmp.map { it.uidUtente }.distinct().filter { it.isNotBlank() }
                 if (uids.isEmpty()) {
                     ordinazioni.addAll(ordiniTmp)
                     adapter.notifyDataSetChanged()
@@ -55,10 +92,40 @@ class ListaOrdinazioniFragment : Fragment() {
             SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(it)
         } ?: "-"
 
+        val msg = """
+            Utente: ${ordine.uidUtente}
+            Prodotto: ${ordine.nomeProdotto}
+            ID Prodotto: ${ordine.prodottoId}
+            Richieste aggiuntive: ${ordine.richiesteAggiuntive ?: "Nessuna"}
+            Stato: ${ordine.stato}
+            Data: $dataString
+        """.trimIndent()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Dettaglio Ordinazione")
+            .setMessage(msg)
+            .setPositiveButton("Completa") { _, _ ->
+                completaOrdinazione(ordine)
+            }
+            .setNegativeButton("Chiudi") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun completaOrdinazione(ordine: Ordine) {
+        val db = FirebaseFirestore.getInstance()
+        // Usa direttamente l'ID del documento che ora è salvato in prodottoId
         if (ordine.prodottoId.isNotBlank()) {
             db.collection("ordinazioni").document(ordine.prodottoId)
-                .delete()                .addOnSuccessListener {
+                .delete() // Elimina completamente il documento invece di aggiornare lo stato
+                .addOnSuccessListener {
                     Toast.makeText(context, "Ordinazione completata ed eliminata!", Toast.LENGTH_SHORT).show()
+                    // Usa l'UID originale dalla mappa
+                    val uidOriginale = mappaUidOriginali[ordine.prodottoId] ?: ordine.uidUtente
+                    val ordineConUidOriginale = ordine.copy(uidUtente = uidOriginale)
+                    inviaNotificaUtente(ordineConUidOriginale)
+                    caricaOrdinazioniDaFirestore() // Ricarica la lista
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Errore nell'eliminazione: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -71,6 +138,7 @@ class ListaOrdinazioniFragment : Fragment() {
     }
 
     private fun inviaNotificaUtente(ordine: Ordine) {
+        // Utilizza solo notifiche in-app (senza Firebase Functions)
         salvaNotificaInApp(ordine)
         Log.d("ListaOrdinazioniFragment", "Notifica in-app salvata per utente: ${ordine.uidUtente}")
     }

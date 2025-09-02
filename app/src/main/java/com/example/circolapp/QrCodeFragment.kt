@@ -1,4 +1,4 @@
-package com.example.circolapp
+package com.example.circolapp // o il tuo package
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,16 +32,24 @@ class QrCodeFragment : Fragment() {
 
         setupObservers()
 
+        // Richiedi la generazione del QR code quando il fragment è pronto
         viewModel.generateUserQrCode()
     }
 
     private fun setupObservers() {
         viewModel.qrCodeBitmap.observe(viewLifecycleOwner) { bitmap ->
+            // Il Data Binding può essere usato anche per l'immagine,
+            // ma impostarlo qui è anche un'opzione comune.
             binding.qrCodeImageView.setImageBitmap(bitmap)
         }
 
+        // Gli observer per isLoading e errorMessage sono già gestiti dal Data Binding nel layout
+        // per la visibilità di ProgressBar e TextView dell'errore.
+        // Puoi aggiungere qui logica aggiuntiva se necessario.
         viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+            // Ad esempio, potresti voler loggare l'errore o fare altro
             error?.let {
+                // Toast.makeText(context, it, Toast.LENGTH_LONG).show() // Già mostrato nel layout
             }
         }
     }

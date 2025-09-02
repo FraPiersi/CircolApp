@@ -3,22 +3,29 @@ package com.example.circolapp.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.circolapp.model.Movimentoimport com.google.firebase.Timestamp
+import com.example.circolapp.model.Movimento // Assicurati che il percorso sia corretto
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Date
 
 class HomeRepository {
-    private
+    private val db = FirebaseFirestore.getInstance()
+    private val utentiCollection = db.collection("utenti") // Riferimento alla collection
+
     /**
      * Recupera il saldo dell'utente in tempo reale da Firestore usando l'UID.
      * @param userUid L'UID dell'utente autenticato.
      * @return LiveData<Double> che emette il saldo aggiornato.
      */
     fun getSaldo(userUid: String): LiveData<Double> {
+        val liveData = MutableLiveData<Double>()
+        if (userUid.isBlank()) {
+            Log.w("HomeRepository", "User UID è vuoto, impossibile recuperare il saldo.")
+            liveData.value = 0.0 // O gestisci l'errore diversamente
             return liveData
         }
 
-       
+        // L'ID del documento è l'UID dell'utente
         utentiCollection.document(userUid).addSnapshotListener { snapshot, error ->
             if (error != null) {
                 Log.w("HomeRepository", "Errore nell'ascoltare il saldo per UID: $userUid", error)
@@ -27,6 +34,11 @@ class HomeRepository {
             }
 
             if (snapshot != null && snapshot.exists()) {
+                val saldo = snapshot.getDouble("saldo") ?: 0.0
+                liveData.value = saldo
+            } else {
+                Log.d("HomeRepository", "Documento non trovato per il saldo UID: $userUid (potrebbe essere un nuovo utente senza ancora il campo saldo)")
+                liveData.value = 0.0 // Se il documento non esiste o non ha il campo saldo
             }
         }
         return liveData
@@ -38,6 +50,14 @@ class HomeRepository {
      * @return LiveData<List<Movimento>> che emette la lista aggiornata dei movimenti.
      */
     fun getMovimenti(userUid: String): LiveData<List<Movimento>> {
+        val liveData = MutableLiveData<List<Movimento>>()
+        if (userUid.isBlank()) {
+            Log.w("HomeRepository", "User UID è vuoto, impossibile recuperare i movimenti.")
+            liveData.value = emptyList()
+            return liveData
+        }
+
+        // Utilizziamo la sottocollezione "movimenti" dentro il documento utente
         utentiCollection.document(userUid).collection("movimenti")
             .orderBy("data", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->

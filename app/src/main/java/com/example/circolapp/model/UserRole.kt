@@ -1,4 +1,5 @@
-package com.example.circolapp.model
+package com.example.circolapp.model // Assicurati che il package sia corretto
+
 /**
  * Rappresenta i possibili ruoli utente nell'applicazione.
  */
