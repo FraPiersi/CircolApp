@@ -45,7 +45,23 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        // Force androidx.test:core to version 1.6.1 to resolve conflicts
+        force("androidx.test:core:1.6.1")
+    }
+}
+
 dependencies {
+    constraints {
+        // Force consistent versions for androidx.test dependencies to resolve version conflicts
+        implementation("androidx.test:core:1.6.1")
+        androidTestImplementation("androidx.test:core:1.6.1")
+        androidTestImplementation("androidx.test.ext:junit:1.2.1")
+        androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+        androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
+        androidTestImplementation("androidx.test.espresso:espresso-contrib:3.6.1")
+    }
     // Camera X per barcode scanning
     implementation ("androidx.camera:camera-core:1.4.2")
     implementation ("androidx.camera:camera-camera2:1.4.2")
