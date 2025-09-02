@@ -101,12 +101,15 @@ dependencies {
     // Android Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
-    androidTestImplementation("androidx.test:runner:1.6.1")
-    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    
+    // Add explicit test platform dependency for DirectExecutor
+    androidTestImplementation("androidx.test:platform:1.6.1")
     
     // Fragment testing
     debugImplementation("androidx.fragment:fragment-testing:1.8.3")
