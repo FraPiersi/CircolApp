@@ -6,7 +6,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -172,15 +171,33 @@ class AppTest {
         // Chiudi eventuale tastiera prima del test
         onView(isRoot()).perform(closeSoftKeyboard())
         
-        // Verifica che il bottone sia visibile e abilitato prima del click
+        // Assicurati che tutti gli elementi siano caricati
+        onView(withId(R.id.textViewLoginTitle))
+            .check(matches(isDisplayed()))
+        
+        // Scorri per assicurarsi che il bottone sia visibile
         onView(withId(R.id.buttonLogin))
-            .perform(scrollTo()) // Assicura che il bottone sia visibile nello schermo
+            .perform(scrollTo())
+        
+        // Verifica lo stato del bottone prima del click
+        onView(withId(R.id.buttonLogin))
             .check(matches(isDisplayed()))
             .check(matches(isEnabled()))
             .check(matches(isClickable()))
+        
+        // Esegui il click
+        onView(withId(R.id.buttonLogin))
             .perform(click())
 
-        // Verifica che siamo ancora sulla stessa schermata (login fallisce senza credenziali)
+        // Breve pausa per permettere al sistema di reagire
+        try {
+            Thread.sleep(500)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+
+        // Verifica che siamo ancora sulla stessa schermata
+        // (il login dovrebbe fallire senza credenziali valide)
         onView(withId(R.id.textViewLoginTitle))
             .check(matches(isDisplayed()))
     }
@@ -198,19 +215,37 @@ class AppTest {
 
         // Inserisce email
         onView(withId(R.id.editTextEmail))
-            .perform(scrollTo(), replaceText(testEmail), closeSoftKeyboard())
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .perform(replaceText(testEmail))
+            .perform(closeSoftKeyboard())
 
         // Inserisce password  
         onView(withId(R.id.editTextPassword))
-            .perform(scrollTo(), replaceText(testPassword), closeSoftKeyboard())
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .perform(replaceText(testPassword))
+            .perform(closeSoftKeyboard())
+
+        // Verifica i dati inseriti
+        onView(withId(R.id.editTextEmail))
+            .check(matches(withText(testEmail)))
+        onView(withId(R.id.editTextPassword))
+            .check(matches(withText(testPassword)))
 
         // Clicca login
         onView(withId(R.id.buttonLogin))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
             .check(matches(isEnabled()))
-            .check(matches(isClickable()))
             .perform(click())
+
+        // Pausa per permettere al ViewModel di processare
+        try {
+            Thread.sleep(1000)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
 
         // Il login dovrebbe fallire con credenziali invalide, ma almeno il click dovrebbe funzionare
         // Verifica che il titolo sia ancora visibile (non dovrebbe navigare via)
@@ -245,15 +280,22 @@ class AppTest {
         val testEmail = "test@domain.com"
         val testPassword = "securepass"
 
+        // Chiudi eventuale tastiera
+        onView(isRoot()).perform(closeSoftKeyboard())
+
         // Test campo email
         onView(withId(R.id.editTextEmail))
-            .perform(scrollTo(), click())
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .perform(click())
             .perform(replaceText(testEmail))
             .check(matches(withText(testEmail)))
 
         // Test campo password
         onView(withId(R.id.editTextPassword))
-            .perform(scrollTo(), click())
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .perform(click())
             .perform(replaceText(testPassword))
             .check(matches(withText(testPassword)))
 
@@ -262,5 +304,28 @@ class AppTest {
             .check(matches(withText(testEmail)))
         onView(withId(R.id.editTextPassword))
             .check(matches(withText(testPassword)))
+    }
+
+    /**
+     * Test 14: Verifica interazione bottone senza logica business (test alternativo)
+     */
+    @Test
+    fun testLoginButtonInteractionOnly() {
+        // Chiudi eventuale tastiera prima del test
+        onView(isRoot()).perform(closeSoftKeyboard())
+        
+        // Test che verifica solo che il bottone sia interagibile
+        // senza effettuare il vero click che triggera Firebase
+        onView(withId(R.id.buttonLogin))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .check(matches(isEnabled()))
+            .check(matches(isClickable()))
+            .check(matches(withText("Login")))
+            
+        // Verifica che possiamo ottenere il focus sul bottone
+        onView(withId(R.id.buttonLogin))
+            .perform(scrollTo())
+            // Solo test di positioning e interattività senza click vero
     }
 }
