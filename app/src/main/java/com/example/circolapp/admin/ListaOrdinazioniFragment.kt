@@ -22,7 +22,7 @@ class ListaOrdinazioniFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: OrdinazioniAdapter
     private val ordinazioni = mutableListOf<Ordine>()
-    private val mappaUidOriginali = mutableMapOf<String, String>() // Map: ID documento -> UID originale
+    private val mappaUidOriginali = mutableMapOf<String, String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,17 +45,15 @@ class ListaOrdinazioniFragment : Fragment() {
             .get()
             .addOnSuccessListener { result ->
                 ordinazioni.clear()
-                mappaUidOriginali.clear() // Pulisci la mappa
+                mappaUidOriginali.clear()
                 val utentiMap = mutableMapOf<String, String>()
                 val ordiniTmp = mutableListOf<Ordine>()
                 for (document in result) {
                     val ordine = document.toObject(Ordine::class.java)
                     val ordineConId = ordine.copy(prodottoId = document.id)
                     ordiniTmp.add(ordineConId)
-                    // Salva l'UID originale nella mappa
                     mappaUidOriginali[document.id] = ordine.uidUtente
                 }
-                // Recupera i nomi utenti in batch
                 val uids = ordiniTmp.map { it.uidUtente }.distinct().filter { it.isNotBlank() }
                 if (uids.isEmpty()) {
                     ordinazioni.addAll(ordiniTmp)
@@ -115,13 +113,11 @@ class ListaOrdinazioniFragment : Fragment() {
 
     private fun completaOrdinazione(ordine: Ordine) {
         val db = FirebaseFirestore.getInstance()
-        // Usa direttamente l'ID del documento che ora è salvato in prodottoId
         if (ordine.prodottoId.isNotBlank()) {
             db.collection("ordinazioni").document(ordine.prodottoId)
-                .delete() // Elimina completamente il documento invece di aggiornare lo stato
+                .delete()
                 .addOnSuccessListener {
                     Toast.makeText(context, "Ordinazione completata ed eliminata!", Toast.LENGTH_SHORT).show()
-                    // Usa l'UID originale dalla mappa
                     val uidOriginale = mappaUidOriginali[ordine.prodottoId] ?: ordine.uidUtente
                     val ordineConUidOriginale = ordine.copy(uidUtente = uidOriginale)
                     inviaNotificaUtente(ordineConUidOriginale)

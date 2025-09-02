@@ -28,7 +28,6 @@ class CassaFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_cassa, container, false)
         val btnRicarica = view.findViewById<Button>(R.id.btnRicarica)
         val btnRiscuoti = view.findViewById<Button>(R.id.btnRiscuoti)
-        // Qui puoi aggiungere eventuali listener ai bottoni
         btnRicarica.setOnClickListener {
             val cameraPermission = Manifest.permission.CAMERA
             if (ContextCompat.checkSelfPermission(requireContext(), cameraPermission) != PackageManager.PERMISSION_GRANTED) {

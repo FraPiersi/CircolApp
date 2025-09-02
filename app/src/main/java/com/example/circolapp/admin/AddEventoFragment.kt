@@ -39,7 +39,6 @@ class AddEventoFragment : Fragment() {
             ViewModelProvider(it).get(EventiViewModel::class.java)
         }
 
-        // Gestione del selettore di data
         binding.editDataEvento.setOnClickListener {
             mostraDatePicker()
         }
@@ -49,7 +48,6 @@ class AddEventoFragment : Fragment() {
             val descrizione = binding.editDescrizioneEvento.text.toString().trim()
             val luogo = binding.editLuogoEvento.text.toString().trim()
 
-            // Validazione campi obbligatori
             when {
                 nome.isEmpty() -> {
                     Toast.makeText(requireContext(), "Inserisci il nome dell'evento", Toast.LENGTH_SHORT).show()
@@ -91,7 +89,6 @@ class AddEventoFragment : Fragment() {
     private fun mostraDatePicker() {
         val calendar = Calendar.getInstance()
 
-        // Imposta la data minima a oggi
         val today = Calendar.getInstance()
 
         val datePickerDialog = DatePickerDialog(
@@ -101,7 +98,6 @@ class AddEventoFragment : Fragment() {
                 selectedCalendar.set(year, month, dayOfMonth)
                 dataEventoSelezionata = selectedCalendar.time
 
-                // Aggiorna il campo di testo con la data formattata
                 binding.editDataEvento.setText(dateFormatter.format(dataEventoSelezionata!!))
             },
             calendar.get(Calendar.YEAR),
@@ -109,7 +105,6 @@ class AddEventoFragment : Fragment() {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
-        // Imposta la data minima a oggi (non si possono creare eventi nel passato)
         datePickerDialog.datePicker.minDate = today.timeInMillis
 
         datePickerDialog.show()

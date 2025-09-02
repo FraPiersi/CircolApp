@@ -9,16 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.circolapp.adapter.MovimentiAdapter // Assicurati che il percorso sia corretto
+import com.example.circolapp.adapter.MovimentiAdapter
 import com.example.circolapp.databinding.FragmentHomeBinding
-import com.example.circolapp.viewmodel.HomeViewModel // Assicurati che il percorso sia corretto
+import com.example.circolapp.viewmodel.HomeViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.text.NumberFormat
 import java.util.Locale
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
-    // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
     private lateinit var movimentiAdapter: MovimentiAdapter
@@ -38,15 +37,14 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Gestione click icona notifiche
         binding.iconNotifiche.setOnClickListener {
             findNavController().navigate(R.id.notificheFragment)
         }
 
         if (FirebaseAuth.getInstance().currentUser == null) {
             Log.w("HomeFragment", "Utente non loggato. Impossibile caricare i dati.")
-            binding.saldoText.text = getString(R.string.login_required_saldo) // Stringa dedicata
-            binding.textViewNoDataMessage.text = getString(R.string.login_required_data) // Stringa dedicata
+            binding.saldoText.text = getString(R.string.login_required_saldo)
+            binding.textViewNoDataMessage.text = getString(R.string.login_required_data)
             binding.textViewNoDataMessage.visibility = View.VISIBLE
             binding.recyclerViewMovimenti.visibility = View.GONE
             binding.progressBarHome.visibility = View.GONE

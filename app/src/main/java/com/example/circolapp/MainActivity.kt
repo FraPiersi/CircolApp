@@ -1,4 +1,4 @@
-package com.example.circolapp // Assicurati che il package sia corretto
+package com.example.circolapp
 
 import android.os.Bundle
 import android.util.Log
@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.circolapp.databinding.ActivityMainBinding // Assumi che usi ViewBinding
+import com.example.circolapp.databinding.ActivityMainBinding
 import com.example.circolapp.model.UserRole
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlin.io.path.name
@@ -26,9 +26,9 @@ class MainActivity : AppCompatActivity(), NavControllerProvider {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val userRoleString = intent.getStringExtra("USER_ROLE") ?: UserRole.USER.name // Default a USER
+        val userRoleString = intent.getStringExtra("USER_ROLE") ?: UserRole.USER.name
         val userRole = try {
-            UserRole.valueOf(userRoleString) // Converte la stringa (es. "ADMIN") in enum
+            UserRole.valueOf(userRoleString)
         } catch (e: IllegalArgumentException) {
             Log.e("MainActivity", "Ruolo non valido ricevuto: $userRoleString. Default a USER.")
             UserRole.USER
@@ -40,18 +40,16 @@ class MainActivity : AppCompatActivity(), NavControllerProvider {
             .findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Imposta il NavGraph e la start destination in base al ruolo
         if (userRole == UserRole.ADMIN) {
             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
             navGraph.setStartDestination(R.id.ProductCatalogFragment)
             navController.graph = navGraph
-            // Forza la navigazione verso ProductCatalogFragment dopo aver impostato il graph
             navController.navigate(R.id.ProductCatalogFragment)
             setupAdminBottomNavigation()
         } else {
             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-            navGraph.setStartDestination(R.id.homeFragment) // ID del fragment di partenza per utente
-            navController.graph = navGraph // Applica il graph con la nuova start destination
+            navGraph.setStartDestination(R.id.homeFragment)
+            navController.graph = navGraph
 
             setupUserBottomNavigation()
         }
