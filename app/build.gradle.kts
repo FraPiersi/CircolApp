@@ -123,7 +123,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
-
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
     // Fragment testing
     debugImplementation("androidx.fragment:fragment-testing:1.8.3")
 }
