@@ -72,7 +72,6 @@ class GestisciTessereAdapter(
             onActionClick(utente, "gestisci")
         }
 
-        // Nascondi il secondo pulsante (rifiuta) dato che non serve più
         holder.itemView.findViewById<Button>(R.id.button_rifiuta)?.visibility = View.GONE
     }
 

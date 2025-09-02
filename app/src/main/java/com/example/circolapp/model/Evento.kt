@@ -11,6 +11,6 @@ data class Evento(
     val descrizione: String = "",
     val data: Date? = null,
     val luogo: String = "",
-    @Transient // Questo campo non viene serializzato in Firestore
-    val partecipanti: List<String> = emptyList() // Solo per compatibilità locale
+    @Transient
+    val partecipanti: List<String> = emptyList()
 ): Parcelable

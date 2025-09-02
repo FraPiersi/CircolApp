@@ -1,4 +1,4 @@
-package com.example.circolapp.viewmodel // o il tuo package per i ViewModel
+package com.example.circolapp.viewmodel
 
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -32,7 +32,7 @@ class QrCodeViewModel : ViewModel() {
     fun generateUserQrCode() {
         _isLoading.value = true
         _errorMessage.value = null
-        _qrCodeBitmap.value = null // Resetta il bitmap precedente
+        _qrCodeBitmap.value = null
 
         val userUid = auth.currentUser?.uid
 
@@ -42,7 +42,7 @@ class QrCodeViewModel : ViewModel() {
             return
         }
 
-        viewModelScope.launch(Dispatchers.Default) { // Esegui su un thread in background
+        viewModelScope.launch(Dispatchers.Default) {
             try {
                 val writer = QRCodeWriter()
                 val bitMatrix: BitMatrix = writer.encode(userUid, BarcodeFormat.QR_CODE, 512, 512)

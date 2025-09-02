@@ -41,7 +41,6 @@ class RicaricaFragment : Fragment() {
             val db = FirebaseFirestore.getInstance()
             val utentiRef = db.collection("utenti")
 
-            // Utilizziamo una transazione per aggiornare sia il saldo che aggiungere il movimento
             db.runTransaction { transaction ->
                 val userDocRef = utentiRef.document(uidQr)
                 val userSnapshot = transaction.get(userDocRef)
@@ -53,10 +52,8 @@ class RicaricaFragment : Fragment() {
                 val saldoAttuale = userSnapshot.getDouble("saldo") ?: 0.0
                 val nuovoSaldo = saldoAttuale + importo
 
-                // Aggiorna il saldo
                 transaction.update(userDocRef, "saldo", nuovoSaldo)
 
-                // Aggiungi il movimento nella sottocollezione
                 val movimento = hashMapOf(
                     "importo" to importo,
                     "descrizione" to "Ricarica in cassa",
@@ -78,10 +75,8 @@ class RicaricaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (args.username.isBlank()) {
-            // Mostra dialog per scansione QR code
             val dialog = BarcodeScannerDialogFragment { qrCode ->
                 val action = RicaricaFragmentDirections.actionRicaricaFragmentSelf(qrCode)
-                // Navigazione corretta dal Fragment
                 requireParentFragment().requireParentFragment().requireView().findNavController().navigate(action)
             }
             dialog.show(parentFragmentManager, "BarcodeScannerDialog")

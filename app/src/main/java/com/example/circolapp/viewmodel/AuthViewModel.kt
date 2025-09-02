@@ -1,4 +1,4 @@
-package com.example.circolapp.viewmodel // o il tuo package viewmodel
+package com.example.circolapp.viewmodel
 
 import android.app.Application
 import android.util.Log
@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.circolapp.model.UserRole // Creeremo questo Enum/Sealed Class
+import com.example.circolapp.model.UserRole
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -16,18 +16,17 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-// Enum o Sealed class per rappresentare lo stato dell'autenticazione/ruolo
 sealed class AuthResult {
     data class Success(val userRole: UserRole, val user: FirebaseUser) : AuthResult()
     data class Error(val message: String) : AuthResult()
     object Loading : AuthResult()
-    object Idle : AuthResult() // Stato iniziale o dopo un logout
+    object Idle : AuthResult()
 }
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = Firebase.firestore // Modo più conciso
+    private val firestore: FirebaseFirestore = Firebase.firestore
 
     private val _authResult = MutableLiveData<AuthResult>(AuthResult.Idle)
     val authResult: LiveData<AuthResult> get() = _authResult

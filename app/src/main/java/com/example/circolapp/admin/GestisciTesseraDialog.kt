@@ -41,12 +41,10 @@ class GestisciTesseraDialog(
     }
 
     private fun setupViews(view: View) {
-        // Informazioni utente
         view.findViewById<TextView>(R.id.text_nome_utente).text = utente.nome
         view.findViewById<TextView>(R.id.text_uid_utente).text = "UID: ${utente.uid}"
         view.findViewById<TextView>(R.id.text_saldo_utente).text = "Saldo: ${currencyFormatter.format(utente.saldo)}"
 
-        // Stato tessera
         val textStatoTessera = view.findViewById<TextView>(R.id.text_stato_tessera)
         val textDettagliTessera = view.findViewById<TextView>(R.id.text_dettagli_tessera)
 
@@ -138,13 +136,11 @@ class GestisciTesseraDialog(
     private fun approvaRichiesta() {
         val db = FirebaseFirestore.getInstance()
 
-        // Genera numero tessera e data scadenza
         val numeroTessera = "TS${System.currentTimeMillis().toString().takeLast(8)}"
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.YEAR, 1)
         val dataScadenza = calendar.time
 
-        // Aggiorna l'utente
         val userUpdates = mapOf(
             "hasTessera" to true,
             "numeroTessera" to numeroTessera,
@@ -155,7 +151,6 @@ class GestisciTesseraDialog(
         db.collection("utenti").document(utente.uid)
             .update(userUpdates)
             .addOnSuccessListener {
-                // Rimuovi la richiesta dalla collezione richieste_tessera se esiste
                 db.collection("richieste_tessera")
                     .whereEqualTo("uidUtente", utente.uid)
                     .get()
@@ -180,7 +175,6 @@ class GestisciTesseraDialog(
         db.collection("utenti").document(utente.uid)
             .update("richiestaRinnovoInCorso", false)
             .addOnSuccessListener {
-                // Rimuovi la richiesta dalla collezione richieste_tessera se esiste
                 db.collection("richieste_tessera")
                     .whereEqualTo("uidUtente", utente.uid)
                     .get()

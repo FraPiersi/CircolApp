@@ -1,4 +1,3 @@
-// InfoEventoViewModel.kt
 package com.example.circolapp.viewmodel
 
 import android.util.Log
@@ -8,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.circolapp.model.Evento
-import com.google.firebase.auth.FirebaseAuth // Per ottenere l'utente corrente (esempio)
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -24,15 +23,12 @@ class InfoEventoViewModel : ViewModel() {
     private val _azionePartecipazioneCompletata = MutableLiveData<Boolean>()
     val azionePartecipazioneCompletata: LiveData<Boolean> get() = _azionePartecipazioneCompletata
 
-    private val _isLoading = MutableLiveData<Boolean>(false) // Per mostrare/nascondere un loader
+    private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    // Istanza di Firestore
     private val db = FirebaseFirestore.getInstance()
-    // Istanza di FirebaseAuth (esempio per ottenere username/userId)
     private val auth = FirebaseAuth.getInstance()
 
-    // Aggiungi questi LiveData per gestire i partecipanti dalla sottocollezione
     private val _partecipanti = MutableLiveData<List<String>>()
     val partecipanti: LiveData<List<String>> get() = _partecipanti
 
