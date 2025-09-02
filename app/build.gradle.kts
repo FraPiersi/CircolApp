@@ -108,8 +108,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
 
-    androidTestImplementation("androidx.test:platform:1.6.1")
-
     // Fragment testing
     debugImplementation("androidx.fragment:fragment-testing:1.8.3")
 }
