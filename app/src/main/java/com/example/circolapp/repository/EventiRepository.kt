@@ -18,7 +18,7 @@ class EventiRepository {
         val liveData = MutableLiveData<List<Evento>>()
 
         eventiCollection
-            .orderBy("data", Query.Direction.ASCENDING) // Ordina per data crescente
+            .orderBy("data", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.w("EventiRepository", "Errore nel caricamento eventi", error)
@@ -30,7 +30,7 @@ class EventiRepository {
                     val eventiList = snapshot.documents.mapNotNull { document ->
                         try {
                             val evento = document.toObject(Evento::class.java)
-                            evento?.copy(id = document.id) // Aggiungi l'ID del documento
+                            evento?.copy(id = document.id)
                         } catch (e: Exception) {
                             Log.e("EventiRepository", "Errore nel parsing evento: ${document.id}", e)
                             null
@@ -49,16 +49,13 @@ class EventiRepository {
      * Aggiunge un nuovo evento a Firestore
      */
     fun addEvento(evento: Evento, onComplete: (() -> Unit)? = null, onError: ((Exception) -> Unit)? = null) {
-        // Crea un nuovo documento con ID automatico
         val eventoRef = eventiCollection.document()
 
-        // Prepara i dati dell'evento per Firestore
         val eventoData = hashMapOf(
             "nome" to evento.nome,
             "descrizione" to evento.descrizione,
             "luogo" to evento.luogo,
             "data" to evento.data
-            // Non includiamo partecipanti perché ora è una sottocollezione
         )
 
         eventoRef.set(eventoData)

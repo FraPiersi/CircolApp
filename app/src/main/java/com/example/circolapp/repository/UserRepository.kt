@@ -12,7 +12,7 @@ import kotlin.io.path.exists
 class UserRepository {
 
     private val db = FirebaseFirestore.getInstance()
-    private val usersCollection = db.collection("utenti") // Assicurati che sia "utenti"
+    private val usersCollection = db.collection("utenti")
 
     suspend fun addOrUpdateUserInFirestore(firebaseUser: FirebaseUser) {
         if (firebaseUser.uid.isBlank()) {
@@ -37,25 +37,15 @@ class UserRepository {
             }
 
             userMap["lastSeen"] = FieldValue.serverTimestamp()
-            // userMap["fcmToken"] = ... // Gestisci l'FCM token se necessario
 
-            // Controlla se il documento esiste già.
-            // Se non esiste, è un nuovo utente, quindi inizializza il saldo.
             val existingUserDoc = userDocumentRef.get().await()
             if (!existingUserDoc.exists()) {
-                userMap["saldo"] = 0.0 // Inizializza il saldo a 0 per i nuovi utenti
+                userMap["saldo"] = 0.0
                 Log.d("UserRepository", "Nuovo utente ${firebaseUser.uid}. Impostazione saldo a 0.")
             } else {
-                // Utente esistente. Non tocchiamo il saldo qui a meno che non ci sia una logica specifica
-                // per aggiornarlo durante il login (generalmente non necessario per il saldo).
-                // Il saldo verrà modificato da altre funzioni (es. trasferimenti).
                 Log.d("UserRepository", "Utente esistente ${firebaseUser.uid}. Saldo non modificato durante il login.")
             }
 
-            // Usa SetOptions.merge() per aggiornare solo i campi specificati
-            // e non sovrascrivere l'intero documento se esiste già.
-            // Se l'utente è nuovo, questo creerà il documento con tutti i campi, incluso il saldo.
-            // Se l'utente esiste e 'saldo' non è in userMap, il merge non lo toccherà.
             userDocumentRef.set(userMap, SetOptions.merge()).await()
             Log.d(
                 "UserRepository",
@@ -68,9 +58,7 @@ class UserRepository {
                 "Errore nell'aggiungere/aggiornare l'utente ${firebaseUser.uid}",
                 e
             )
-            throw e // Rilancia l'eccezione
+            throw e
         }
     }
-
-    // ... altre funzioni del repository ...
 }

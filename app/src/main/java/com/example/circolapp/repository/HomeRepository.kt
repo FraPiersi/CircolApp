@@ -3,14 +3,14 @@ package com.example.circolapp.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.circolapp.model.Movimento // Assicurati che il percorso sia corretto
+import com.example.circolapp.model.Movimento
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Date
 
 class HomeRepository {
     private val db = FirebaseFirestore.getInstance()
-    private val utentiCollection = db.collection("utenti") // Riferimento alla collection
+    private val utentiCollection = db.collection("utenti")
 
     /**
      * Recupera il saldo dell'utente in tempo reale da Firestore usando l'UID.
@@ -21,15 +21,14 @@ class HomeRepository {
         val liveData = MutableLiveData<Double>()
         if (userUid.isBlank()) {
             Log.w("HomeRepository", "User UID è vuoto, impossibile recuperare il saldo.")
-            liveData.value = 0.0 // O gestisci l'errore diversamente
+            liveData.value = 0.0
             return liveData
         }
 
-        // L'ID del documento è l'UID dell'utente
         utentiCollection.document(userUid).addSnapshotListener { snapshot, error ->
             if (error != null) {
                 Log.w("HomeRepository", "Errore nell'ascoltare il saldo per UID: $userUid", error)
-                liveData.value = 0.0 // O gestisci l'errore diversamente
+                liveData.value = 0.0
                 return@addSnapshotListener
             }
 
@@ -38,7 +37,7 @@ class HomeRepository {
                 liveData.value = saldo
             } else {
                 Log.d("HomeRepository", "Documento non trovato per il saldo UID: $userUid (potrebbe essere un nuovo utente senza ancora il campo saldo)")
-                liveData.value = 0.0 // Se il documento non esiste o non ha il campo saldo
+                liveData.value = 0.0
             }
         }
         return liveData
@@ -57,7 +56,6 @@ class HomeRepository {
             return liveData
         }
 
-        // Utilizziamo la sottocollezione "movimenti" dentro il documento utente
         utentiCollection.document(userUid).collection("movimenti")
             .orderBy("data", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->

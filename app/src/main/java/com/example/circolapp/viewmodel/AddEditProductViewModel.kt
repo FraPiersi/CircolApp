@@ -29,15 +29,13 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
     private val storage = FirebaseStorage.getInstance()
     private val productsCollection = db.collection("prodotti")
 
-    // Dati del prodotto
     val productName = MutableLiveData<String>()
-    val productCode = MutableLiveData<String>() // Questo è l'ID
+    val productCode = MutableLiveData<String>()
     val productDescription = MutableLiveData<String>()
     val productPieces = MutableLiveData<String>()
-    val productAmount = MutableLiveData<String>() // << NUOVO LiveData per l'importo (come String per input)
-    val productOrdinabile = MutableLiveData<Boolean>(true) // << NUOVO LiveData per ordinabile
+    val productAmount = MutableLiveData<String>()
+    val productOrdinabile = MutableLiveData<Boolean>(true)
 
-    // Gestione immagine
     val productImageUrl = MutableLiveData<String?>()
     private val _selectedImageUri = MutableLiveData<Uri?>()
     val selectedImageUri: LiveData<Uri?> get() = _selectedImageUri
@@ -67,8 +65,8 @@ class AddEditProductViewModel(application: Application) : AndroidViewModel(appli
             productCode.value = ""
             productDescription.value = ""
             productPieces.value = ""
-            productAmount.value = "" // Inizializza l'importo
-            productOrdinabile.value = true // Inizializza ordinabile a true
+            productAmount.value = ""
+            productOrdinabile.value = true
         }
     }
 
