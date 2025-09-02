@@ -31,7 +31,6 @@ class NewChatViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
-    // Evento per la navigazione alla schermata dei messaggi
     private val _navigateToChat = MutableLiveData<NewChatNavigationEvent?>()
     val navigateToChat: LiveData<NewChatNavigationEvent?> get() = _navigateToChat
 
@@ -52,7 +51,6 @@ class NewChatViewModel : ViewModel() {
                 val result = db.collection("utenti").get().await()
                 for (document in result.documents) {
                     val user = document.toObject(User::class.java)
-                    // Escludi l'utente corrente dalla lista
                     if (user != null && user.uid != currentUserId) {
                         usersList.add(user)
                     }
@@ -76,16 +74,14 @@ class NewChatViewModel : ViewModel() {
 
         val otherUserId = selectedUser.uid
 
-        // Crea un ID chat consistente (ordinando gli UID)
         val participantsList = listOf(currentUserId, otherUserId).sorted()
         val generatedChatId = participantsList.joinToString(separator = "_")
 
 
         viewModelScope.launch {
             try {
-                // 1. Controlla se una chat tra questi due utenti esiste già
                 val existingChatQuery = db.collection("chats")
-                    .whereArrayContains("participants", currentUserId) // otteniamo le chat dell'utente corrente
+                    .whereArrayContains("participants", currentUserId)
                     .get()
                     .await()
 
@@ -99,22 +95,16 @@ class NewChatViewModel : ViewModel() {
                 }
 
                 if (foundChatId != null) {
-                    // Chat esistente trovata, naviga a quella
                     _navigateToChat.value = NewChatNavigationEvent(foundChatId, otherUserId)
                 } else {
-                    // 2. Chat non esiste, creane una nuova
                     val newChat = hashMapOf(
                         "participants" to participantsList,
-                        "lastMessageText" to "Chat iniziata", // Messaggio iniziale opzionale
+                        "lastMessageText" to "Chat iniziata",
                         "lastMessageTimestamp" to FieldValue.serverTimestamp(),
                         "createdAt" to FieldValue.serverTimestamp(),
-                        "unreadCount" to mapOf(currentUserId to 0, otherUserId!! to 0) // Inizializza contatori non letti
+                        "unreadCount" to mapOf(currentUserId to 0, otherUserId!! to 0)
                     )
 
-                    // Usa l'ID generato o lascia che Firestore ne generi uno
-                    // Usare un ID predeterminato (generatedChatId) può essere utile se vuoi accedervi direttamente
-                    // senza una query, ma richiede di assicurarsi che sia unico (l'ordinamento aiuta).
-                    // Se usi un ID generato da Firestore: db.collection("chats").add(newChat).await().id
                     db.collection("chats").document(generatedChatId).set(newChat).await()
                     _navigateToChat.value = NewChatNavigationEvent(generatedChatId, otherUserId)
                 }

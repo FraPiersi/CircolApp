@@ -10,11 +10,10 @@ data class Feedback(
     val emailUtente: String = "",
     val titolo: String = "",
     val messaggio: String = "",
-    val categoria: String = "", // "GENERALE", "BUG", "SUGGERIMENTO", "ALTRO"
+    val categoria: String = "",
     @ServerTimestamp
     val timestamp: Timestamp? = null,
     val letto: Boolean = false
 ) {
-    // Costruttore vuoto per Firestore
     constructor() : this("", "", "", "", "", "", "", null, false)
 }
