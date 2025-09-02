@@ -16,16 +16,18 @@ import org.junit.runner.RunWith
 import org.hamcrest.Matchers.allOf
 
 /**
- * Instrumented tests per CircolApp - Test di UI locali senza Firebase
+ * Instrumented tests per CircolApp - Test di UI e interazioni
  * 
  * Questi test verificano:
  * - UI e layout delle activity principali
  * - Navigazione tra schermata di login e registrazione  
  * - Validazione form e input fields
  * - Visibilità e funzionamento elementi UI
- * - Transizioni tra activity
+ * - Interazioni con bottoni e campi input
+ * - Comportamento con operazioni asincrone (Firebase)
  * 
- * NOTA: Questi test non accedono a Firebase e testano solo funzionalità locali
+ * NOTA: I test gestiscono le operazioni Firebase ma si aspettano
+ * che falliscano con credenziali di test non valide
  * 
  * Per eseguire i test:
  * ./gradlew connectedAndroidTest
@@ -307,7 +309,61 @@ class AppTest {
     }
 
     /**
-     * Test 14: Verifica interazione bottone senza logica business (test alternativo)
+     * Test 15: Test robusto con gestione avanzata per il click del bottone
+     */
+    @Test
+    fun testLoginButtonClickRobust() {
+        // Setup iniziale - chiudi tastiera e stabilizza UI
+        onView(isRoot()).perform(closeSoftKeyboard())
+        
+        // Aspetta che l'Activity sia completamente caricata
+        onView(withId(R.id.textViewLoginTitle))
+            .check(matches(isDisplayed()))
+            .check(matches(withText("Accesso Utente")))
+
+        // Verifica che tutti gli elementi siano presenti prima di procedere
+        onView(withId(R.id.editTextEmail))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.editTextPassword))
+            .check(matches(isDisplayed()))
+            
+        // Focus sul bottone per assicurarsi che sia nel viewport
+        onView(withId(R.id.buttonLogin))
+            .perform(scrollTo())
+            
+        // Verifica stato del bottone in modo esteso
+        onView(withId(R.id.buttonLogin))
+            .check(matches(isDisplayed()))
+            .check(matches(isEnabled()))
+            .check(matches(isClickable()))
+            .check(matches(withText("Login")))
+            
+        // Breve pausa per stabilizzare la UI
+        try {
+            Thread.sleep(200)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+            
+        // Esegui click verificando lo stato immediatamente prima
+        onView(allOf(withId(R.id.buttonLogin), isDisplayed(), isEnabled()))
+            .perform(click())
+            
+        // Pausa maggiore per permettere processing asincrono
+        try {
+            Thread.sleep(2000)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+
+        // Verifica finale - dovremmo essere ancora sulla login screen
+        // perché il login fallisce senza credenziali valide
+        onView(withId(R.id.textViewLoginTitle))
+            .check(matches(isDisplayed()))
+    }
+
+    /**
+     * Test 16: Verifica interazione bottone senza logica business (test alternativo)
      */
     @Test
     fun testLoginButtonInteractionOnly() {
@@ -322,10 +378,5 @@ class AppTest {
             .check(matches(isEnabled()))
             .check(matches(isClickable()))
             .check(matches(withText("Login")))
-            
-        // Verifica che possiamo ottenere il focus sul bottone
-        onView(withId(R.id.buttonLogin))
-            .perform(scrollTo())
-            // Solo test di positioning e interattività senza click vero
     }
 }
