@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.circolapp.R
-import com.example.circolapp.databinding.ItemUserSelectionBinding // Verrà creato
+import com.example.circolapp.databinding.ItemUserSelectionBinding
 import com.example.circolapp.model.User
 
 class UserSelectionAdapter(private val onUserSelected: (User) -> Unit) :

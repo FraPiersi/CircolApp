@@ -8,34 +8,30 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.circolapp.R
 import com.example.circolapp.databinding.ItemMovimentoBinding
-import com.example.circolapp.model.Movimento // Assicurati che il percorso sia corretto
-import java.text.NumberFormat
+import com.example.circolapp.model.Movimentoimport java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MovimentiAdapter : ListAdapter<Movimento, MovimentiAdapter.MovimentoViewHolder>(
-    // Definisci DiffUtil.ItemCallback come oggetto anonimo qui
+   
     object : DiffUtil.ItemCallback<Movimento>() {
         override fun areItemsTheSame(oldItem: Movimento, newItem: Movimento): Boolean {
-            // Se Movimento ha un ID univoco, confronta quello.
+           
             // Altrimenti, se i campi chiave sono sufficienti per l'unicità e non cambiano
             // frequentemente per lo STESSO item logico, puoi usarli.
             // Dato che Movimento potrebbe non avere un ID stabile, e la descrizione+data+importo
             // potrebbero ripetersi per item DIVERSI, questo è un compromesso.
             // L'ideale per areItemsTheSame è un ID stabile.
-            // Se non hai un ID, e due movimenti con gli stessi dati sono considerati
             // lo "stesso" item per scopi di aggiornamento della UI, allora questo va bene.
-            // Se hai molti movimenti con dati identici ma sono logicamente distinti,
             // dovresti davvero considerare di aggiungere un ID a Movimento.
             return oldItem.descrizione == newItem.descrizione &&
                     oldItem.importo == newItem.importo &&
                     oldItem.data == newItem.data
-            // Per esempio, se Movimento avesse un campo `id: String`:
-            // return oldItem.id == newItem.id
+                      
         }
 
         override fun areContentsTheSame(oldItem: Movimento, newItem: Movimento): Boolean {
-            // Dato che Movimento è (si spera) una data class,
+           
             // l'implementazione di equals() confronta tutti i campi.
             return oldItem == newItem
         }

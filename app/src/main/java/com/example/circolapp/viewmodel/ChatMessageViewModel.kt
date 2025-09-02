@@ -12,7 +12,7 @@ import kotlinx.coroutines.tasks.await
 class ChatMessageViewModel(
     private val chatId: String,
     private val currentUserId: String,
-    private val otherUserId: String // Necessario per aggiornare unreadCount
+    private val otherUserId: String
 ) : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
@@ -22,19 +22,19 @@ class ChatMessageViewModel(
     private val _messages = MutableLiveData<List<Message>>()
     val messages: LiveData<List<Message>> get() = _messages
 
-    private val _isLoading = MutableLiveData<Boolean>(true) // Inizia con loading
+    private val _isLoading = MutableLiveData<Boolean>(true)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
-    val newMessageText = MutableLiveData<String>("") // Per il campo di input
+    val newMessageText = MutableLiveData<String>("")
 
     private var messagesListener: ListenerRegistration? = null
 
     init {
         loadMessages()
-        markMessagesAsRead() // Segna i messaggi come letti quando si entra nella chat
+        markMessagesAsRead()
     }
 
     private fun loadMessages() {
@@ -55,7 +55,6 @@ class ChatMessageViewModel(
                     val messageList = snapshots.documents.mapNotNull { doc ->
                         doc.toObject(Message::class.java)?.apply {
                             this.isSentByCurrentUser = this.senderId == currentUserId
-                            // this.messageId = doc.id // L'adapter ne ha bisogno per DiffUtil
                         }
                     }
                     _messages.value = messageList
@@ -74,13 +73,13 @@ class ChatMessageViewModel(
         val message = Message(
             senderId = currentUserId,
             text = text,
-            timestamp = null // Sarà impostato da @ServerTimestamp
+            timestamp = null
         )
 
         viewModelScope.launch {
             try {
                 messagesRef.add(message).await()
-                newMessageText.value = "" // Pulisci il campo di input
+                newMessageText.value = ""
                 updateChatDocumentOnNewMessage(text)
             } catch (e: Exception) {
                 Log.e("ChatMessageVM", "Errore invio messaggio", e)
@@ -93,26 +92,22 @@ class ChatMessageViewModel(
         val updates = hashMapOf<String, Any>(
             "lastMessageText" to lastText,
             "lastMessageTimestamp" to FieldValue.serverTimestamp(),
-            "unreadCount.$otherUserId" to FieldValue.increment(1) // Incrementa per l'altro utente
+            "unreadCount.$otherUserId" to FieldValue.increment(1)
         )
         try {
             chatDocRef.update(updates).await()
         } catch (e: Exception) {
             Log.e("ChatMessageVM", "Errore aggiornamento documento chat", e)
-            // Gestisci l'errore, ma l'invio del messaggio principale è andato a buon fine
         }
     }
 
     private fun markMessagesAsRead() {
-        // Resetta il contatore unread per l'utente corrente in questa chat
-        // currentUserId è la chiave che vogliamo azzerare
         val updateField = "unreadCount.$currentUserId"
         chatDocRef.update(updateField, 0)
             .addOnSuccessListener { Log.d("ChatMessageVM", "Chat $chatId marcata come letta per $currentUserId") }
             .addOnFailureListener { e -> Log.w("ChatMessageVM", "Errore nel marcare chat $chatId come letta", e) }
     }
 
-    // Nuovo metodo per ottenere il saldo dell'utente corrente
     fun getCurrentUserBalance(callback: (Double) -> Unit) {
         db.collection("utenti").document(currentUserId)
             .get()
@@ -126,11 +121,9 @@ class ChatMessageViewModel(
             }
     }
 
-    // Nuovo metodo per inviare trasferimento di denaro
     fun sendMoneyTransfer(amount: Double, recipientId: String) {
         viewModelScope.launch {
             try {
-                // Esegui la transazione per trasferire il denaro
                 db.runTransaction { transaction ->
                     val senderRef = db.collection("utenti").document(currentUserId)
                     val recipientRef = db.collection("utenti").document(recipientId)
@@ -141,44 +134,36 @@ class ChatMessageViewModel(
                     val senderBalance = senderSnapshot.getDouble("saldo") ?: 0.0
                     val recipientBalance = recipientSnapshot.getDouble("saldo") ?: 0.0
 
-                    // Verifica se il mittente ha saldo sufficiente
                     if (senderBalance < amount) {
                         throw Exception("Saldo insufficiente. Saldo disponibile: €${String.format("%.2f", senderBalance)}")
                     }
 
-                    // Calcola i nuovi saldi
                     val newSenderBalance = senderBalance - amount
                     val newRecipientBalance = recipientBalance + amount
 
-                    // Aggiorna i saldi
                     transaction.update(senderRef, "saldo", newSenderBalance)
                     transaction.update(recipientRef, "saldo", newRecipientBalance)
 
-                    // Crea i movimenti per entrambi gli utenti nella sottocollezione
                     val currentTime = com.google.firebase.Timestamp.now()
 
-                    // Movimento per il mittente (negativo)
                     val senderMovimentoData = mapOf(
                         "importo" to -amount,
                         "descrizione" to "Trasferimento a ${recipientSnapshot.getString("displayName") ?: "Utente"}",
                         "data" to currentTime
                     )
 
-                    // Movimento per il destinatario (positivo)
                     val recipientMovimentoData = mapOf(
                         "importo" to amount,
                         "descrizione" to "Ricevuto da ${senderSnapshot.getString("displayName") ?: "Utente"}",
                         "data" to currentTime
                     )
 
-                    // Aggiungi i movimenti nelle sottocollezioni
                     val senderMovimentoRef = senderRef.collection("movimenti").document()
                     transaction.set(senderMovimentoRef, senderMovimentoData)
 
                     val recipientMovimentoRef = recipientRef.collection("movimenti").document()
                     transaction.set(recipientMovimentoRef, recipientMovimentoData)
 
-                    // Crea il messaggio di trasferimento denaro nella chat
                     val transferMessage = Message(
                         senderId = currentUserId,
                         text = "💰 Trasferimento di €${String.format("%.2f", amount)}",
@@ -187,11 +172,9 @@ class ChatMessageViewModel(
                         transferStatus = "COMPLETED"
                     )
 
-                    // Aggiungi il messaggio alla chat
                     val messageRef = messagesRef.document()
                     transaction.set(messageRef, transferMessage)
 
-                    // Aggiorna il documento della chat
                     val chatUpdates = mapOf(
                         "lastMessageText" to "💰 Trasferimento di €${String.format("%.2f", amount)}",
                         "lastMessageTimestamp" to FieldValue.serverTimestamp(),
@@ -210,14 +193,12 @@ class ChatMessageViewModel(
         }
     }
 
-
     override fun onCleared() {
         super.onCleared()
         messagesListener?.remove()
     }
 }
 
-// Factory per il ViewModel se hai bisogno di passare argomenti al costruttore
 @Suppress("UNCHECKED_CAST")
 class ChatMessageViewModelFactory(
     private val chatId: String,

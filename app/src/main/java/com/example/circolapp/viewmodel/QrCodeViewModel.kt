@@ -1,4 +1,4 @@
-package com.example.circolapp.viewmodel // o il tuo package per i ViewModel
+package com.example.circolapp.viewmodel
 
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -18,31 +18,7 @@ import kotlinx.coroutines.withContext
 
 class QrCodeViewModel : ViewModel() {
 
-    private val _qrCodeBitmap = MutableLiveData<Bitmap?>()
-    val qrCodeBitmap: LiveData<Bitmap?> get() = _qrCodeBitmap
-
-    private val _isLoading = MutableLiveData<Boolean>(false)
-    val isLoading: LiveData<Boolean> get() = _isLoading
-
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
-
-    private val auth = FirebaseAuth.getInstance()
-
-    fun generateUserQrCode() {
-        _isLoading.value = true
-        _errorMessage.value = null
-        _qrCodeBitmap.value = null // Resetta il bitmap precedente
-
-        val userUid = auth.currentUser?.uid
-
-        if (userUid.isNullOrBlank()) {
-            _errorMessage.value = "Utente non autenticato. Impossibile generare il QR code."
-            _isLoading.value = false
-            return
-        }
-
-        viewModelScope.launch(Dispatchers.Default) { // Esegui su un thread in background
+    private
             try {
                 val writer = QRCodeWriter()
                 val bitMatrix: BitMatrix = writer.encode(userUid, BarcodeFormat.QR_CODE, 512, 512)

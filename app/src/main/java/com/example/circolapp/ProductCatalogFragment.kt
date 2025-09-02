@@ -20,45 +20,7 @@ import com.example.circolapp.viewmodel.ProductCatalogViewModel
 import com.example.circolapp.viewmodel.ProductCatalogScreenState
 
 class ProductCatalogFragment : Fragment() {
-    private var _binding: FragmentProductCatalogBinding? = null
-    private val binding get() = _binding!!
-
-    private val viewModel: ProductCatalogViewModel by viewModels()
-    private lateinit var productAdapter: ProductCatalogAdapter
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_product_catalog, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.recyclerViewProducts.layoutManager = GridLayoutManager(context, 2)
-        observeScreenState()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("ProductCatalogFragment", "onResume chiamato")
-
-        // Assicurati sempre che l'adapter sia configurato
-        val currentState = viewModel.screenState.value
-        if (currentState != null) {
-            Log.d("ProductCatalogFragment", "onResume: riconfigurazione UI con stato esistente")
-
-            // Forza la riconfigurazione dell'adapter
-            forceReconfigureAdapter(currentState.currentUserRole, currentState.products)
-
-            updateUI(currentState)
-        }
-
-        // Solo ricarica se non ci sono già prodotti caricati o se c'è stato un errore
-        if (currentState?.products?.isEmpty() == true && !currentState.isLoading) {
+    private        if (currentState?.products?.isEmpty() == true && !currentState.isLoading) {
             Log.d("ProductCatalogFragment", "onResume: ricaricando dati perché lista vuota")
             viewModel.refreshData()
         } else {
@@ -108,13 +70,11 @@ class ProductCatalogFragment : Fragment() {
         // Forza l'aggiornamento del binding
         binding.invalidateAll()
 
-        // Gestisci la visibilità del progress bar manualmente se il data binding non funziona
         binding.progressBarCatalog.visibility = if (state.isLoading) View.VISIBLE else View.GONE
 
         setupAdapter(state.currentUserRole)
         updateProductList(state.products)
 
-        // Gestisci la visibilità del messaggio "nessun prodotto"
         binding.textViewNoProductsCatalog.visibility =
             if (!state.isLoading && state.products.isEmpty()) View.VISIBLE else View.GONE
 
@@ -157,8 +117,6 @@ class ProductCatalogFragment : Fragment() {
     private fun handleProductClick(product: Product) {
         view?.doOnPreDraw {
             try {
-                // Per gli admin, naviga alla schermata di modifica
-                // Per gli utenti normali, naviga alla schermata di dettaglio
                 val currentUserRole = viewModel.screenState.value?.currentUserRole
 
                 if (currentUserRole == UserRole.ADMIN) {

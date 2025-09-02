@@ -40,7 +40,6 @@ class GestisciTessereAdapter(
         holder.textNomeUtente.text = utente.nome.ifEmpty { "Nome non disponibile" }
         holder.textEmailUtente.text = "UID: ${utente.uid}"
 
-        // Determina lo stato della tessera
         val statoTessera = when {
             utente.richiestaRinnovoInCorso -> "🟡 Richiesta in attesa"
             utente.hasTessera -> {
@@ -54,7 +53,6 @@ class GestisciTessereAdapter(
         }
         holder.textStatoTessera.text = statoTessera
 
-        // Mostra dettagli aggiuntivi
         val dettagli = buildString {
             append("Saldo: ${currencyFormatter.format(utente.saldo)}")
             if (utente.hasTessera && utente.numeroTessera != null) {
@@ -66,13 +64,11 @@ class GestisciTessereAdapter(
         }
         holder.textDettagli.text = dettagli
 
-        // Configura il pulsante
         holder.buttonGestisci.text = "Gestisci"
         holder.buttonGestisci.setOnClickListener {
             onActionClick(utente, "gestisci")
         }
 
-        // Nascondi il secondo pulsante (rifiuta) dato che non serve più
         holder.itemView.findViewById<Button>(R.id.button_rifiuta)?.visibility = View.GONE
     }
 
