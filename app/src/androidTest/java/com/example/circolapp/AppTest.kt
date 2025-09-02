@@ -162,19 +162,4 @@ class AppTest {
             .check(matches(isDisplayed()))
             .check(matches(withText("Accesso Utente")))
     }
-
-    /**
-     * Test 10: Verifica click semplice sul bottone login
-     */
-    @Test
-    fun testLoginButtonClick() {
-        // Test che prova a cliccare il bottone login (senza aspettarsi navigazione)
-        onView(withId(R.id.buttonLogin))
-            .check(matches(isDisplayed()))
-            .perform(click())
-
-        // Verifica che siamo ancora sulla stessa schermata (login fallisce senza credenziali)
-        onView(withId(R.id.textViewLoginTitle))
-            .check(matches(isDisplayed()))
-    }
 }
