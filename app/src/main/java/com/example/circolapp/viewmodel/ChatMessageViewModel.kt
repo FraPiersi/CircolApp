@@ -193,7 +193,6 @@ class ChatMessageViewModel(
         }
     }
 
-
     override fun onCleared() {
         super.onCleared()
         messagesListener?.remove()

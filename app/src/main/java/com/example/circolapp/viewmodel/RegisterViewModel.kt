@@ -1,4 +1,4 @@
-package com.example.circolapp.viewmodel // o il tuo package viewmodel
+package com.example.circolapp.viewmodel
 
 import android.app.Application
 import android.util.Log
@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.circolapp.model.UserRole // La nostra enum
+import com.example.circolapp.model.UserRole
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -25,44 +25,8 @@ sealed class RegistrationResult {
 
 class RegisterViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = Firebase.firestore
-
-    private val _registrationStatus = MutableLiveData<RegistrationResult>()
-    val registrationStatus: LiveData<RegistrationResult> get() = _registrationStatus
-
-    fun registerUser(email: String, password: String, displayName: String) {
-        if (email.isBlank() || password.isBlank() || displayName.isBlank()) {
-            _registrationStatus.value = RegistrationResult.Error("Tutti i campi sono obbligatori.")
-            return
-        }
-        if (password.length < 6) {
-            _registrationStatus.value = RegistrationResult.Error("La password deve contenere almeno 6 caratteri.")
-            return
-        }
-
-        _registrationStatus.value = RegistrationResult.Loading
-        viewModelScope.launch {
-            try {
-                // 1. Crea utente con Firebase Authentication
-                val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-                val firebaseUser = authResult.user
-
-                if (firebaseUser != null) {
-                    // 2. Aggiorna il profilo Firebase Auth con il displayName (opzionale ma consigliato)
-                    val profileUpdates = UserProfileChangeRequest.Builder()
-                        .setDisplayName(displayName)
-                        .build()
-                    firebaseUser.updateProfile(profileUpdates).await()
-
-                    // 3. Crea il documento utente in Firestore con ruolo "user"
-                    val userDocumentData = hashMapOf(
-                        "uid" to firebaseUser.uid,
-                        "email" to firebaseUser.email,
-                        "displayName" to displayName, // Usa il displayName fornito
-                        "photoUrl" to firebaseUser.photoUrl?.toString(), // Sarà null all'inizio
-                        "ruolo" to UserRole.USER.name.lowercase(), // Salva "user" come stringa lowercase
-                        "saldo" to 0.0,    // Saldo iniziale di default
+    private                        "photoUrl" to firebaseUser.photoUrl?.toString(), // Sarà null all'inizio
+                        "ruolo" to UserRole.USER.name.lowercase(),                        "saldo" to 0.0,    // Saldo iniziale di default
                         "dataCreazione" to FieldValue.serverTimestamp() // Data di creazione
                     )
 

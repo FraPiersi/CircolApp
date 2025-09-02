@@ -20,8 +20,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView // Import corretto per CameraX
-import androidx.core.content.ContextCompat
+import androidx.camera.view.PreviewViewimport androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -45,34 +44,7 @@ import java.util.concurrent.Executors
 
 class AddEditProductFragment : Fragment() {
 
-    private var _binding: FragmentAddEditProductBinding? = null
-    private val binding get() = _binding!!
-
-    private val viewModel: AddEditProductViewModel by viewModels()
-    private val args: AddEditProductFragmentArgs by navArgs()
-
-    // Launcher per la selezione delle immagini
-    private val imagePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) {
-            viewModel.setSelectedImageUri(uri)
-            displaySelectedImage(uri)
-            binding.btnRemoveImage.visibility = View.VISIBLE
-        }
-    }
-
-    // --- Inizio Variabili per Barcode Scanning con CameraX ---
-    private lateinit var cameraExecutor: ExecutorService
-    private var barcodeScanner: BarcodeScanner? = null
-    private var cameraProvider: ProcessCameraProvider? = null
-    private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    private var imageAnalysis: ImageAnalysis? = null
-    private var cameraPreview: Preview? = null // Rinominato da 'preview' per evitare conflitto con CameraX Preview
-    private var scannerDialog: AlertDialog? = null // Riferimento al dialog per chiuderlo
-    private var cameraXPreviewView: PreviewView? = null // Riferimento alla PreviewView nel dialog
-    // --- Fine Variabili per Barcode Scanning con CameraX ---
-
+    private    private    private
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -189,8 +161,6 @@ class AddEditProductFragment : Fragment() {
     }
 
     private fun startBarcodeScanningFlow() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_barcode_scanner, null)
-        cameraXPreviewView = dialogView.findViewById(R.id.camerax_preview_view_scanner) // Usa il nuovo ID
 
         scannerDialog = AlertDialog.Builder(requireContext())
             .setTitle("Scansiona Codice Prodotto")
@@ -200,8 +170,7 @@ class AddEditProductFragment : Fragment() {
                 dialog.dismiss()
             }
             .setOnDismissListener {
-                stopCameraAndScanner() // Assicurati di fermare la camera e lo scanner
-            }
+                stopCameraAndScanner()            }
             .create()
 
         if (cameraXPreviewView == null) {
@@ -215,36 +184,6 @@ class AddEditProductFragment : Fragment() {
     }
 
     private fun setupCamera() {
-        val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> = ProcessCameraProvider.getInstance(requireContext())
-        cameraProviderFuture.addListener({
-            try {
-                cameraProvider = cameraProviderFuture.get()
-                bindCameraUseCases()
-            } catch (e: Exception) {
-                Log.e("BarcodeScan", "Errore nell'ottenere CameraProvider", e)
-                Toast.makeText(context, "Errore fotocamera: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-            }
-        }, ContextCompat.getMainExecutor(requireContext()))
-    }
-
-    @SuppressLint("UnsafeOptInUsageError")
-    private fun bindCameraUseCases() {
-        if (cameraProvider == null) {
-            Log.e("BarcodeScan", "CameraProvider non inizializzato.")
-            return
-        }
-        if (cameraXPreviewView == null) {
-            Log.e("BarcodeScan", "CameraXPreviewView non è disponibile nel dialog.")
-            return
-        }
-
-        // Configura le opzioni dello scanner di codici a barre
-        val options = BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
-            .build()
-        barcodeScanner = BarcodeScanning.getClient(options)
-
-        // Preview Use Case
         cameraPreview = Preview.Builder()
             .build()
             .also {
@@ -253,43 +192,22 @@ class AddEditProductFragment : Fragment() {
 
         // ImageAnalysis Use Case
         imageAnalysis = ImageAnalysis.Builder()
-            // Imposta una dimensione di target ragionevole per l'analisi.
-            // Dimensioni troppo grandi possono rallentare l'analisi.
-            .setTargetResolution(Size(1280, 720)) // Esempio, puoi adattarla
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // Processa solo l'ultimo frame
-            .build()
+            .setTargetResolution(Size(1280, 720))            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)            .build()
 
         imageAnalysis?.setAnalyzer(cameraExecutor, ImageAnalysis.Analyzer { imageProxy ->
-            val mediaImage = imageProxy.image
-            if (mediaImage != null) {
-                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-
-                barcodeScanner!!.process(image)
-                    .addOnSuccessListener { barcodes ->
-                        if (barcodes.isNotEmpty()) {
-                            val firstBarcode = barcodes[0]
-                            val barcodeValue = firstBarcode.rawValue
-                            Log.d("BarcodeScan", "Barcode CameraX scansionato: $barcodeValue")
-
-                            // Esegui sul thread UI per aggiornare ViewModel e UI
                             requireActivity().runOnUiThread {
                                 viewModel.productCode.postValue(barcodeValue)
-                                scannerDialog?.dismiss() // Chiudi il dialog
-                                stopCameraAndScanner()   // Ferma la camera e lo scanner
-                                Toast.makeText(context, "Codice scansionato: $barcodeValue", Toast.LENGTH_SHORT).show()
+                                scannerDialog?.dismiss()                                stopCameraAndScanner()                                Toast.makeText(context, "Codice scansionato: $barcodeValue", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
                     .addOnFailureListener { e ->
                         Log.e("BarcodeScan", "Errore durante la scansione del barcode con CameraX", e)
-                        // Non mostrare Toast continui qui, potrebbe essere fastidioso
                     }
                     .addOnCompleteListener {
-                        imageProxy.close() // Molto importante chiudere imageProxy
-                    }
+                        imageProxy.close()                    }
             } else {
-                imageProxy.close() // Chiudi anche se mediaImage è null
-            }
+                imageProxy.close()            }
         })
 
         try {
@@ -298,7 +216,7 @@ class AddEditProductFragment : Fragment() {
                 this as LifecycleOwner, // Il Fragment è un LifecycleOwner
                 cameraSelector,
                 cameraPreview,
-                imageAnalysis // Aggiungi imageAnalysis qui
+                imageAnalysis
             )
             Log.d("BarcodeScan", "CameraX Use Cases associati al lifecycle.")
         } catch (exc: Exception) {
@@ -352,55 +270,6 @@ class AddEditProductFragment : Fragment() {
                         Log.d("AddEditFragment_Event", "ProductSaved event HANDLED. Showing Toast...")
                         Toast.makeText(context, "Prodotto salvato!", Toast.LENGTH_SHORT).show()
                         Log.d("AddEditProduct", "Current destination before pop: ${findNavController().currentDestination?.label}")
-                        val success = findNavController().popBackStack()
-                        Log.d("AddEditProduct", "popBackStack success: $success. New current destination: ${findNavController().currentDestination?.label}")
-                        if (!success) {
-                            Log.e("AddEditProduct", "popBackStack FAILED!")
-                        }
-                    }
-                    is AddEditProductEvent.ProductDeleted -> {
-                        Toast.makeText(context, "Prodotto eliminato!", Toast.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
-                    }
-                    is AddEditProductEvent.Error -> {
-                        Toast.makeText(context, "Errore: ${it.message}", Toast.LENGTH_LONG).show()
-                    }
-                    is AddEditProductEvent.ImageUploadStarted -> {
-                        Toast.makeText(context, "Caricamento immagine...", Toast.LENGTH_SHORT).show()
-                    }
-                    is AddEditProductEvent.ImageUploadCompleted -> {
-                        Toast.makeText(context, "Immagine caricata con successo!", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                viewModel.onEventHandled()
-            }
-        })
-
-        viewModel.isCodeEditable.observe(viewLifecycleOwner, Observer { isEditable ->
-            binding.etProductCode.isEnabled = isEditable
-            binding.tilProductCode.isEnabled = isEditable
-            binding.btnScanBarcode.visibility = if(isEditable) View.VISIBLE else View.GONE
-            if (!isEditable) {
-                binding.tilProductCode.helperText = "Il codice non è modificabile per prodotti esistenti."
-            } else {
-                binding.tilProductCode.helperText = null
-            }
-        })
-    }
-
-    private fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Conferma Eliminazione")
-            .setMessage("Sei sicuro di voler eliminare questo prodotto? L'azione è irreversibile.")
-            .setPositiveButton("Elimina") { _, _ -> viewModel.deleteProduct() }
-            .setNegativeButton("Annulla", null)
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        stopCameraAndScanner() // Assicurati che le risorse della camera siano rilasciate
         cameraExecutor.shutdown() // Arresta l'executor
         _binding = null
         cameraXPreviewView = null // Pulisci riferimento alla view del dialog

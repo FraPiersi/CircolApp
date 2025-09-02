@@ -26,9 +26,7 @@ class TransactionLogicTest {
             importo = 25.0
         )
 
-
         val result = processPayment(user, product.importo)
-
 
         assertTrue(result.isSuccess)
         assertEquals(75.0, result.newBalance, 0.01)
@@ -44,9 +42,7 @@ class TransactionLogicTest {
         )
         val amount = 25.0
 
-
         val result = processPayment(user, amount)
-
 
         assertFalse(result.isSuccess)
         assertEquals("Saldo insufficiente", result.errorMessage)
@@ -62,9 +58,7 @@ class TransactionLogicTest {
         )
         val rechargeAmount = 25.0
 
-
         val result = processRecharge(user, rechargeAmount)
-
 
         assertTrue(result.isSuccess)
         assertEquals(75.0, result.newBalance, 0.01)
@@ -75,9 +69,7 @@ class TransactionLogicTest {
 
         val user = User(uid = "user123", saldo = 50.0)
 
-
         val result = processRecharge(user, -10.0)
-
 
         assertFalse(result.isSuccess)
         assertEquals("Importo non valido", result.errorMessage)
@@ -89,9 +81,7 @@ class TransactionLogicTest {
         val amount = 25.0
         val description = "Pagamento prodotto"
 
-
         val movimento = createPaymentMovimento(amount, description)
-
 
         assertEquals(-25.0, movimento.importo, 0.01)
         assertEquals(description, movimento.descrizione)
@@ -136,10 +126,8 @@ class TransactionLogicTest {
         val user = User(uid = "user123", saldo = 50.0)
         val tesseraPrice = 30.0
 
-
         val canPay = canPayForTessera(user, tesseraPrice)
         val result = processTesseraPayment(user, tesseraPrice)
-
 
         assertTrue(canPay)
         assertTrue(result.isSuccess)

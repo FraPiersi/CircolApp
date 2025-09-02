@@ -25,28 +25,10 @@ class GestisciTesseraDialog(
 ) : DialogFragment() {
 
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.ITALY)
-    private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.ITALY)
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_gestisci_tessera, null)
-
-        setupViews(view)
-
-        return AlertDialog.Builder(requireContext())
-            .setView(view)
-            .setTitle("Gestisci Tessera - ${utente.nome}")
-            .setNegativeButton("Chiudi", null)
-            .create()
-    }
-
-    private fun setupViews(view: View) {
-        // Informazioni utente
-        view.findViewById<TextView>(R.id.text_nome_utente).text = utente.nome
+    private        view.findViewById<TextView>(R.id.text_nome_utente).text = utente.nome
         view.findViewById<TextView>(R.id.text_uid_utente).text = "UID: ${utente.uid}"
         view.findViewById<TextView>(R.id.text_saldo_utente).text = "Saldo: ${currencyFormatter.format(utente.saldo)}"
 
-        // Stato tessera
         val textStatoTessera = view.findViewById<TextView>(R.id.text_stato_tessera)
         val textDettagliTessera = view.findViewById<TextView>(R.id.text_dettagli_tessera)
 

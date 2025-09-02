@@ -14,14 +14,14 @@ class ValidationUtilsTest {
 
     @Test
     fun `test product validation with valid data`() {
-        // Act & Assert
+
         assertTrue(isValidProduct("Prodotto Test", "Descrizione", 10, 25.0))
         assertTrue(isValidProduct("P", "D", 1, 0.01))
     }
 
     @Test
     fun `test product validation with invalid data`() {
-        // Act & Assert
+
         assertFalse(isValidProduct("", "Descrizione", 10, 25.0)) // nome vuoto
         assertFalse(isValidProduct("Prodotto", "", 10, 25.0)) // descrizione vuota
         assertFalse(isValidProduct("Prodotto", "Descrizione", -1, 25.0)) // quantità negativa
@@ -30,56 +30,21 @@ class ValidationUtilsTest {
 
     @Test
     fun `test balance calculation with movements`() {
-        // Arrange
-        val movements = listOf(
-            TestMovement(50.0, "Ricarica"),
-            TestMovement(-25.0, "Pagamento"),
-            TestMovement(100.0, "Ricarica"),
-            TestMovement(-30.0, "Acquisto")
-        )
-
-        // Act
-        val balance = calculateBalance(movements)
-
-        // Assert
         assertEquals(95.0, balance, 0.01)
     }
 
     @Test
     fun `test balance calculation with empty movements`() {
-        // Act
-        val balance = calculateBalance(emptyList())
-
-        // Assert
         assertEquals(0.0, balance, 0.01)
     }
 
     @Test
     fun `test date formatting`() {
-        // Arrange
-        val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.JANUARY, 15, 14, 30, 0)
-        val date = calendar.time
-
-        // Act
-        val formattedDate = formatDate(date)
-
-        // Assert
         assertEquals("15/01/2025 14:30", formattedDate)
     }
 
     @Test
     fun `test tessera expiration check`() {
-        // Arrange
-        val futureDate = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_MONTH, 30)
-        }.time
-
-        val pastDate = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_MONTH, -30)
-        }.time
-
-        // Act & Assert
         assertFalse(isTesseraExpired(futureDate))
         assertTrue(isTesseraExpired(pastDate))
         assertTrue(isTesseraExpired(null))
@@ -87,7 +52,7 @@ class ValidationUtilsTest {
 
     @Test
     fun `test price formatting`() {
-        // Act & Assert
+
         assertEquals("€ 25,50", formatPrice(25.5))
         assertEquals("€ 0,00", formatPrice(0.0))
         assertEquals("€ 1.234,56", formatPrice(1234.56))

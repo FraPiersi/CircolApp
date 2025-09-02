@@ -1,4 +1,4 @@
-// InfoEventoViewModel.kt
+
 package com.example.circolapp.viewmodel
 
 import android.util.Log
