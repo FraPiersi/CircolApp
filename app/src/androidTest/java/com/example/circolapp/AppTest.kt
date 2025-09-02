@@ -6,6 +6,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -168,13 +169,98 @@ class AppTest {
      */
     @Test
     fun testLoginButtonClick() {
-        // Test che prova a cliccare il bottone login (senza aspettarsi navigazione)
+        // Chiudi eventuale tastiera prima del test
+        onView(isRoot()).perform(closeSoftKeyboard())
+        
+        // Verifica che il bottone sia visibile e abilitato prima del click
         onView(withId(R.id.buttonLogin))
+            .perform(scrollTo()) // Assicura che il bottone sia visibile nello schermo
             .check(matches(isDisplayed()))
+            .check(matches(isEnabled()))
+            .check(matches(isClickable()))
             .perform(click())
 
         // Verifica che siamo ancora sulla stessa schermata (login fallisce senza credenziali)
         onView(withId(R.id.textViewLoginTitle))
             .check(matches(isDisplayed()))
+    }
+
+    /**
+     * Test 11: Verifica comportamento login con dati inseriti (test più completo)
+     */
+    @Test
+    fun testLoginWithCredentials() {
+        val testEmail = "test@example.com"
+        val testPassword = "password123"
+
+        // Chiudi eventuale tastiera
+        onView(isRoot()).perform(closeSoftKeyboard())
+
+        // Inserisce email
+        onView(withId(R.id.editTextEmail))
+            .perform(scrollTo(), replaceText(testEmail), closeSoftKeyboard())
+
+        // Inserisce password  
+        onView(withId(R.id.editTextPassword))
+            .perform(scrollTo(), replaceText(testPassword), closeSoftKeyboard())
+
+        // Clicca login
+        onView(withId(R.id.buttonLogin))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .check(matches(isEnabled()))
+            .check(matches(isClickable()))
+            .perform(click())
+
+        // Il login dovrebbe fallire con credenziali invalide, ma almeno il click dovrebbe funzionare
+        // Verifica che il titolo sia ancora visibile (non dovrebbe navigare via)
+        onView(withId(R.id.textViewLoginTitle))
+            .check(matches(isDisplayed()))
+    }
+
+    /**
+     * Test 12: Verifica click su link registrazione 
+     */
+    @Test
+    fun testRegisterLinkClick() {
+        // Chiudi eventuale tastiera
+        onView(isRoot()).perform(closeSoftKeyboard())
+        
+        onView(withId(R.id.textViewRegister))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .check(matches(isClickable()))
+            .perform(click())
+
+        // Dopo il click dovrebbe navigare alla RegisterActivity
+        // Nota: questo test può fallire se non c'è la RegisterActivity, 
+        // ma almeno testiamo che il click funzioni
+    }
+
+    /**
+     * Test 13: Verifica comportamento campi input
+     */
+    @Test
+    fun testInputFieldsInteraction() {
+        val testEmail = "test@domain.com"
+        val testPassword = "securepass"
+
+        // Test campo email
+        onView(withId(R.id.editTextEmail))
+            .perform(scrollTo(), click())
+            .perform(replaceText(testEmail))
+            .check(matches(withText(testEmail)))
+
+        // Test campo password
+        onView(withId(R.id.editTextPassword))
+            .perform(scrollTo(), click())
+            .perform(replaceText(testPassword))
+            .check(matches(withText(testPassword)))
+
+        // Verifica che i dati persistano
+        onView(withId(R.id.editTextEmail))
+            .check(matches(withText(testEmail)))
+        onView(withId(R.id.editTextPassword))
+            .check(matches(withText(testPassword)))
     }
 }
