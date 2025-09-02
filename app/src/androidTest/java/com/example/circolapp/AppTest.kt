@@ -49,6 +49,7 @@ class AppTest {
      */
     @Test
     fun testLoginScreenElementsVisibility() {
+        // Verifica che tutti gli elementi principali siano visibili
         onView(withId(R.id.imageViewLogo))
             .check(matches(isDisplayed()))
 
@@ -74,6 +75,9 @@ class AppTest {
      */
     @Test
     fun testEmailInputField() {
+        val testEmail = "test@example.com"
+
+        // Inserisce testo nel campo email senza click esplicito
         onView(withId(R.id.editTextEmail))
             .perform(replaceText(testEmail), closeSoftKeyboard())
             .check(matches(withText(testEmail)))
@@ -84,6 +88,7 @@ class AppTest {
      */
     @Test
     fun testRegisterLinkClickable() {
+        // Verifica che il link di registrazione sia visibile e cliccabile
         onView(withId(R.id.textViewRegister))
             .check(matches(isDisplayed()))
             .check(matches(isClickable()))
@@ -95,6 +100,7 @@ class AppTest {
      */
     @Test
     fun testBasicUIElements() {
+        // Test molto semplice che verifica solo l'esistenza degli elementi
         onView(withId(R.id.imageViewLogo))
             .check(matches(isDisplayed()))
 

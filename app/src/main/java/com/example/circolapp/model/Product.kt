@@ -1,4 +1,4 @@
-package com.example.circolapp.model
+package com.example.circolapp.model // o il tuo package models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @com.google.firebase.firestore.IgnoreExtraProperties
 data class Product(
+    val id: String = "", // Rimosso @DocumentId
     val nome: String = "",
     val descrizione: String = "",
     val numeroPezzi: Int = 0,

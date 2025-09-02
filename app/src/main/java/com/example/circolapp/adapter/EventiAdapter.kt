@@ -1,4 +1,4 @@
-
+// EventoAdapter.kt
 package com.example.circolapp.adapter
 
 import android.view.LayoutInflater

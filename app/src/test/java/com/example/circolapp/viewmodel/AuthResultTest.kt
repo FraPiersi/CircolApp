@@ -13,18 +13,37 @@ class AuthResultTest {
 
     @Test
     fun `test AuthResult Success creation`() {
+        // Arrange
+        val mockFirebaseUser = mock<FirebaseUser>()
+        val userRole = UserRole.ADMIN
+
+        // Act
+        val result = AuthResult.Success(userRole, mockFirebaseUser)
+
+        // Assert
         assertEquals(userRole, result.userRole)
         assertEquals(mockFirebaseUser, result.user)
     }
 
     @Test
     fun `test AuthResult Error creation`() {
+        // Arrange
+        val errorMessage = "Login failed"
+
+        // Act
+        val result = AuthResult.Error(errorMessage)
+
+        // Assert
         assertEquals(errorMessage, result.message)
     }
 
     @Test
     fun `test AuthResult Loading and Idle states`() {
+        // Act & Assert
+        val loadingResult = AuthResult.Loading
+        val idleResult = AuthResult.Idle
 
+        // Test che sono istanze della classe corretta
         assertNotNull(loadingResult)
         assertNotNull(idleResult)
 
